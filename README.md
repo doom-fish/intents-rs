@@ -2,7 +2,7 @@
 
 Safe Rust bindings for Apple's [Intents](https://developer.apple.com/documentation/intents) framework on macOS.
 
-> **Status:** v0.2.0 adds dedicated bridge coverage for IntentDefinition, IntentResponse, IntentHandler, IntentDonation, IntentExtension, INParameter, INObject, INVocabulary, INRelevantShortcut, INInteraction, and INRelevantShortcutStore while keeping the v0.1.0 Siri preferences and voice-shortcut surface.
+> **Status:** v0.2.1 adds `INPerson`, `INFile`, `INIntentResolutionResult`, `INSendMessageIntentResponse`, and `INStartCallIntentHandling` coverage on top of the v0.2.0 IntentDefinition / IntentResponse / IntentHandler / IntentDonation / IntentExtension / INParameter / INObject / INVocabulary / INRelevantShortcut / INInteraction / INRelevantShortcutStore surface.
 
 ## Quick start
 
@@ -17,25 +17,25 @@ fn main() {
 
 ## Highlights
 
-- `Intent::new`, `Shortcut::new_with_user_activity`, `UserActivity`, `Image`, and typed wrappers for common generated intent classes.
-- `IntentResponse::new`, `set_user_activity_type`, `IntentDonationMetadata`, and `SendMessageIntentDonationMetadata`.
-- `IntentHandlerProvider` and `IntentExtension` helpers for `INIntentHandlerProviding` / `INExtension` flows.
-- `IntentParameter`, `IntentObject`, `SpeakableString`, `IntentVocabulary`, `RelevantShortcut`, `RelevantShortcutStore`, and `Interaction`.
+- `Intent::new`, `Shortcut::new_with_user_activity`, `UserActivity`, `Image`, `Person`, `PersonHandle`, and typed wrappers for common generated intent classes.
+- `IntentResponse::new`, `SendMessageIntentResponse`, `IntentResolutionResult`, `IntentDonationMetadata`, and `SendMessageIntentDonationMetadata`.
+- `IntentHandlerProvider`, `StartCallIntentHandling`, and `IntentExtension` helpers for `INIntentHandlerProviding`, `INStartCallIntentHandling`, and `INExtension` flows.
+- `IntentFile`, `IntentParameter`, `IntentObject`, `SpeakableString`, `IntentVocabulary`, `RelevantShortcut`, `RelevantShortcutStore`, and `Interaction`.
 - Existing Siri preferences, interaction donation, relevant-shortcut, and voice-shortcut APIs remain available.
 
 ## Examples
 
 ```bash
 cargo run --example 01_smoke
-cargo run --example 02_intent_definition_basic
-cargo run --example 12_in_relevant_shortcut_store_basic
+cargo run --example 13_in_person_roundtrip
+cargo run --example 15_intent_helpers
 ```
 
-The crate now ships twelve numbered examples and eleven integration-test files, with at least one example and one test for every new logical area.
+The crate now ships fifteen numbered examples and fourteen integration-test files, with at least one example and one test for every new logical area.
 
 ## Coverage audit
 
-See [COVERAGE.md](COVERAGE.md) for the v0.2.0 header-by-header audit, including macOS-unavailable and deferred surfaces.
+See [COVERAGE_AUDIT.md](COVERAGE_AUDIT.md) for the current v0.2.1 SDK symbol audit, and [COVERAGE.md](COVERAGE.md) for the v0.2.0 logical-area audit.
 
 ## Notes
 

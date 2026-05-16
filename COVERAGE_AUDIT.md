@@ -5,30 +5,41 @@ This audit enumerates top-level Objective-C/C public symbols from `Intents.frame
 `intents-rs` also exposes several runtime-only wrappers for symbols that the macOS 26.2 SDK marks unavailable (for example `INPreferences`, `INParameter`, `INVocabulary`, `INRelevantShortcut*`, `INRelevanceProvider*`, `INPlayMediaIntent`, `INSearchForMessagesIntent`, and `INAddTasksIntent`). Those wrappers are intentionally excluded from the `VERIFIED` / `GAPS` counts here.
 
 SDK_PUBLIC_SYMBOLS: 170
-VERIFIED: 18
-GAPS: 131
+VERIFIED: 29
+GAPS: 120
 EXEMPT: 21
-COVERAGE_PCT: 12.1%
+COVERAGE_PCT: 19.5%
 
 ## 🟢 VERIFIED
 | Symbol | Kind | Header | Wrapped by |
 | --- | --- | --- | --- |
 | INExtension | interface | INExtension.h | IntentExtension |
+| INFile | interface | INFile.h | IntentFile |
 | INImage | interface | INImage.h | Image |
 | INIntent | interface | INIntent.h | Intent |
 | INIntentDonationMetadata | interface | INIntentDonationMetadata.h | IntentDonationMetadata |
 | INIntentHandlerProviding | protocol | INIntentHandlerProviding.h | IntentHandlerProvider / IntentExtension::handler_class_name_for_intent |
+| INIntentResolutionResult | interface | INIntentResolutionResult.h | IntentResolutionResult |
 | INIntentResponse | interface | INIntentResponse.h | IntentResponse |
 | INIntentHandlingStatus | enum | INInteraction.h | IntentHandlingStatus |
 | INInteraction | interface | INInteraction.h | Interaction |
 | INInteractionDirection | enum | INInteraction.h | InteractionDirection |
 | INObject | interface | INObject.h | IntentObject |
+| INPerson | interface | INPerson.h | Person |
+| INPerson (INInteraction) | category | INPerson.h | Person::with_details / aliases_count / suggestion_type |
+| INPerson (SiriAdditions) | category | INPerson+SiriAdditions.h | Person::is_me |
+| INPersonHandle | interface | INPersonHandle.h | PersonHandle |
+| INPersonHandleType | enum | INPersonHandle.h | PersonHandleType |
+| INPersonSuggestionType | enum | INPerson.h | PersonSuggestionType |
 | INSendMessageIntent | interface | INSendMessageIntent.h | SendMessageIntent |
 | INSendMessageIntentDonationMetadata | interface | INSendMessageIntentDonationMetadata.h | SendMessageIntentDonationMetadata |
+| INSendMessageIntentResponse | interface | INSendMessageIntentResponse.h | SendMessageIntentResponse |
+| INSendMessageIntentResponseCode | enum | INSendMessageIntentResponse.h | SendMessageIntentResponseCode |
 | INShortcut | interface | INShortcut.h | Shortcut |
 | INSpeakable | protocol | INSpeakable.h | Speakable trait |
 | INSpeakableString | interface | INSpeakableString.h | SpeakableString |
 | INStartCallIntent | interface | INStartCallIntent.h | StartCallIntent |
+| INStartCallIntentHandling | protocol | INStartCallIntent.h | StartCallIntentHandling helper |
 | INVoiceShortcut | interface | INVoiceShortcut.h | VoiceShortcut |
 | INVoiceShortcutCenter | interface | INVoiceShortcutCenter.h | VoiceShortcutCenter |
 
@@ -74,7 +85,6 @@ COVERAGE_PCT: 12.1%
 | INEditMessageIntentResponseCode | enum | INEditMessageIntentResponse.h | Enum not exposed. |
 | INEnergyResolutionResult | interface | INEnergyResolutionResult.h | No public Rust wrapper. |
 | INEnumResolutionResult | interface | INEnumResolutionResult.h | No public Rust wrapper. |
-| INFile | interface | INFile.h | No public Rust wrapper. |
 | INFileResolutionResult | interface | INFileResolutionResult.h | No public Rust wrapper. |
 | INFlight | interface | INFlight.h | No public Rust wrapper. |
 | INFlightReservation | interface | INFlightReservation.h | No public Rust wrapper. |
@@ -95,7 +105,6 @@ COVERAGE_PCT: 12.1%
 | INIntegerResolutionResult | interface | INIntegerResolutionResult.h | No public Rust wrapper. |
 | INIntentErrorCode | enum | INIntentErrors.h | Enum not exposed. |
 | INIntentResolutionResult (Custom) | category | INIntentResolutionResult+Custom.h | Objective-C category not surfaced. |
-| INIntentResolutionResult | interface | INIntentResolutionResult.h | No public Rust wrapper. |
 | INLengthResolutionResult | interface | INLengthResolutionResult.h | No public Rust wrapper. |
 | INLodgingReservation | interface | INLodgingReservation.h | No public Rust wrapper. |
 | INMassResolutionResult | interface | INMassResolutionResult.h | No public Rust wrapper. |
@@ -110,12 +119,6 @@ COVERAGE_PCT: 12.1%
 | INPaymentMethod | interface | INPaymentMethod.h | No public Rust wrapper. |
 | INPaymentMethodResolutionResult | interface | INPaymentMethodResolutionResult.h | No public Rust wrapper. |
 | INPaymentMethodType | enum | INPaymentMethodType.h | Enum not exposed. |
-| INPerson (SiriAdditions) | category | INPerson+SiriAdditions.h | Objective-C category not surfaced. |
-| INPerson | interface | INPerson.h | No public Rust wrapper. |
-| INPerson (INInteraction) | category | INPerson.h | Objective-C category not surfaced. |
-| INPersonSuggestionType | enum | INPerson.h | Enum not exposed. |
-| INPersonHandle | interface | INPersonHandle.h | No public Rust wrapper. |
-| INPersonHandleType | enum | INPersonHandle.h | Enum not exposed. |
 | INPersonResolutionResult | interface | INPersonResolutionResult.h | No public Rust wrapper. |
 | INPlacemarkResolutionResult | interface | INPlacemarkResolutionResult.h | No public Rust wrapper. |
 | INRecurrenceFrequency | enum | INRecurrenceFrequency.h | Enum not exposed. |
@@ -132,8 +135,6 @@ COVERAGE_PCT: 12.1%
 | INSendMessageAttachment | interface | INSendMessageAttachment.h | No public Rust wrapper. |
 | INSendMessageIntent (UserNotifications) | category | INSendMessageIntent+UserNotifications.h | Objective-C category not surfaced. |
 | INSendMessageIntentHandling | protocol | INSendMessageIntent.h | Protocol not surfaced. |
-| INSendMessageIntentResponse | interface | INSendMessageIntentResponse.h | No public Rust wrapper. |
-| INSendMessageIntentResponseCode | enum | INSendMessageIntentResponse.h | Enum not exposed. |
 | INSendMessageRecipientResolutionResult | interface | INSendMessageRecipientResolutionResult.h | No public Rust wrapper. |
 | INSendMessageRecipientUnsupportedReason | enum | INSendMessageRecipientResolutionResult.h | Enum not exposed. |
 | INShareFocusStatusIntent | interface | INShareFocusStatusIntent.h | No public Rust wrapper. |
@@ -144,7 +145,6 @@ COVERAGE_PCT: 12.1%
 | INStartCallCallRecordToCallBackResolutionResult | interface | INStartCallCallRecordToCallBackResolutionResult.h | No public Rust wrapper. |
 | INStartCallCallRecordToCallBackUnsupportedReason | enum | INStartCallCallRecordToCallBackResolutionResult.h | Enum not exposed. |
 | INStartCallIntent (UserNotifications) | category | INStartCallIntent+UserNotifications.h | Objective-C category not surfaced. |
-| INStartCallIntentHandling | protocol | INStartCallIntent.h | Protocol not surfaced. |
 | INSticker | interface | INSticker.h | No public Rust wrapper. |
 | INStickerType | enum | INStickerType.h | Enum not exposed. |
 | INStringResolutionResult | interface | INStringResolutionResult.h | No public Rust wrapper. |

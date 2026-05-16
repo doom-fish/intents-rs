@@ -8,9 +8,11 @@
 
 pub mod error;
 pub mod ffi;
+pub mod in_file;
 pub mod in_interaction;
 pub mod in_object;
 pub mod in_parameter;
+pub mod in_person;
 pub mod in_relevant_shortcut;
 pub mod in_relevant_shortcut_store;
 pub mod in_vocabulary;
@@ -19,6 +21,7 @@ pub mod intent_definition;
 pub mod intent_donation;
 pub mod intent_extension;
 pub mod intent_handler;
+pub mod intent_resolution;
 pub mod intent_response;
 pub mod interaction;
 pub mod preferences;
@@ -27,9 +30,11 @@ pub mod relevant;
 pub mod voice_shortcut;
 
 pub use error::IntentsError;
-pub use in_interaction::{DateInterval, Interaction, InteractionDirection, IntentHandlingStatus};
+pub use in_file::IntentFile;
+pub use in_interaction::{DateInterval, IntentHandlingStatus, Interaction, InteractionDirection};
 pub use in_object::{Image, IntentObject, Speakable, SpeakableString};
 pub use in_parameter::IntentParameter;
+pub use in_person::{Person, PersonHandle, PersonHandleType, PersonSuggestionType};
 pub use in_relevant_shortcut::{
     DailyRoutineSituation, RelevanceProvider, RelevantShape, RelevantShortcut, RelevantShortcutRole,
 };
@@ -41,18 +46,23 @@ pub use intent_definition::{
 };
 pub use intent_donation::{IntentDonationMetadata, SendMessageIntentDonationMetadata};
 pub use intent_extension::IntentExtension;
-pub use intent_handler::IntentHandlerProvider;
-pub use intent_response::{IntentResponse, UserActivity};
+pub use intent_handler::{IntentHandlerProvider, StartCallIntentHandling};
+pub use intent_resolution::IntentResolutionResult;
+pub use intent_response::{
+    IntentResponse, SendMessageIntentResponse, SendMessageIntentResponseCode, UserActivity,
+};
 pub use preferences::{Preferences, SiriAuthorizationStatus};
 pub use voice_shortcut::{VoiceShortcut, VoiceShortcutCenter};
 
 pub mod prelude {
     pub use crate::error::IntentsError;
+    pub use crate::in_file::IntentFile;
     pub use crate::in_interaction::{
-        DateInterval, Interaction, InteractionDirection, IntentHandlingStatus,
+        DateInterval, IntentHandlingStatus, Interaction, InteractionDirection,
     };
     pub use crate::in_object::{Image, IntentObject, Speakable, SpeakableString};
     pub use crate::in_parameter::IntentParameter;
+    pub use crate::in_person::{Person, PersonHandle, PersonHandleType, PersonSuggestionType};
     pub use crate::in_relevant_shortcut::{
         DailyRoutineSituation, RelevanceProvider, RelevantShape, RelevantShortcut,
         RelevantShortcutRole,
@@ -65,8 +75,11 @@ pub mod prelude {
     };
     pub use crate::intent_donation::{IntentDonationMetadata, SendMessageIntentDonationMetadata};
     pub use crate::intent_extension::IntentExtension;
-    pub use crate::intent_handler::IntentHandlerProvider;
-    pub use crate::intent_response::{IntentResponse, UserActivity};
+    pub use crate::intent_handler::{IntentHandlerProvider, StartCallIntentHandling};
+    pub use crate::intent_resolution::IntentResolutionResult;
+    pub use crate::intent_response::{
+        IntentResponse, SendMessageIntentResponse, SendMessageIntentResponseCode, UserActivity,
+    };
     pub use crate::preferences::{Preferences, SiriAuthorizationStatus};
     pub use crate::voice_shortcut::{VoiceShortcut, VoiceShortcutCenter};
 }
