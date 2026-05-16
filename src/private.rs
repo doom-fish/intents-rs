@@ -35,6 +35,12 @@ pub trait RawObject {
     fn as_ptr(&self) -> *mut c_void;
 }
 
+impl RawObject for RetainedObject {
+    fn as_ptr(&self) -> *mut c_void {
+        self.0.as_ptr()
+    }
+}
+
 pub fn cstring(value: &str, context: &str) -> Result<CString, IntentsError> {
     CString::new(value).map_err(|error| {
         IntentsError::invalid_argument(format!("{context} contains a NUL byte: {error}"))
@@ -70,6 +76,10 @@ pub fn string_property(object: &impl RawObject, key: &str) -> Option<String> {
     let key = property_key(key);
     let ptr = unsafe { ffi::inx_object_copy_string_property(object.as_ptr(), key.as_ptr()) };
     unsafe { take_string(ptr) }
+}
+
+pub fn object_is_equal(lhs: &impl RawObject, rhs: &impl RawObject) -> bool {
+    unsafe { ffi::inx_object_is_equal(lhs.as_ptr(), rhs.as_ptr()) }
 }
 
 pub fn object_property(object: &impl RawObject, key: &str) -> Option<RetainedObject> {
@@ -185,6 +195,29 @@ pub fn set_integer_property(
     } else {
         Err(IntentsError::framework(format!(
             "failed to set Objective-C integer property '{key_name}'"
+        )))
+    }
+}
+
+pub fn set_object_property(
+    object: &impl RawObject,
+    key: &str,
+    value: Option<*mut c_void>,
+) -> Result<(), IntentsError> {
+    let key_name = key.to_string();
+    let key = property_key(key);
+    let ok = unsafe {
+        ffi::inx_object_set_object_property(
+            object.as_ptr(),
+            key.as_ptr(),
+            value.unwrap_or(std::ptr::null_mut()),
+        )
+    };
+    if ok {
+        Ok(())
+    } else {
+        Err(IntentsError::framework(format!(
+            "failed to set Objective-C object property '{key_name}'"
         )))
     }
 }

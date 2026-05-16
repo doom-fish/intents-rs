@@ -26,6 +26,17 @@ public func inx_object_class_name(_ ptr: UnsafeMutableRawPointer?) -> UnsafeMuta
     return inxCString(NSStringFromClass(type(of: object)))
 }
 
+@_cdecl("inx_object_is_equal")
+public func inx_object_is_equal(
+    _ lhsPtr: UnsafeMutableRawPointer?,
+    _ rhsPtr: UnsafeMutableRawPointer?
+) -> Bool {
+    guard let lhs = inxObject(lhsPtr), let rhs = inxObject(rhsPtr) else {
+        return false
+    }
+    return lhs.isEqual(rhs)
+}
+
 @_cdecl("inx_object_copy_string_property")
 public func inx_object_copy_string_property(
     _ ptr: UnsafeMutableRawPointer?,
@@ -50,6 +61,8 @@ public func inx_object_copy_string_property(
         return inxCString(url.absoluteString ?? url.description)
     case let activity as NSUserActivity:
         return inxCString(activity.activityType)
+    case let cls as AnyClass:
+        return inxCString(NSStringFromClass(cls))
     default:
         return nil
     }
@@ -225,6 +238,18 @@ public func inx_object_set_integer_property(
 ) -> Bool {
     guard let object = inxObject(ptr), let key = inxKey(key) else { return false }
     object.setValue(NSNumber(value: value), forKey: key)
+    return true
+}
+
+@_cdecl("inx_object_set_object_property")
+public func inx_object_set_object_property(
+    _ ptr: UnsafeMutableRawPointer?,
+    _ key: UnsafePointer<CChar>?,
+    _ valuePtr: UnsafeMutableRawPointer?
+) -> Bool {
+    guard let object = inxObject(ptr), let key = inxKey(key) else { return false }
+    let value = valuePtr.map { Unmanaged<AnyObject>.fromOpaque($0).takeUnretainedValue() }
+    object.setValue(value, forKey: key)
     return true
 }
 

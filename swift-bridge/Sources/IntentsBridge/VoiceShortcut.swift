@@ -1,24 +1,6 @@
 import Foundation
 import Intents
 
-@_cdecl("inx_shortcut_create_with_intent")
-public func inx_shortcut_create_with_intent(
-    _ intentPtr: UnsafeMutableRawPointer?,
-    _ outError: UnsafeMutablePointer<UnsafeMutablePointer<CChar>?>?
-) -> UnsafeMutableRawPointer? {
-    guard let intentPtr else {
-        outError?.pointee = inxCString("intent pointer was NULL")
-        return nil
-    }
-
-    let intent: INIntent = inxUnretained(intentPtr)
-    guard let shortcut = INShortcut(intent: intent) else {
-        outError?.pointee = inxCString("INShortcut rejected the provided intent")
-        return nil
-    }
-    return inxRetain(shortcut as AnyObject)
-}
-
 @_cdecl("inx_voice_shortcut_center_shared")
 public func inx_voice_shortcut_center_shared() -> UnsafeMutableRawPointer? {
     if #available(macOS 12.0, *) {
