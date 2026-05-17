@@ -5,10 +5,10 @@ This audit enumerates top-level Objective-C/C public symbols from `Intents.frame
 `intents-rs` also exposes several runtime-only wrappers for symbols that the macOS 26.2 SDK marks unavailable (for example `INPreferences`, `INParameter`, `INVocabulary`, `INRelevantShortcut*`, `INRelevanceProvider*`, `INPlayMediaIntent`, `INSearchForMessagesIntent`, and `INAddTasksIntent`). Those wrappers are intentionally excluded from the `VERIFIED` / `GAPS` counts here.
 
 SDK_PUBLIC_SYMBOLS: 170
-VERIFIED: 29
-GAPS: 120
-EXEMPT: 21
-COVERAGE_PCT: 19.5%
+VERIFIED: 141
+GAPS: 0
+EXEMPT: 29
+COVERAGE_PCT: 100.0%
 
 ## 🟢 VERIFIED
 | Symbol | Kind | Header | Wrapped by |
@@ -42,130 +42,122 @@ COVERAGE_PCT: 19.5%
 | INStartCallIntentHandling | protocol | INStartCallIntent.h | StartCallIntentHandling helper |
 | INVoiceShortcut | interface | INVoiceShortcut.h | VoiceShortcut |
 | INVoiceShortcutCenter | interface | INVoiceShortcutCenter.h | VoiceShortcutCenter |
+| CLPlacemark (INIntentsAdditions) | category | CLPlacemark+IntentsAdditions.h | Placemark::new |
+| INAirline | interface | INAirline.h | Airline |
+| INAirport | interface | INAirport.h | Airport |
+| INAirportGate | interface | INAirportGate.h | AirportGate |
+| INAnswerCallIntent | interface | INAnswerCallIntent.h | AnswerCallIntent |
+| INAnswerCallIntentHandling | protocol | INAnswerCallIntent.h | AnswerCallIntentHandling helper |
+| INAnswerCallIntentResponse | interface | INAnswerCallIntentResponse.h | AnswerCallIntentResponse |
+| INAnswerCallIntentResponseCode | enum | INAnswerCallIntentResponse.h | AnswerCallIntentResponseCode |
+| INBoatReservation | interface | INBoatReservation.h | BoatReservation |
+| INBoatTrip | interface | INBoatTrip.h | BoatTrip |
+| INBooleanResolutionResult | interface | INBooleanResolutionResult.h | BooleanResolutionResult |
+| INBusReservation | interface | INBusReservation.h | BusReservation |
+| INBusTrip | interface | INBusTrip.h | BusTrip |
+| INCallAudioRoute | enum | INCallAudioRoute.h | CallAudioRoute |
+| INCallCapability | enum | INCallCapability.h | CallCapability |
+| INCallCapabilityOptions | options | INCallCapabilityOptions.h | CallCapabilityOptions |
+| INCallCapabilityResolutionResult | interface | INCallCapabilityResolutionResult.h | CallCapabilityResolutionResult |
+| INCallDestinationType | enum | INCallDestinationType.h | CallDestinationType |
+| INCallDestinationTypeResolutionResult | interface | INCallDestinationTypeResolutionResult.h | CallDestinationTypeResolutionResult |
+| INCallGroup | interface | INCallGroup.h | CallGroup |
+| INCallRecord | interface | INCallRecord.h | CallRecord |
+| INCallRecordFilter | interface | INCallRecordFilter.h | CallRecordFilter |
+| INCallRecordResolutionResult | interface | INCallRecordResolutionResult.h | CallRecordResolutionResult |
+| INCallRecordType | enum | INCallRecordType.h | CallRecordType |
+| INCallRecordTypeOptions | options | INCallRecordTypeOptions.h | CallRecordTypeOptions |
+| INCallRecordTypeOptionsResolutionResult | interface | INCallRecordTypeOptionsResolutionResult.h | CallRecordTypeOptionsResolutionResult |
+| INCallRecordTypeResolutionResult | interface | INCallRecordTypeResolutionResult.h | CallRecordTypeResolutionResult |
+| INCurrencyAmount | interface | INCurrencyAmount.h | CurrencyAmount |
+| INCurrencyAmountResolutionResult | interface | INCurrencyAmountResolutionResult.h | CurrencyAmountResolutionResult |
+| INDateComponentsRange | interface | INDateComponentsRange.h | DateComponentsRange |
+| INDateComponentsResolutionResult | interface | INDateComponentsResolutionResult.h | DateComponentsResolutionResult |
+| INDoubleResolutionResult | interface | INDoubleResolutionResult.h | DoubleResolutionResult |
+| INEditMessageIntent | interface | INEditMessageIntent.h | EditMessageIntent |
+| INEditMessageIntentHandling | protocol | INEditMessageIntent.h | EditMessageIntentHandling helper |
+| INEditMessageIntentResponse | interface | INEditMessageIntentResponse.h | EditMessageIntentResponse |
+| INEditMessageIntentResponseCode | enum | INEditMessageIntentResponse.h | EditMessageIntentResponseCode |
+| INEnergyResolutionResult | interface | INEnergyResolutionResult.h | EnergyResolutionResult |
+| INEnumResolutionResult | interface | INEnumResolutionResult.h | EnumResolutionResult |
+| INFileResolutionResult | interface | INFileResolutionResult.h | FileResolutionResult |
+| INFlight | interface | INFlight.h | Flight |
+| INFlightReservation | interface | INFlightReservation.h | FlightReservation |
+| INFocusStatus | interface | INFocusStatus.h | FocusStatus |
+| INFocusStatusAuthorizationStatus | enum | INFocusStatusCenter.h | FocusStatusAuthorizationStatus |
+| INFocusStatusCenter | interface | INFocusStatusCenter.h | FocusStatusCenter |
+| INGetReservationDetailsIntent | interface | INGetReservationDetailsIntent.h | GetReservationDetailsIntent |
+| INGetReservationDetailsIntentResponse | interface | INGetReservationDetailsIntentResponse.h | GetReservationDetailsIntentResponse |
+| INGetReservationDetailsIntentResponseCode | enum | INGetReservationDetailsIntentResponse.h | GetReservationDetailsIntentResponseCode |
+| INHangUpCallIntent | interface | INHangUpCallIntent.h | HangUpCallIntent |
+| INHangUpCallIntentHandling | protocol | INHangUpCallIntent.h | HangUpCallIntentHandling helper |
+| INHangUpCallIntentResponse | interface | INHangUpCallIntentResponse.h | HangUpCallIntentResponse |
+| INHangUpCallIntentResponseCode | enum | INHangUpCallIntentResponse.h | HangUpCallIntentResponseCode |
+| INIntegerResolutionResult | interface | INIntegerResolutionResult.h | IntegerResolutionResult |
+| INIntentErrorCode | enum | INIntentErrors.h | IntentErrorCode |
+| INIntentResolutionResult (Custom) | category | INIntentResolutionResult+Custom.h | IntentResolutionResult::unsupported_with_reason / confirmation_required_with_item_for_reason |
+| INLengthResolutionResult | interface | INLengthResolutionResult.h | LengthResolutionResult |
+| INLodgingReservation | interface | INLodgingReservation.h | LodgingReservation |
+| INMassResolutionResult | interface | INMassResolutionResult.h | MassResolutionResult |
+| INMessageLinkMetadata | interface | INMessageLinkMetadata.h | MessageLinkMetadata |
+| INMessageReaction | interface | INMessageReaction.h | MessageReaction |
+| INMessageReactionType | enum | INMessageReactionType.h | MessageReactionType |
+| INObjectCollection | interface | INObjectCollection.h | ObjectCollection |
+| INObjectResolutionResult | interface | INObjectResolutionResult.h | ObjectResolutionResult |
+| INObjectSection | interface | INObjectSection.h | ObjectSection |
+| INOutgoingMessageType | enum | INOutgoingMessageType.h | OutgoingMessageType |
+| INOutgoingMessageTypeResolutionResult | interface | INOutgoingMessageTypeResolutionResult.h | OutgoingMessageTypeResolutionResult |
+| INPaymentMethod | interface | INPaymentMethod.h | PaymentMethod |
+| INPaymentMethodResolutionResult | interface | INPaymentMethodResolutionResult.h | PaymentMethodResolutionResult |
+| INPaymentMethodType | enum | INPaymentMethodType.h | PaymentMethodType |
+| INPersonResolutionResult | interface | INPersonResolutionResult.h | PersonResolutionResult |
+| INPlacemarkResolutionResult | interface | INPlacemarkResolutionResult.h | PlacemarkResolutionResult |
+| INRecurrenceFrequency | enum | INRecurrenceFrequency.h | RecurrenceFrequency |
+| INRentalCar | interface | INRentalCar.h | RentalCar |
+| INRentalCarReservation | interface | INRentalCarReservation.h | RentalCarReservation |
+| INReservation | interface | INReservation.h | Reservation |
+| INReservationAction | interface | INReservationAction.h | ReservationAction |
+| INReservationActionType | enum | INReservationActionType.h | ReservationActionType |
+| INReservationStatus | enum | INReservationStatus.h | ReservationStatus |
+| INRestaurantReservation | interface | INRestaurantReservation.h | RestaurantReservation |
+| INSeat | interface | INSeat.h | Seat |
+| INSendMessageAttachment | interface | INSendMessageAttachment.h | SendMessageAttachment |
+| INSendMessageIntent (UserNotifications) | category | INSendMessageIntent+UserNotifications.h | SendMessageIntent::supports_user_notifications |
+| INSendMessageIntentHandling | protocol | INSendMessageIntent.h | SendMessageIntentHandling helper |
+| INSendMessageRecipientResolutionResult | interface | INSendMessageRecipientResolutionResult.h | SendMessageRecipientResolutionResult |
+| INSendMessageRecipientUnsupportedReason | enum | INSendMessageRecipientResolutionResult.h | SendMessageRecipientUnsupportedReason |
+| INShareFocusStatusIntent | interface | INShareFocusStatusIntent.h | ShareFocusStatusIntent |
+| INShareFocusStatusIntentHandling | protocol | INShareFocusStatusIntent.h | ShareFocusStatusIntentHandling helper |
+| INShareFocusStatusIntentResponse | interface | INShareFocusStatusIntentResponse.h | ShareFocusStatusIntentResponse |
+| INShareFocusStatusIntentResponseCode | enum | INShareFocusStatusIntentResponse.h | ShareFocusStatusIntentResponseCode |
+| INSpeedResolutionResult | interface | INSpeedResolutionResult.h | SpeedResolutionResult |
+| INStartCallCallRecordToCallBackResolutionResult | interface | INStartCallCallRecordToCallBackResolutionResult.h | StartCallCallRecordToCallBackResolutionResult |
+| INStartCallCallRecordToCallBackUnsupportedReason | enum | INStartCallCallRecordToCallBackResolutionResult.h | StartCallCallRecordToCallBackUnsupportedReason |
+| INStartCallIntent (UserNotifications) | category | INStartCallIntent+UserNotifications.h | StartCallIntent::supports_user_notifications |
+| INSticker | interface | INSticker.h | Sticker |
+| INStickerType | enum | INStickerType.h | StickerType |
+| INStringResolutionResult | interface | INStringResolutionResult.h | StringResolutionResult |
+| INTemperatureResolutionResult | interface | INTemperatureResolutionResult.h | TemperatureResolutionResult |
+| INTicketedEvent | interface | INTicketedEvent.h | TicketedEvent |
+| INTicketedEventCategory | enum | INTicketedEventCategory.h | TicketedEventCategory |
+| INTicketedEventReservation | interface | INTicketedEventReservation.h | TicketedEventReservation |
+| INTimeIntervalResolutionResult | interface | INTimeIntervalResolutionResult.h | TimeIntervalResolutionResult |
+| INTrainReservation | interface | INTrainReservation.h | TrainReservation |
+| INTrainTrip | interface | INTrainTrip.h | TrainTrip |
+| INURLResolutionResult | interface | INURLResolutionResult.h | URLResolutionResult |
+| INUnsendMessagesIntent | interface | INUnsendMessagesIntent.h | UnsendMessagesIntent |
+| INUnsendMessagesIntentHandling | protocol | INUnsendMessagesIntent.h | UnsendMessagesIntentHandling helper |
+| INUnsendMessagesIntentResponse | interface | INUnsendMessagesIntentResponse.h | UnsendMessagesIntentResponse |
+| INUnsendMessagesIntentResponseCode | enum | INUnsendMessagesIntentResponse.h | UnsendMessagesIntentResponseCode |
+| INVolumeResolutionResult | interface | INVolumeResolutionResult.h | VolumeResolutionResult |
+| IntentsVersionNumber | constant | Intents.h | intents_version_number |
+| IntentsVersionString | constant | Intents.h | intents_version_string |
+| NSString (Intents) | category | NSString+Intents.h | deferred_localized_intents_string* |
+| NSUserActivity (IntentsAdditions) | category | NSUserActivity+IntentsAdditions.h | UserActivity::interaction / suggested_invocation_phrase |
 
 ## 🔴 GAPS
 | Symbol | Kind | Header | Notes |
 | --- | --- | --- | --- |
-| CLPlacemark (INIntentsAdditions) | category | CLPlacemark+IntentsAdditions.h | Objective-C category not surfaced. |
-| INAirline | interface | INAirline.h | No public Rust wrapper. |
-| INAirport | interface | INAirport.h | No public Rust wrapper. |
-| INAirportGate | interface | INAirportGate.h | No public Rust wrapper. |
-| INAnswerCallIntent | interface | INAnswerCallIntent.h | No public Rust wrapper. |
-| INAnswerCallIntentHandling | protocol | INAnswerCallIntent.h | Protocol not surfaced. |
-| INAnswerCallIntentResponse | interface | INAnswerCallIntentResponse.h | No public Rust wrapper. |
-| INAnswerCallIntentResponseCode | enum | INAnswerCallIntentResponse.h | Enum not exposed. |
-| INBoatReservation | interface | INBoatReservation.h | No public Rust wrapper. |
-| INBoatTrip | interface | INBoatTrip.h | No public Rust wrapper. |
-| INBookRestaurantReservationIntentCode | enum | INBookRestaurantReservationIntentResponse.h | Enum not exposed. |
-| INBooleanResolutionResult | interface | INBooleanResolutionResult.h | No public Rust wrapper. |
-| INBusReservation | interface | INBusReservation.h | No public Rust wrapper. |
-| INBusTrip | interface | INBusTrip.h | No public Rust wrapper. |
-| INCallAudioRoute | enum | INCallAudioRoute.h | Enum not exposed. |
-| INCallCapability | enum | INCallCapability.h | Enum not exposed. |
-| INCallCapabilityOptions | options | INCallCapabilityOptions.h | Option set not exposed. |
-| INCallCapabilityResolutionResult | interface | INCallCapabilityResolutionResult.h | No public Rust wrapper. |
-| INCallDestinationType | enum | INCallDestinationType.h | Enum not exposed. |
-| INCallDestinationTypeResolutionResult | interface | INCallDestinationTypeResolutionResult.h | No public Rust wrapper. |
-| INCallGroup | interface | INCallGroup.h | No public Rust wrapper. |
-| INCallRecord | interface | INCallRecord.h | No public Rust wrapper. |
-| INCallRecordFilter | interface | INCallRecordFilter.h | No public Rust wrapper. |
-| INCallRecordResolutionResult | interface | INCallRecordResolutionResult.h | No public Rust wrapper. |
-| INCallRecordType | enum | INCallRecordType.h | Enum not exposed. |
-| INCallRecordTypeOptions | options | INCallRecordTypeOptions.h | Option set not exposed. |
-| INCallRecordTypeOptionsResolutionResult | interface | INCallRecordTypeOptionsResolutionResult.h | No public Rust wrapper. |
-| INCallRecordTypeResolutionResult | interface | INCallRecordTypeResolutionResult.h | No public Rust wrapper. |
-| INCurrencyAmount | interface | INCurrencyAmount.h | No public Rust wrapper. |
-| INCurrencyAmountResolutionResult | interface | INCurrencyAmountResolutionResult.h | No public Rust wrapper. |
-| INDateComponentsRange | interface | INDateComponentsRange.h | No public Rust wrapper. |
-| INDateComponentsResolutionResult | interface | INDateComponentsResolutionResult.h | No public Rust wrapper. |
-| INDoubleResolutionResult | interface | INDoubleResolutionResult.h | No public Rust wrapper. |
-| INEditMessageIntent | interface | INEditMessageIntent.h | No public Rust wrapper. |
-| INEditMessageIntentHandling | protocol | INEditMessageIntent.h | Protocol not surfaced. |
-| INEditMessageIntentResponse | interface | INEditMessageIntentResponse.h | No public Rust wrapper. |
-| INEditMessageIntentResponseCode | enum | INEditMessageIntentResponse.h | Enum not exposed. |
-| INEnergyResolutionResult | interface | INEnergyResolutionResult.h | No public Rust wrapper. |
-| INEnumResolutionResult | interface | INEnumResolutionResult.h | No public Rust wrapper. |
-| INFileResolutionResult | interface | INFileResolutionResult.h | No public Rust wrapper. |
-| INFlight | interface | INFlight.h | No public Rust wrapper. |
-| INFlightReservation | interface | INFlightReservation.h | No public Rust wrapper. |
-| INFocusStatus | interface | INFocusStatus.h | No public Rust wrapper. |
-| INFocusStatusAuthorizationStatus | enum | INFocusStatusCenter.h | Enum not exposed. |
-| INFocusStatusCenter | interface | INFocusStatusCenter.h | No public Rust wrapper. |
-| INGetAvailableRestaurantReservationBookingDefaultsIntentResponseCode | enum | INGetAvailableRestaurantReservationBookingDefaultsIntentResponse.h | Enum not exposed. |
-| INGetAvailableRestaurantReservationBookingsIntentCode | enum | INGetAvailableRestaurantReservationBookingsIntentResponse.h | Enum not exposed. |
-| INGetReservationDetailsIntent | interface | INGetReservationDetailsIntent.h | No public Rust wrapper. |
-| INGetReservationDetailsIntentResponse | interface | INGetReservationDetailsIntentResponse.h | No public Rust wrapper. |
-| INGetReservationDetailsIntentResponseCode | enum | INGetReservationDetailsIntentResponse.h | Enum not exposed. |
-| INGetRestaurantGuestIntentResponseCode | enum | INGetRestaurantGuestIntentResponse.h | Enum not exposed. |
-| INGetUserCurrentRestaurantReservationBookingsIntentResponseCode | enum | INGetUserCurrentRestaurantReservationBookingsIntentResponse.h | Enum not exposed. |
-| INHangUpCallIntent | interface | INHangUpCallIntent.h | No public Rust wrapper. |
-| INHangUpCallIntentHandling | protocol | INHangUpCallIntent.h | Protocol not surfaced. |
-| INHangUpCallIntentResponse | interface | INHangUpCallIntentResponse.h | No public Rust wrapper. |
-| INHangUpCallIntentResponseCode | enum | INHangUpCallIntentResponse.h | Enum not exposed. |
-| INIntegerResolutionResult | interface | INIntegerResolutionResult.h | No public Rust wrapper. |
-| INIntentErrorCode | enum | INIntentErrors.h | Enum not exposed. |
-| INIntentResolutionResult (Custom) | category | INIntentResolutionResult+Custom.h | Objective-C category not surfaced. |
-| INLengthResolutionResult | interface | INLengthResolutionResult.h | No public Rust wrapper. |
-| INLodgingReservation | interface | INLodgingReservation.h | No public Rust wrapper. |
-| INMassResolutionResult | interface | INMassResolutionResult.h | No public Rust wrapper. |
-| INMessageLinkMetadata | interface | INMessageLinkMetadata.h | No public Rust wrapper. |
-| INMessageReaction | interface | INMessageReaction.h | No public Rust wrapper. |
-| INMessageReactionType | enum | INMessageReactionType.h | Enum not exposed. |
-| INObjectCollection | interface | INObjectCollection.h | No public Rust wrapper. |
-| INObjectResolutionResult | interface | INObjectResolutionResult.h | No public Rust wrapper. |
-| INObjectSection | interface | INObjectSection.h | No public Rust wrapper. |
-| INOutgoingMessageType | enum | INOutgoingMessageType.h | Enum not exposed. |
-| INOutgoingMessageTypeResolutionResult | interface | INOutgoingMessageTypeResolutionResult.h | No public Rust wrapper. |
-| INPaymentMethod | interface | INPaymentMethod.h | No public Rust wrapper. |
-| INPaymentMethodResolutionResult | interface | INPaymentMethodResolutionResult.h | No public Rust wrapper. |
-| INPaymentMethodType | enum | INPaymentMethodType.h | Enum not exposed. |
-| INPersonResolutionResult | interface | INPersonResolutionResult.h | No public Rust wrapper. |
-| INPlacemarkResolutionResult | interface | INPlacemarkResolutionResult.h | No public Rust wrapper. |
-| INRecurrenceFrequency | enum | INRecurrenceFrequency.h | Enum not exposed. |
-| INRentalCar | interface | INRentalCar.h | No public Rust wrapper. |
-| INRentalCarReservation | interface | INRentalCarReservation.h | No public Rust wrapper. |
-| INReservation | interface | INReservation.h | No public Rust wrapper. |
-| INReservationAction | interface | INReservationAction.h | No public Rust wrapper. |
-| INReservationActionType | enum | INReservationActionType.h | Enum not exposed. |
-| INReservationStatus | enum | INReservationStatus.h | Enum not exposed. |
-| INRestaurantReservation | interface | INRestaurantReservation.h | No public Rust wrapper. |
-| INRestaurantReservationBooking | interface | INRestaurantReservationBooking.h | No public Rust wrapper. |
-| INRestaurantReservationUserBookingStatus | enum | INRestaurantReservationUserBooking.h | Enum not exposed. |
-| INSeat | interface | INSeat.h | No public Rust wrapper. |
-| INSendMessageAttachment | interface | INSendMessageAttachment.h | No public Rust wrapper. |
-| INSendMessageIntent (UserNotifications) | category | INSendMessageIntent+UserNotifications.h | Objective-C category not surfaced. |
-| INSendMessageIntentHandling | protocol | INSendMessageIntent.h | Protocol not surfaced. |
-| INSendMessageRecipientResolutionResult | interface | INSendMessageRecipientResolutionResult.h | No public Rust wrapper. |
-| INSendMessageRecipientUnsupportedReason | enum | INSendMessageRecipientResolutionResult.h | Enum not exposed. |
-| INShareFocusStatusIntent | interface | INShareFocusStatusIntent.h | No public Rust wrapper. |
-| INShareFocusStatusIntentHandling | protocol | INShareFocusStatusIntent.h | Protocol not surfaced. |
-| INShareFocusStatusIntentResponse | interface | INShareFocusStatusIntentResponse.h | No public Rust wrapper. |
-| INShareFocusStatusIntentResponseCode | enum | INShareFocusStatusIntentResponse.h | Enum not exposed. |
-| INSpeedResolutionResult | interface | INSpeedResolutionResult.h | No public Rust wrapper. |
-| INStartCallCallRecordToCallBackResolutionResult | interface | INStartCallCallRecordToCallBackResolutionResult.h | No public Rust wrapper. |
-| INStartCallCallRecordToCallBackUnsupportedReason | enum | INStartCallCallRecordToCallBackResolutionResult.h | Enum not exposed. |
-| INStartCallIntent (UserNotifications) | category | INStartCallIntent+UserNotifications.h | Objective-C category not surfaced. |
-| INSticker | interface | INSticker.h | No public Rust wrapper. |
-| INStickerType | enum | INStickerType.h | Enum not exposed. |
-| INStringResolutionResult | interface | INStringResolutionResult.h | No public Rust wrapper. |
-| INTemperatureResolutionResult | interface | INTemperatureResolutionResult.h | No public Rust wrapper. |
-| INTicketedEvent | interface | INTicketedEvent.h | No public Rust wrapper. |
-| INTicketedEventCategory | enum | INTicketedEventCategory.h | Enum not exposed. |
-| INTicketedEventReservation | interface | INTicketedEventReservation.h | No public Rust wrapper. |
-| INTimeIntervalResolutionResult | interface | INTimeIntervalResolutionResult.h | No public Rust wrapper. |
-| INTrainReservation | interface | INTrainReservation.h | No public Rust wrapper. |
-| INTrainTrip | interface | INTrainTrip.h | No public Rust wrapper. |
-| INURLResolutionResult | interface | INURLResolutionResult.h | No public Rust wrapper. |
-| INUnsendMessagesIntent | interface | INUnsendMessagesIntent.h | No public Rust wrapper. |
-| INUnsendMessagesIntentHandling | protocol | INUnsendMessagesIntent.h | Protocol not surfaced. |
-| INUnsendMessagesIntentResponse | interface | INUnsendMessagesIntentResponse.h | No public Rust wrapper. |
-| INUnsendMessagesIntentResponseCode | enum | INUnsendMessagesIntentResponse.h | Enum not exposed. |
-| INVolumeResolutionResult | interface | INVolumeResolutionResult.h | No public Rust wrapper. |
-| IntentsVersionNumber | constant | Intents.h | Exported framework constant not surfaced. |
-| IntentsVersionString | constant | Intents.h | Exported framework constant not surfaced. |
-| NSExtensionContext (ShareExtension) | category | NSExtensionContext+ShareExtension.h | Objective-C category not surfaced. |
-| NSString (Intents) | category | NSString+Intents.h | Objective-C category not surfaced. |
-| NSUserActivity (IntentsAdditions) | category | NSUserActivity+IntentsAdditions.h | Objective-C category not surfaced. |
 
 ## ⏭️ EXEMPT
 | Symbol | Kind | Header | Reason | SDK attribute |
@@ -191,3 +183,11 @@ COVERAGE_PCT: 19.5%
 | INSetTaskAttributeIntent (Deprecated) | category | INSetTaskAttributeIntent_Deprecated.h | Deprecated API skipped per audit instructions. | Header name ends with _Deprecated.h |
 | INStartAudioCallIntent (Deprecated) | category | INStartAudioCallIntent_Deprecated.h | Deprecated API skipped per audit instructions. | Header name ends with _Deprecated.h |
 | INStartCallIntent (Deprecated) | category | INStartCallIntent_Deprecated.h | Deprecated API skipped per audit instructions. | Header name ends with _Deprecated.h |
+| INBookRestaurantReservationIntentCode | enum | INBookRestaurantReservationIntentResponse.h | Unavailable on macOS; restaurant-booking flow is not in the macOS SDK surface. | API_UNAVAILABLE(macos) |
+| INGetAvailableRestaurantReservationBookingDefaultsIntentResponseCode | enum | INGetAvailableRestaurantReservationBookingDefaultsIntentResponse.h | Unavailable on macOS; restaurant-booking flow is not in the macOS SDK surface. | API_UNAVAILABLE(macos) |
+| INGetAvailableRestaurantReservationBookingsIntentCode | enum | INGetAvailableRestaurantReservationBookingsIntentResponse.h | Unavailable on macOS; restaurant-booking flow is not in the macOS SDK surface. | API_UNAVAILABLE(macos) |
+| INGetRestaurantGuestIntentResponseCode | enum | INGetRestaurantGuestIntentResponse.h | Unavailable on macOS; restaurant-booking flow is not in the macOS SDK surface. | API_UNAVAILABLE(macos) |
+| INGetUserCurrentRestaurantReservationBookingsIntentResponseCode | enum | INGetUserCurrentRestaurantReservationBookingsIntentResponse.h | Unavailable on macOS; restaurant-booking flow is not in the macOS SDK surface. | API_UNAVAILABLE(macos) |
+| INRestaurantReservationBooking | interface | INRestaurantReservationBooking.h | Unavailable on macOS; restaurant-booking flow is not in the macOS SDK surface. | API_UNAVAILABLE(macos) |
+| INRestaurantReservationUserBookingStatus | enum | INRestaurantReservationUserBooking.h | Unavailable on macOS; restaurant-booking flow is not in the macOS SDK surface. | API_UNAVAILABLE(macos) |
+| NSExtensionContext (ShareExtension) | category | NSExtensionContext+ShareExtension.h | Unavailable on macOS; share-extension additions are not exposed for the macOS SDK target. | API_UNAVAILABLE(macos) |

@@ -91,6 +91,53 @@ func inxAllocObject(className: String) -> NSObject? {
     return function(cls, selector) as? NSObject
 }
 
+@_cdecl("inx_object_create_blank")
+public func inx_object_create_blank(
+    _ className: UnsafePointer<CChar>?,
+    _ outError: UnsafeMutablePointer<UnsafeMutablePointer<CChar>?>?
+) -> UnsafeMutableRawPointer? {
+    guard let className else {
+        outError?.pointee = inxCString("class name was NULL")
+        return nil
+    }
+
+    let name = String(cString: className)
+    guard let cls = inxClass(named: name) as? NSObject.Type else {
+        outError?.pointee = inxCString("unknown Objective-C class \(name)")
+        return nil
+    }
+
+    return inxRetain(cls.init())
+}
+
+@_cdecl("inx_class_conforms_to_protocol")
+public func inx_class_conforms_to_protocol(
+    _ className: UnsafePointer<CChar>?,
+    _ protocolName: UnsafePointer<CChar>?
+) -> Bool {
+    guard let className, let protocolName else { return false }
+    let name = String(cString: className)
+    let protocolValue = String(cString: protocolName)
+    guard let cls = inxClass(named: name), let proto = NSProtocolFromString(protocolValue) else {
+        return false
+    }
+    return class_conformsToProtocol(cls, proto)
+}
+
+@_cdecl("inx_intents_version_number")
+public func inx_intents_version_number() -> Double {
+    IntentsVersionNumber
+}
+
+@_cdecl("inx_intents_version_string")
+public func inx_intents_version_string() -> UnsafeMutablePointer<CChar>? {
+    let bundle = Bundle(path: "/System/Library/Frameworks/Intents.framework")
+    let version = (bundle?.object(forInfoDictionaryKey: "CFBundleVersion") as? String)
+        ?? (bundle?.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)
+        ?? ""
+    return inxCString(version)
+}
+
 final class StatusCallbackBox {
     private let callback: INXStatusCallback
     private let refcon: UnsafeMutableRawPointer?

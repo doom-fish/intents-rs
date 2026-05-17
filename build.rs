@@ -12,6 +12,7 @@ fn main() {
 
     println!("cargo:rustc-link-lib=framework=Intents");
     println!("cargo:rustc-link-lib=framework=Foundation");
+    println!("cargo:rustc-link-lib=framework=CoreLocation");
 
     let swift_dir = "swift-bridge";
     let out_dir = env::var("OUT_DIR").expect("OUT_DIR should be set by Cargo");

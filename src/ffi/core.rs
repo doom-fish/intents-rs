@@ -43,10 +43,25 @@ extern "C" {
         key: *const c_char,
         value: *const c_char,
     ) -> bool;
+    pub fn inx_object_create_blank(
+        class_name: *const c_char,
+        out_error: *mut *mut c_char,
+    ) -> *mut c_void;
+    pub fn inx_class_conforms_to_protocol(
+        class_name: *const c_char,
+        protocol_name: *const c_char,
+    ) -> bool;
+    pub fn inx_intents_version_number() -> f64;
+    pub fn inx_intents_version_string() -> *mut c_char;
     pub fn inx_object_set_integer_property(
         ptr: *mut c_void,
         key: *const c_char,
         value: i64,
+    ) -> bool;
+    pub fn inx_object_set_bool_property(
+        ptr: *mut c_void,
+        key: *const c_char,
+        value: bool,
     ) -> bool;
     pub fn inx_object_set_object_property(
         ptr: *mut c_void,

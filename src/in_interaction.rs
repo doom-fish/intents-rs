@@ -94,6 +94,10 @@ impl Interaction {
         })
     }
 
+    pub(crate) const fn from_retained(raw: RetainedObject) -> Self {
+        Self { raw }
+    }
+
     pub fn donate(&self) -> Result<(), IntentsError> {
         let (sender, receiver) = mpsc::channel();
         let context = Box::into_raw(Box::new(sender)).cast::<c_void>();

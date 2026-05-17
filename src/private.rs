@@ -182,6 +182,26 @@ pub fn set_string_property(
     }
 }
 
+pub fn create_blank_object(
+    class_name: &str,
+    context: &'static str,
+) -> Result<RetainedObject, IntentsError> {
+    let class_name = cstring(class_name, context)?;
+    let mut error = std::ptr::null_mut();
+    let ptr = unsafe { ffi::inx_object_create_blank(class_name.as_ptr(), &mut error) };
+    if ptr.is_null() {
+        Err(unsafe { take_error(error, context) })
+    } else {
+        unsafe { RetainedObject::from_owned(ptr, context) }
+    }
+}
+
+pub fn class_conforms_to_protocol(class_name: &str, protocol_name: &str) -> Result<bool, IntentsError> {
+    let class_name = cstring(class_name, "Objective-C class name")?;
+    let protocol_name = cstring(protocol_name, "Objective-C protocol name")?;
+    Ok(unsafe { ffi::inx_class_conforms_to_protocol(class_name.as_ptr(), protocol_name.as_ptr()) })
+}
+
 pub fn set_integer_property(
     object: &impl RawObject,
     key: &str,
@@ -195,6 +215,23 @@ pub fn set_integer_property(
     } else {
         Err(IntentsError::framework(format!(
             "failed to set Objective-C integer property '{key_name}'"
+        )))
+    }
+}
+
+pub fn set_bool_property(
+    object: &impl RawObject,
+    key: &str,
+    value: bool,
+) -> Result<(), IntentsError> {
+    let key_name = key.to_string();
+    let key = property_key(key);
+    let ok = unsafe { ffi::inx_object_set_bool_property(object.as_ptr(), key.as_ptr(), value) };
+    if ok {
+        Ok(())
+    } else {
+        Err(IntentsError::framework(format!(
+            "failed to set Objective-C bool property '{key_name}'"
         )))
     }
 }

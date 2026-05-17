@@ -241,6 +241,17 @@ public func inx_object_set_integer_property(
     return true
 }
 
+@_cdecl("inx_object_set_bool_property")
+public func inx_object_set_bool_property(
+    _ ptr: UnsafeMutableRawPointer?,
+    _ key: UnsafePointer<CChar>?,
+    _ value: Bool
+) -> Bool {
+    guard let object = inxObject(ptr), let key = inxKey(key) else { return false }
+    object.setValue(NSNumber(value: value), forKey: key)
+    return true
+}
+
 @_cdecl("inx_object_set_object_property")
 public func inx_object_set_object_property(
     _ ptr: UnsafeMutableRawPointer?,

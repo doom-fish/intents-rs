@@ -1,139 +1,99 @@
-# Intents.framework coverage audit (v0.2.0)
+# Intents.framework coverage notes (v0.2.2)
 
 Legend:
 
 - ✅ implemented
 - 🟡 partial
-- ⏭️ skipped
+- ⏭️ skipped / exempt
 
-## Carried forward from v0.1.0
+## Core surface retained from v0.1.0–v0.2.1
 
-| Header / API | Status | Notes |
+| Area | Status | Notes |
 | --- | --- | --- |
-| `INPreferences.siriAuthorizationStatus` / `requestSiriAuthorization:` | ✅ | `Preferences` wrapper plus callback bridge in `Preferences.swift` / `preferences.rs`. |
-| `INVoiceShortcutCenter.shared`, `getAllVoiceShortcuts`, `getVoiceShortcut(with:)` | ✅ | `VoiceShortcutCenter` + `VoiceShortcut` wrappers retained from v0.1.0. |
+| Preferences / authorization | ✅ | `Preferences` wraps Siri authorization status and callback-based authorization requests. |
+| IntentDefinition / Shortcut | ✅ | `Intent`, `Shortcut`, `SendMessageIntent`, and `StartCallIntent` remain available, including image and donation metadata helpers. |
+| IntentResponse / UserActivity | ✅ | `IntentResponse`, `SendMessageIntentResponse`, and `UserActivity` remain available. |
+| IntentHandler / IntentExtension | ✅ | `IntentHandlerProvider`, `StartCallIntentHandling`, and `IntentExtension` remain available. |
+| IntentDonation | ✅ | `IntentDonationMetadata` and `SendMessageIntentDonationMetadata` remain available. |
+| INParameter / INObject / INFile / INPerson | ✅ | `IntentParameter`, `IntentObject`, `IntentFile`, `Person`, `PersonHandle`, and related enums remain available. |
+| Vocabulary / relevant shortcuts / interaction | ✅ | `IntentVocabulary`, `RelevantShortcut`, `RelevantShortcutStore`, `Interaction`, and related helpers remain available. |
+| Voice shortcuts | ✅ | `VoiceShortcut` and `VoiceShortcutCenter` remain available. |
 
-## Requested logical areas
+## v0.2.2 gap-closure areas
 
-### IntentDefinition (`INIntent.h`, `INShortcut.h`)
+### Support and category-backed helpers
 
 | API | Status | Notes |
 | --- | --- | --- |
-| `INIntent.identifier` | ✅ | `Intent::identifier`. |
-| `INIntent.intentDescription` | ✅ | `Intent::intent_description`. |
-| `INIntent.suggestedInvocationPhrase` | ✅ | Getter/setter on `Intent`. |
-| `INIntent.donationMetadata` | ✅ | Getter/setter on `Intent` via `IntentDonationMetadata`. |
-| `INIntent.keyImage` | ✅ | `Intent::key_image`. |
-| `INIntent.setImage:forParameterNamed:` / `imageForParameterNamed:` | ✅ | Dynamic Objective-C bridge in `IntentDefinition.swift`. |
-| `INIntent.shortcutAvailability` | ⏭️ | API is marked unavailable on macOS in the public headers. |
-| `INShortcut.initWithIntent:` | ✅ | `Shortcut::new`. |
-| `INShortcut.initWithUserActivity:` | ✅ | `Shortcut::new_with_user_activity`. |
-| `INShortcut.intent` / `userActivity` | ✅ | Exposed as `Shortcut::intent` / `user_activity`. |
+| `CLPlacemark (INIntentsAdditions)` | ✅ | `Placemark::new` creates `CLPlacemark` instances via the Intents category factory. |
+| `NSString (Intents)` | ✅ | `deferred_localized_intents_string` and `deferred_localized_intents_string_from_table` wrap the category methods. |
+| `NSUserActivity (IntentsAdditions)` | ✅ | `UserActivity::interaction`, `suggested_invocation_phrase`, and `set_suggested_invocation_phrase` cover the macOS-available additions. |
+| `INObjectSection` / `INObjectCollection` | ✅ | `ObjectSection` and `ObjectCollection` expose section/item construction and collation helpers. |
+| `IntentsVersionNumber` / `IntentsVersionString` | ✅ | `intents_version_number` and `intents_version_string` surface the exported framework version constants. |
 
-### IntentResponse (`INIntentResponse.h`)
+### Call surface
 
 | API | Status | Notes |
 | --- | --- | --- |
-| `INIntentResponse.userActivity` | ✅ | `IntentResponse::user_activity`, `set_user_activity`, and `set_user_activity_type`. |
+| `INCallAudioRoute`, `INCallCapability`, `INCallCapabilityOptions`, `INCallDestinationType`, `INCallRecordType`, `INCallRecordTypeOptions` | ✅ | Exposed as Rust enums / option sets. |
+| `INCallGroup`, `INCallRecord`, `INCallRecordFilter` | ✅ | Safe constructors and property accessors are exposed. |
+| Call-related resolution results | ✅ | `CallCapabilityResolutionResult`, `CallDestinationTypeResolutionResult`, `CallRecordResolutionResult`, `CallRecordTypeResolutionResult`, and `CallRecordTypeOptionsResolutionResult` are exposed. |
 
-### IntentHandler (`INIntentHandlerProviding.h`)
-
-| API | Status | Notes |
-| --- | --- | --- |
-| `handlerForIntent:` | ✅ | Runtime-backed `IntentHandlerProvider` test helper maps intent class names to handler names. |
-
-### IntentDonation (`INIntentDonationMetadata.h`, `INSendMessageIntentDonationMetadata.h`)
+### Focus surface
 
 | API | Status | Notes |
 | --- | --- | --- |
-| `INIntentDonationMetadata` wrapper | ✅ | Opaque `IntentDonationMetadata` handle for attached metadata. |
-| `INIntentDonationMetadata.init` | ⏭️ | Explicitly unavailable in Apple’s header. |
-| `INSendMessageIntentDonationMetadata.init` | ✅ | `SendMessageIntentDonationMetadata::new`. |
-| `mentionsCurrentUser` | ✅ | Getter/setter exposed. |
-| `replyToCurrentUser` | ✅ | Getter/setter exposed as `is_reply_to_current_user` / `set_reply_to_current_user`. |
-| `notifyRecipientAnyway` | ✅ | Getter/setter exposed. |
-| `recipientCount` | ✅ | Getter/setter exposed. |
+| `INFocusStatus` | ✅ | `FocusStatus::new` and `is_focused` are exposed. |
+| `INFocusStatusCenter` | ✅ | `FocusStatusCenter::default_center` is exposed. |
+| `INFocusStatusAuthorizationStatus` | ✅ | Exposed as `FocusStatusAuthorizationStatus`. |
 
-### IntentExtension (`INExtension.h`)
+### Message surface
 
 | API | Status | Notes |
 | --- | --- | --- |
-| `INExtension` construction | ✅ | `IntentExtension::new`. |
-| `handlerForIntent:` inherited behavior | ✅ | `IntentExtension::handler_class_name_for_intent`. |
+| `INMessageLinkMetadata` | ✅ | `MessageLinkMetadata::new` plus property accessors. |
+| `INMessageReaction` / `INMessageReactionType` | ✅ | `MessageReaction` and `MessageReactionType` are exposed. |
+| `INSendMessageAttachment` | ✅ | `SendMessageAttachment::audio_message_file` wraps the audio attachment factory. |
+| `INSticker` / `INStickerType` | ✅ | `Sticker` and `StickerType` are exposed. |
+| `INOutgoingMessageType` | ✅ | Exposed as `OutgoingMessageType`. |
 
-### INParameter (`INParameter.h`)
-
-| API | Status | Notes |
-| --- | --- | --- |
-| `parameterForClass:keyPath:` | ✅ | `IntentParameter::new`. |
-| `parameterClass` / `parameterKeyPath` | ✅ | Getter surface exposed. |
-| `isEqualToParameter:` | ✅ | `IntentParameter::is_equal_to_parameter`. |
-| `setIndex:forSubKeyPath:` / `indexForSubKeyPath:` | ✅ | Getter/setter exposed, with `NSNotFound` mapped to `None`. |
-| `INInteraction.parameterValueForParameter:` | ⏭️ | Category API is marked unavailable on macOS. |
-
-### INObject (`INObject.h`)
+### Reservation, travel, and payment surface
 
 | API | Status | Notes |
 | --- | --- | --- |
-| All public initializers | ✅ | `IntentObject::new` / `with_details`. |
-| `identifier` / `displayString` / `pronunciationHint` | ✅ | Getter surface exposed. |
-| `subtitleString` | ✅ | Getter/setter exposed. |
-| `displayImage` | ✅ | Getter/setter exposed via `Image`. |
-| `alternativeSpeakableMatches` setter | ✅ | `set_alternative_speakable_matches`. |
-| `alternativeSpeakableMatches` getter | 🟡 | Count is exposed; a fully typed array getter is not yet provided. |
+| `INAirline`, `INAirport`, `INAirportGate`, `INFlight` | ✅ | Constructors and property accessors are exposed. |
+| `INCurrencyAmount`, `INDateComponentsRange`, `INPaymentMethod`, `INPaymentMethodType`, `INRecurrenceFrequency` | ✅ | Exposed as safe wrappers / enums. |
+| `INReservation`, `INReservationAction`, `INReservationActionType`, `INReservationStatus` | ✅ | Shared reservation surface is wrapped. |
+| `INBoatReservation`, `INBoatTrip`, `INBusReservation`, `INBusTrip`, `INFlightReservation`, `INLodgingReservation`, `INRentalCar`, `INRentalCarReservation`, `INRestaurantReservation`, `INTrainReservation`, `INTrainTrip` | ✅ | Public wrapper types are exported for the macOS-available reservation classes. |
+| `INSeat`, `INTicketedEvent`, `INTicketedEventCategory`, `INTicketedEventReservation` | ✅ | Seat and ticketed-event helpers are exposed. |
 
-### INVocabulary (`INVocabulary.h`)
-
-| API | Status | Notes |
-| --- | --- | --- |
-| `sharedVocabulary` | ✅ | `IntentVocabulary::shared`. |
-| `setVocabularyStrings:ofType:` | ✅ | `set_vocabulary_strings`. |
-| `setVocabulary:ofType:` | ✅ | `set_vocabulary_speakables`. |
-| `removeAllVocabularyStrings` | ✅ | `remove_all_vocabulary_strings`. |
-
-### INRelevantShortcut (`INRelevantShortcut.h`, `INRelevanceProvider.h`)
+### Additional intent, response, and handling families
 
 | API | Status | Notes |
 | --- | --- | --- |
-| `INRelevantShortcut.initWithShortcut:` | ✅ | `RelevantShortcut::new`. |
-| `relevanceProviders` setter | ✅ | `set_relevance_providers`. |
-| `relevanceProviders` getter | 🟡 | Count is exposed; a typed array getter is not yet provided. |
-| `watchTemplate` | 🟡 | Template presence is inspectable via `watch_template_class_name`; no `INDefaultCardTemplate` wrapper yet. |
-| `widgetKind` | ✅ | Getter/setter exposed. |
-| `shortcutRole` | ✅ | Getter/setter exposed. |
-| `shortcut` | ✅ | `RelevantShortcut::shortcut`. |
-| `INDateRelevanceProvider.initWithStartDate:endDate:` | ✅ | `RelevanceProvider::date`. |
-| `INDailyRoutineRelevanceProvider.initWithSituation:` | ✅ | `RelevanceProvider::daily_routine`. |
-| `INLocationRelevanceProvider.initWithRegion:` | ⏭️ | Requires `CLRegion` / CoreLocation bridging plus location authorization. |
+| `INAnswerCallIntent*` | ✅ | `AnswerCallIntent`, `AnswerCallIntentResponse`, `AnswerCallIntentResponseCode`, and `AnswerCallIntentHandling` helper are exposed. |
+| `INEditMessageIntent*` | ✅ | `EditMessageIntent`, `EditMessageIntentResponse`, `EditMessageIntentResponseCode`, and `EditMessageIntentHandling` helper are exposed. |
+| `INGetReservationDetailsIntent*` | ✅ | `GetReservationDetailsIntent`, `GetReservationDetailsIntentResponse`, and `GetReservationDetailsIntentResponseCode` are exposed. |
+| `INHangUpCallIntent*` | ✅ | `HangUpCallIntent`, `HangUpCallIntentResponse`, `HangUpCallIntentResponseCode`, and `HangUpCallIntentHandling` helper are exposed. |
+| `INShareFocusStatusIntent*` | ✅ | `ShareFocusStatusIntent`, `ShareFocusStatusIntentResponse`, `ShareFocusStatusIntentResponseCode`, and `ShareFocusStatusIntentHandling` helper are exposed. |
+| `INUnsendMessagesIntent*` | ✅ | `UnsendMessagesIntent`, `UnsendMessagesIntentResponse`, `UnsendMessagesIntentResponseCode`, and `UnsendMessagesIntentHandling` helper are exposed. |
+| `INSendMessageIntentHandling` | ✅ | `SendMessageIntentHandling` helper is exposed. |
+| `INSendMessageIntent (UserNotifications)` / `INStartCallIntent (UserNotifications)` | ✅ | `SendMessageIntent::supports_user_notifications` and `StartCallIntent::supports_user_notifications` expose the protocol-conformance checks. |
 
-### INInteraction (`INInteraction.h`)
+### Resolution-result extras and errors
 
 | API | Status | Notes |
 | --- | --- | --- |
-| `initWithIntent:response:` | ✅ | `Interaction::new`. |
-| `donateInteractionWithCompletion:` | ✅ | `Interaction::donate`. |
-| `deleteAllInteractionsWithCompletion:` | ✅ | `Interaction::delete_all`. |
-| `deleteInteractionsWithIdentifiers:completion:` | ✅ | `Interaction::delete_by_identifiers`. |
-| `deleteInteractionsWithGroupIdentifier:completion:` | ✅ | `Interaction::delete_by_group_identifier`. |
-| `intent` / `intentResponse` | ✅ | Getter surface exposed. |
-| `intentHandlingStatus` | ✅ | Enum-mapped getter exposed. |
-| `direction` | ✅ | Getter/setter exposed. |
-| `dateInterval` | ✅ | Getter/setter exposed. |
-| `identifier` / `groupIdentifier` | ✅ | Getter/setter exposed. |
+| Scalar/object resolution results (`INBooleanResolutionResult`, `INDoubleResolutionResult`, `INIntegerResolutionResult`, `INStringResolutionResult`, `INURLResolutionResult`, `INFileResolutionResult`, etc.) | ✅ | Exposed through the typed resolution-result wrappers in `resolution_extras.rs`. |
+| Message/call-specific resolution results | ✅ | `SendMessageRecipientResolutionResult`, `OutgoingMessageTypeResolutionResult`, and `StartCallCallRecordToCallBackResolutionResult` are exposed, including unsupported-reason enums. |
+| `INIntentResolutionResult (Custom)` | ✅ | `unsupported_with_reason` and `confirmation_required_with_item_for_reason` are exposed on `IntentResolutionResult`. |
+| `INIntentErrorCode` | ✅ | Exposed as `IntentErrorCode`. |
 
-### INRelevantShortcutStore (`INRelevantShortcutStore.h`)
-
-| API | Status | Notes |
-| --- | --- | --- |
-| `defaultStore` | ✅ | `RelevantShortcutStore::default_store`. |
-| `setRelevantShortcuts:completionHandler:` | ✅ | `set_relevant_shortcuts`. |
-
-## Deferred items
+## Deferred / exempt
 
 | API | Status | Reason |
 | --- | --- | --- |
-| `INIntent.shortcutAvailability` | ⏭️ | Public header marks the property unavailable on macOS. |
-| `INInteraction.parameterValueForParameter:` | ⏭️ | Public header marks the category unavailable on macOS. |
-| `INLocationRelevanceProvider` | ⏭️ | Requires additional CoreLocation bridging and location authorization. |
-| `INDefaultCardTemplate` / `watchTemplate` full wrapper | 🟡 | Presence is surfaced, but there is no dedicated card-template type in v0.2.0. |
-| `alternativeSpeakableMatches` / `relevanceProviders` typed getters | 🟡 | Setter + count are covered; returning typed arrays is deferred. |
+| `INRestaurantReservationBooking` and restaurant-booking-only response enums | ⏭️ | The macOS SDK marks these types unavailable; they are recorded in `COVERAGE_AUDIT.md` as `EXEMPT`. |
+| `NSExtensionContext (ShareExtension)` | ⏭️ | The share-extension category is unavailable on macOS. |
+| `NSUserActivity.shortcutAvailability` | ⏭️ | The property is unavailable on macOS even though the rest of `NSUserActivity (IntentsAdditions)` is available. |
+| Deprecated `*_Deprecated.h` Intents categories | ⏭️ | Kept as `EXEMPT` per the audit instructions. |

@@ -31,6 +31,11 @@ impl IntentResolutionResult {
         })
     }
 
+    #[allow(dead_code)]
+    pub(crate) const fn from_retained(raw: RetainedObject) -> Self {
+        Self { raw }
+    }
+
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
