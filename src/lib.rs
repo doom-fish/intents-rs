@@ -39,6 +39,9 @@ pub mod response_extras;
 pub mod support;
 pub mod voice_shortcut;
 
+#[cfg(feature = "async")]
+pub mod async_api;
+
 pub use call::{
     CallAudioRoute, CallCapability, CallCapabilityOptions, CallDestinationType, CallGroup,
     CallRecord, CallRecordFilter, CallRecordType, CallRecordTypeOptions,

@@ -1,5 +1,47 @@
 # Changelog
 
+## [0.3.0] - 2026-05-17
+
+### Added — `async_api` module (Tier 1)
+
+New optional `async` Cargo feature that exposes an executor-agnostic, `Future`-based
+async API for every `Intents.framework` completion-handler surface.
+
+#### INInteraction async wrappers (`AsyncInteraction`)
+
+| Future type | Wraps |
+|---|---|
+| `InteractionDonateFuture` | `INInteraction.donate(completion:)` |
+| `InteractionDeleteFuture` | `INInteraction.delete(with:[String],completion:)` |
+| `InteractionDeleteFuture` | `INInteraction.delete(with:String,completion:)` |
+| `InteractionDeleteAllFuture` | `INInteraction.deleteAll(completion:)` |
+
+#### INPreferences async wrapper (`AsyncPreferences`)
+
+| Future type | Wraps |
+|---|---|
+| `SiriAuthorizationFuture` | `INPreferences.requestSiriAuthorization(_:)` |
+
+#### INVoiceShortcutCenter async wrappers (`AsyncVoiceShortcutCenter`)
+
+| Future type | Wraps |
+|---|---|
+| `AllVoiceShortcutsFuture` | `INVoiceShortcutCenter.getAllVoiceShortcuts(completion:)` |
+| `VoiceShortcutFuture` | `INVoiceShortcutCenter.getVoiceShortcut(with:completion:)` |
+
+#### Noted Tier-2 deferrals
+
+* `INSpeechRecognitionRequest.start(handler:)` — not available on macOS (Speech framework, iOS/watchOS only).
+* `IntentHandler.handle(intent:completion:)` — protocol-based; the system calls *into* your handler. Belongs in a Tier-2 async-trait bridge.
+
+#### New examples
+- `26_async_interaction` — donate + delete variants
+- `27_async_preferences` — Siri auth (skips dialog on headless systems)
+- `28_async_voice_shortcuts` — getAllVoiceShortcuts + getVoiceShortcut
+
+#### New test file
+- `tests/async_api_tests.rs` — 11 tests covering happy paths and error paths
+
 ## [0.2.2] - 2026-05-17
 
 - Closed the remaining public macOS `Intents.framework` audit gaps, bringing `COVERAGE_AUDIT.md` to 141 verified symbols, 0 remaining gaps, and 29 exempt unavailable/deprecated symbols.

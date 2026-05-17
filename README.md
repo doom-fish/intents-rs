@@ -2,7 +2,7 @@
 
 Safe Rust bindings for Apple's [Intents](https://developer.apple.com/documentation/intents) framework on macOS.
 
-> **Status:** v0.2.2 reaches 100% audited coverage of the macOS 26.2 `Intents.framework` surface: 141 verified symbols, 0 remaining gaps, and 29 exempt unavailable/deprecated symbols.
+> **Status:** v0.3.0 adds an async API module (Tier 1) on top of the 100%-audited v0.2.2 sync surface.
 
 ## Quick start
 
@@ -14,6 +14,47 @@ fn main() {
     println!("Siri authorization status: {status:?}");
 }
 ```
+
+## Async API
+
+Enable the `async` feature for executor-agnostic `Future` wrappers over every
+`Intents.framework` completion-handler API:
+
+```toml
+[dependencies]
+intents = { version = "0.3", features = ["async"] }
+```
+
+```rust,no_run
+use intents::async_api::{AsyncInteraction, AsyncPreferences, AsyncVoiceShortcutCenter};
+use intents::{Intent, Interaction, VoiceShortcutCenter};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    pollster::block_on(async {
+        // Donate an interaction
+        let intent = Intent::new()?;
+        let interaction = Interaction::new(&intent, None)?;
+        AsyncInteraction::donate(&interaction).await?;
+
+        // Delete all interactions
+        AsyncInteraction::delete_all().await?;
+
+        Ok::<_, Box<dyn std::error::Error>>(())
+    })
+}
+```
+
+### Async API surface
+
+| Entry point | Future type | Swift API |
+|---|---|---|
+| `AsyncInteraction::donate` | `InteractionDonateFuture` | `INInteraction.donate(completion:)` |
+| `AsyncInteraction::delete` | `InteractionDeleteFuture` | `INInteraction.delete(with:[String],completion:)` |
+| `AsyncInteraction::delete_by_group` | `InteractionDeleteFuture` | `INInteraction.delete(with:String,completion:)` |
+| `AsyncInteraction::delete_all` | `InteractionDeleteAllFuture` | `INInteraction.deleteAll(completion:)` |
+| `AsyncPreferences::request_siri_authorization` | `SiriAuthorizationFuture` | `INPreferences.requestSiriAuthorization(_:)` |
+| `AsyncVoiceShortcutCenter::get_all` | `AllVoiceShortcutsFuture` | `INVoiceShortcutCenter.getAllVoiceShortcuts(completion:)` |
+| `AsyncVoiceShortcutCenter::get` | `VoiceShortcutFuture` | `INVoiceShortcutCenter.getVoiceShortcut(with:completion:)` |
 
 ## Highlights
 
@@ -29,9 +70,13 @@ fn main() {
 cargo run --example 01_smoke
 cargo run --example 21_intent_extras_roundtrip
 cargo run --example 25_intent_error_codes
+# async examples
+cargo run --features async --example 26_async_interaction
+cargo run --features async --example 27_async_preferences
+cargo run --features async --example 28_async_voice_shortcuts
 ```
 
-The crate now ships 25 numbered examples and 24 integration-test files, with coverage for every logical area added in the v0.2.2 gap-closing pass.
+The crate ships 28 numbered examples and 25 integration-test files.
 
 ## Coverage
 

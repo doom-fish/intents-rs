@@ -1,6 +1,6 @@
 [package]
 name = "intents"
-version = "0.2.2"
+version = "0.3.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 homepage = "https://github.com/doom-fish/intents-rs"
@@ -40,10 +40,15 @@ crate-type = ["lib"]
 
 [features]
 default = []
+async = ["dep:doom-fish-utils"]
 cargo-clippy = []
 
 [dependencies]
 serde_json = "1"
+doom-fish-utils = { path = "../doom-fish-utils", version = "0.1", optional = true }
+
+[dev-dependencies]
+pollster = "0.3"
 
 [package.metadata.docs.rs]
 all-features = true
@@ -56,6 +61,18 @@ maintenance = { status = "actively-developed" }
 
 [[example]]
 name = "01_smoke"
+
+[[example]]
+name = "26_async_interaction"
+required-features = ["async"]
+
+[[example]]
+name = "27_async_preferences"
+required-features = ["async"]
+
+[[example]]
+name = "28_async_voice_shortcuts"
+required-features = ["async"]
 
 [profile.release]
 debug = "full"
