@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.1] - 2026-05-17
+
+### Fixed
+
+- Wrapped all `unsafe extern "C"` callbacks in panic guards (`catch_unwind` /
+  `catch_user_panic`) so that a panic inside a callback no longer causes
+  undefined behaviour by unwinding across the C ABI boundary.
+- Added `# Safety` documentation to the three `unsafe fn` signatures in
+  `src/private.rs` (`RetainedObject::from_owned`, `take_string`, `take_error`).
+- Widened `doom-fish-utils` version constraint from `"0.1"` to `">=0.1, <0.3"`
+  to accommodate the next minor release without a forced bump.
+
 ## [0.3.0] - 2026-05-17
 
 ### Added — `async_api` module (Tier 1)

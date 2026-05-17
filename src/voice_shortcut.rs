@@ -103,27 +103,37 @@ unsafe extern "C" fn array_callback(
     count: usize,
     error: *const c_char,
 ) {
-    let sender = unsafe {
-        Box::from_raw(context.cast::<mpsc::Sender<Result<Vec<VoiceShortcut>, IntentsError>>>())
-    };
-    let result = if error.is_null() {
-        let objects = if count == 0 {
-            &[][..]
-        } else {
-            unsafe { std::slice::from_raw_parts(objects.cast_const(), count) }
+    if std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        // SAFETY: context is a valid Box<mpsc::Sender<...>> obtained via Box::into_raw
+        // in the calling function; ownership is transferred to this callback.
+        let sender = unsafe {
+            Box::from_raw(context.cast::<mpsc::Sender<Result<Vec<VoiceShortcut>, IntentsError>>>())
         };
-        objects
-            .iter()
-            .copied()
-            .map(|ptr| unsafe { VoiceShortcut::from_owned(ptr) })
-            .collect()
-    } else {
-        let message = unsafe { CStr::from_ptr(error) }
-            .to_string_lossy()
-            .into_owned();
-        Err(IntentsError::framework(message))
-    };
-    let _ = sender.send(result);
+        let result = if error.is_null() {
+            let objects = if count == 0 {
+                &[][..]
+            } else {
+                unsafe { std::slice::from_raw_parts(objects.cast_const(), count) }
+            };
+            objects
+                .iter()
+                .copied()
+                .map(|ptr| unsafe { VoiceShortcut::from_owned(ptr) })
+                .collect()
+        } else {
+            let message = unsafe { CStr::from_ptr(error) }
+                .to_string_lossy()
+                .into_owned();
+            Err(IntentsError::framework(message))
+        };
+        let _ = sender.send(result);
+    }))
+    .is_err()
+    {
+        eprintln!(
+            "intents: panic in callback caught at C ABI boundary; channel will return RecvError"
+        );
+    }
 }
 
 unsafe extern "C" fn object_callback(
@@ -131,20 +141,32 @@ unsafe extern "C" fn object_callback(
     object: *mut c_void,
     error: *const c_char,
 ) {
-    let sender = unsafe {
-        Box::from_raw(context.cast::<mpsc::Sender<Result<Option<VoiceShortcut>, IntentsError>>>())
-    };
-    let result = if error.is_null() {
-        if object.is_null() {
-            Ok(None)
+    if std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        // SAFETY: context is a valid Box<mpsc::Sender<...>> obtained via Box::into_raw
+        // in the calling function; ownership is transferred to this callback.
+        let sender = unsafe {
+            Box::from_raw(
+                context.cast::<mpsc::Sender<Result<Option<VoiceShortcut>, IntentsError>>>(),
+            )
+        };
+        let result = if error.is_null() {
+            if object.is_null() {
+                Ok(None)
+            } else {
+                unsafe { VoiceShortcut::from_owned(object) }.map(Some)
+            }
         } else {
-            unsafe { VoiceShortcut::from_owned(object) }.map(Some)
-        }
-    } else {
-        let message = unsafe { CStr::from_ptr(error) }
-            .to_string_lossy()
-            .into_owned();
-        Err(IntentsError::framework(message))
-    };
-    let _ = sender.send(result);
+            let message = unsafe { CStr::from_ptr(error) }
+                .to_string_lossy()
+                .into_owned();
+            Err(IntentsError::framework(message))
+        };
+        let _ = sender.send(result);
+    }))
+    .is_err()
+    {
+        eprintln!(
+            "intents: panic in callback caught at C ABI boundary; channel will return RecvError"
+        );
+    }
 }

@@ -47,16 +47,28 @@ impl Preferences {
 }
 
 unsafe extern "C" fn request_callback(context: *mut c_void, status: i64, error: *const c_char) {
-    let sender = unsafe {
-        Box::from_raw(context.cast::<mpsc::Sender<Result<SiriAuthorizationStatus, IntentsError>>>())
-    };
-    let result = if error.is_null() {
-        Ok(SiriAuthorizationStatus::from_raw(status))
-    } else {
-        let message = unsafe { CStr::from_ptr(error) }
-            .to_string_lossy()
-            .into_owned();
-        Err(IntentsError::framework(message))
-    };
-    let _ = sender.send(result);
+    if std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        // SAFETY: context is a valid Box<mpsc::Sender<...>> obtained via Box::into_raw
+        // in the calling function; ownership is transferred to this callback.
+        let sender = unsafe {
+            Box::from_raw(
+                context.cast::<mpsc::Sender<Result<SiriAuthorizationStatus, IntentsError>>>(),
+            )
+        };
+        let result = if error.is_null() {
+            Ok(SiriAuthorizationStatus::from_raw(status))
+        } else {
+            let message = unsafe { CStr::from_ptr(error) }
+                .to_string_lossy()
+                .into_owned();
+            Err(IntentsError::framework(message))
+        };
+        let _ = sender.send(result);
+    }))
+    .is_err()
+    {
+        eprintln!(
+            "intents: panic in callback caught at C ABI boundary; channel will return RecvError"
+        );
+    }
 }

@@ -55,6 +55,7 @@ use std::pin::Pin;
 use std::task::{Context, Poll};
 
 use doom_fish_utils::completion::{error_from_cstr, AsyncCompletion, AsyncCompletionFuture};
+use doom_fish_utils::panic_safe::catch_user_panic;
 
 use crate::error::IntentsError;
 use crate::ffi;
@@ -69,12 +70,16 @@ use crate::voice_shortcut::{VoiceShortcut, VoiceShortcutCenter};
 
 /// Callback for operations that return `()` on success.
 unsafe extern "C" fn void_completion_cb(ctx: *mut c_void, error: *const c_char) {
-    if error.is_null() {
-        unsafe { AsyncCompletion::<()>::complete_ok(ctx, ()) };
-    } else {
-        let msg = unsafe { error_from_cstr(error.cast::<i8>()) };
-        unsafe { AsyncCompletion::<()>::complete_err(ctx, msg) };
-    }
+    // SAFETY: ctx is a valid AsyncCompletion context pointer from AsyncCompletion::create();
+    // called at most once by the Swift bridge.
+    catch_user_panic("void_completion_cb", || {
+        if error.is_null() {
+            unsafe { AsyncCompletion::<()>::complete_ok(ctx, ()) };
+        } else {
+            let msg = unsafe { error_from_cstr(error.cast::<i8>()) };
+            unsafe { AsyncCompletion::<()>::complete_err(ctx, msg) };
+        }
+    });
 }
 
 // ============================================================================
@@ -202,9 +207,7 @@ impl AsyncInteraction {
             .iter()
             .map(|id| {
                 CString::new(*id).map_err(|e| {
-                    IntentsError::invalid_argument(format!(
-                        "identifier contains a NUL byte: {e}"
-                    ))
+                    IntentsError::invalid_argument(format!("identifier contains a NUL byte: {e}"))
                 })
             })
             .collect::<Result<Vec<_>, _>>()?;
@@ -260,13 +263,17 @@ impl AsyncInteraction {
 
 /// Callback for Siri authorization, carrying a status code.
 unsafe extern "C" fn siri_auth_cb(ctx: *mut c_void, status: i64, error: *const c_char) {
-    if error.is_null() {
-        let auth = SiriAuthorizationStatus::from_raw(status);
-        unsafe { AsyncCompletion::complete_ok(ctx, auth) };
-    } else {
-        let msg = unsafe { error_from_cstr(error.cast::<i8>()) };
-        unsafe { AsyncCompletion::<SiriAuthorizationStatus>::complete_err(ctx, msg) };
-    }
+    // SAFETY: ctx is a valid AsyncCompletion context pointer from AsyncCompletion::create();
+    // called at most once by the Swift bridge.
+    catch_user_panic("siri_auth_cb", || {
+        if error.is_null() {
+            let auth = SiriAuthorizationStatus::from_raw(status);
+            unsafe { AsyncCompletion::complete_ok(ctx, auth) };
+        } else {
+            let msg = unsafe { error_from_cstr(error.cast::<i8>()) };
+            unsafe { AsyncCompletion::<SiriAuthorizationStatus>::complete_err(ctx, msg) };
+        }
+    });
 }
 
 /// Future returned by [`AsyncPreferences::request_siri_authorization`].
@@ -329,25 +336,29 @@ unsafe extern "C" fn all_shortcuts_cb(
     count: usize,
     error: *const c_char,
 ) {
-    if !error.is_null() {
-        let msg = unsafe { error_from_cstr(error.cast::<i8>()) };
-        unsafe { AsyncCompletion::<Vec<VoiceShortcut>>::complete_err(ctx, msg) };
-        return;
-    }
-    let result: Result<Vec<VoiceShortcut>, String> = if count == 0 {
-        Ok(Vec::new())
-    } else {
-        let slice = unsafe { std::slice::from_raw_parts(objects.cast_const(), count) };
-        slice
-            .iter()
-            .copied()
-            .map(|ptr| unsafe { VoiceShortcut::from_owned(ptr) }.map_err(|e| e.to_string()))
-            .collect()
-    };
-    match result {
-        Ok(shortcuts) => unsafe { AsyncCompletion::complete_ok(ctx, shortcuts) },
-        Err(msg) => unsafe { AsyncCompletion::<Vec<VoiceShortcut>>::complete_err(ctx, msg) },
-    }
+    // SAFETY: ctx is a valid AsyncCompletion context pointer from AsyncCompletion::create();
+    // called at most once by the Swift bridge.
+    catch_user_panic("all_shortcuts_cb", || {
+        if !error.is_null() {
+            let msg = unsafe { error_from_cstr(error.cast::<i8>()) };
+            unsafe { AsyncCompletion::<Vec<VoiceShortcut>>::complete_err(ctx, msg) };
+            return;
+        }
+        let result: Result<Vec<VoiceShortcut>, String> = if count == 0 {
+            Ok(Vec::new())
+        } else {
+            let slice = unsafe { std::slice::from_raw_parts(objects.cast_const(), count) };
+            slice
+                .iter()
+                .copied()
+                .map(|ptr| unsafe { VoiceShortcut::from_owned(ptr) }.map_err(|e| e.to_string()))
+                .collect()
+        };
+        match result {
+            Ok(shortcuts) => unsafe { AsyncCompletion::complete_ok(ctx, shortcuts) },
+            Err(msg) => unsafe { AsyncCompletion::<Vec<VoiceShortcut>>::complete_err(ctx, msg) },
+        }
+    });
 }
 
 /// Future returned by [`AsyncVoiceShortcutCenter::get_all`].
@@ -385,21 +396,25 @@ unsafe extern "C" fn voice_shortcut_cb(
     object: *mut c_void,
     error: *const c_char,
 ) {
-    if !error.is_null() {
-        let msg = unsafe { error_from_cstr(error.cast::<i8>()) };
-        unsafe { AsyncCompletion::<Option<VoiceShortcut>>::complete_err(ctx, msg) };
-        return;
-    }
-    if object.is_null() {
-        unsafe { AsyncCompletion::complete_ok(ctx, None::<VoiceShortcut>) };
-        return;
-    }
-    match unsafe { VoiceShortcut::from_owned(object) } {
-        Ok(shortcut) => unsafe { AsyncCompletion::complete_ok(ctx, Some(shortcut)) },
-        Err(e) => unsafe {
-            AsyncCompletion::<Option<VoiceShortcut>>::complete_err(ctx, e.to_string());
-        },
-    }
+    // SAFETY: ctx is a valid AsyncCompletion context pointer from AsyncCompletion::create();
+    // called at most once by the Swift bridge.
+    catch_user_panic("voice_shortcut_cb", || {
+        if !error.is_null() {
+            let msg = unsafe { error_from_cstr(error.cast::<i8>()) };
+            unsafe { AsyncCompletion::<Option<VoiceShortcut>>::complete_err(ctx, msg) };
+            return;
+        }
+        if object.is_null() {
+            unsafe { AsyncCompletion::complete_ok(ctx, None::<VoiceShortcut>) };
+            return;
+        }
+        match unsafe { VoiceShortcut::from_owned(object) } {
+            Ok(shortcut) => unsafe { AsyncCompletion::complete_ok(ctx, Some(shortcut)) },
+            Err(e) => unsafe {
+                AsyncCompletion::<Option<VoiceShortcut>>::complete_err(ctx, e.to_string());
+            },
+        }
+    });
 }
 
 /// Future returned by [`AsyncVoiceShortcutCenter::get`].

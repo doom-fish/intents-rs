@@ -117,7 +117,10 @@ impl Interaction {
             .iter()
             .map(|identifier| private::cstring(identifier, "interaction identifier"))
             .collect::<Result<Vec<_>, _>>()?;
-        let pointers = cstrings.iter().map(|value| value.as_ptr()).collect::<Vec<_>>();
+        let pointers = cstrings
+            .iter()
+            .map(|value| value.as_ptr())
+            .collect::<Vec<_>>();
         let values_ptr = if pointers.is_empty() {
             std::ptr::null()
         } else {
@@ -134,7 +137,10 @@ impl Interaction {
                 context,
             );
         }
-        recv_result(&receiver, "interaction delete-by-identifiers callback channel dropped")
+        recv_result(
+            &receiver,
+            "interaction delete-by-identifiers callback channel dropped",
+        )
     }
 
     pub fn delete_by_group_identifier(group_identifier: &str) -> Result<(), IntentsError> {
@@ -171,8 +177,10 @@ impl Interaction {
     }
 
     pub fn direction(&self) -> InteractionDirection {
-        private::integer_property(self, "direction")
-            .map_or(InteractionDirection::Unspecified, InteractionDirection::from_raw)
+        private::integer_property(self, "direction").map_or(
+            InteractionDirection::Unspecified,
+            InteractionDirection::from_raw,
+        )
     }
 
     pub fn set_direction(&mut self, direction: InteractionDirection) -> Result<(), IntentsError> {
@@ -189,8 +197,10 @@ impl Interaction {
     }
 
     pub fn intent_handling_status(&self) -> IntentHandlingStatus {
-        private::integer_property(self, "intentHandlingStatus")
-            .map_or(IntentHandlingStatus::Unspecified, IntentHandlingStatus::from_raw)
+        private::integer_property(self, "intentHandlingStatus").map_or(
+            IntentHandlingStatus::Unspecified,
+            IntentHandlingStatus::from_raw,
+        )
     }
 
     pub fn intent(&self) -> Option<Intent> {
@@ -218,14 +228,25 @@ fn recv_result(
 }
 
 unsafe extern "C" fn callback(context: *mut c_void, error: *const c_char) {
-    let sender = unsafe { Box::from_raw(context.cast::<mpsc::Sender<Result<(), IntentsError>>>()) };
-    let result = if error.is_null() {
-        Ok(())
-    } else {
-        let message = unsafe { CStr::from_ptr(error) }
-            .to_string_lossy()
-            .into_owned();
-        Err(IntentsError::framework(message))
-    };
-    let _ = sender.send(result);
+    if std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        // SAFETY: context is a valid Box<mpsc::Sender<...>> obtained via Box::into_raw
+        // in the calling function; ownership is transferred to this callback.
+        let sender =
+            unsafe { Box::from_raw(context.cast::<mpsc::Sender<Result<(), IntentsError>>>()) };
+        let result = if error.is_null() {
+            Ok(())
+        } else {
+            let message = unsafe { CStr::from_ptr(error) }
+                .to_string_lossy()
+                .into_owned();
+            Err(IntentsError::framework(message))
+        };
+        let _ = sender.send(result);
+    }))
+    .is_err()
+    {
+        eprintln!(
+            "intents: panic in callback caught at C ABI boundary; channel will return RecvError"
+        );
+    }
 }

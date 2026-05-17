@@ -11,6 +11,12 @@ use crate::ffi;
 pub struct RetainedObject(NonNull<c_void>);
 
 impl RetainedObject {
+    /// # Safety
+    ///
+    /// `ptr` must be a valid, non-null Objective-C object pointer that the caller
+    /// is transferring ownership of (i.e. the refcount has been +1 for this caller).
+    /// Passing a null pointer or a pointer that is not a valid Objective-C object
+    /// is undefined behaviour.
     pub unsafe fn from_owned(
         ptr: *mut c_void,
         context: &'static str,
@@ -51,6 +57,12 @@ fn property_key(key: &str) -> CString {
     CString::new(key).expect("static Objective-C property keys never contain NUL bytes")
 }
 
+/// # Safety
+///
+/// `ptr` must be either null or a pointer to a valid, null-terminated C string
+/// allocated by the Swift bridge (via `inx_string_free`-compatible allocator).
+/// The pointer must not be used after this call returns; ownership is transferred
+/// to this function.
 pub unsafe fn take_string(ptr: *mut c_char) -> Option<String> {
     if ptr.is_null() {
         return None;
@@ -61,6 +73,10 @@ pub unsafe fn take_string(ptr: *mut c_char) -> Option<String> {
     Some(value)
 }
 
+/// # Safety
+///
+/// Same requirements as [`take_string`]: `ptr` must be either null or a valid
+/// C string pointer transferred to this function.
 pub unsafe fn take_error(ptr: *mut c_char, context: &'static str) -> IntentsError {
     IntentsError::framework(
         take_string(ptr).unwrap_or_else(|| format!("{context} failed with an unknown error")),
@@ -196,7 +212,10 @@ pub fn create_blank_object(
     }
 }
 
-pub fn class_conforms_to_protocol(class_name: &str, protocol_name: &str) -> Result<bool, IntentsError> {
+pub fn class_conforms_to_protocol(
+    class_name: &str,
+    protocol_name: &str,
+) -> Result<bool, IntentsError> {
     let class_name = cstring(class_name, "Objective-C class name")?;
     let protocol_name = cstring(protocol_name, "Objective-C protocol name")?;
     Ok(unsafe { ffi::inx_class_conforms_to_protocol(class_name.as_ptr(), protocol_name.as_ptr()) })
