@@ -54,7 +54,8 @@ impl IntentParameter {
         let sub_key_path = private::cstring(sub_key_path, "parameter sub key path")?;
         let index = isize::try_from(index)
             .map_err(|_| IntentsError::invalid_argument("parameter index does not fit in isize"))?;
-        let ok = unsafe { ffi::inx_parameter_set_index(self.as_ptr(), index, sub_key_path.as_ptr()) };
+        let ok =
+            unsafe { ffi::inx_parameter_set_index(self.as_ptr(), index, sub_key_path.as_ptr()) };
         if ok {
             Ok(())
         } else {
@@ -64,7 +65,10 @@ impl IntentParameter {
         }
     }
 
-    pub fn index_for_sub_key_path(&self, sub_key_path: &str) -> Result<Option<usize>, IntentsError> {
+    pub fn index_for_sub_key_path(
+        &self,
+        sub_key_path: &str,
+    ) -> Result<Option<usize>, IntentsError> {
         let sub_key_path = private::cstring(sub_key_path, "parameter sub key path")?;
         let mut present = false;
         let index = unsafe {
@@ -73,9 +77,9 @@ impl IntentParameter {
         if !present {
             return Ok(None);
         }
-        usize::try_from(index)
-            .map(Some)
-            .map_err(|_| IntentsError::framework("INParameter returned a negative index".to_string()))
+        usize::try_from(index).map(Some).map_err(|_| {
+            IntentsError::framework("INParameter returned a negative index".to_string())
+        })
     }
 }
 

@@ -45,7 +45,10 @@ macro_rules! typed_resolution_result {
 
             #[allow(dead_code)]
             pub(crate) fn new_blank() -> Result<Self, IntentsError> {
-                let raw = private::create_blank_object(Self::OBJC_CLASS, "typed intent resolution result")?;
+                let raw = private::create_blank_object(
+                    Self::OBJC_CLASS,
+                    "typed intent resolution result",
+                )?;
                 Self::try_from(IntentResolutionResult::from_retained(raw))
             }
 
@@ -107,13 +110,31 @@ simple_enum!(StartCallCallRecordToCallBackUnsupportedReason {
 });
 
 typed_resolution_result!(BooleanResolutionResult, "INBooleanResolutionResult");
-typed_resolution_result!(CallCapabilityResolutionResult, "INCallCapabilityResolutionResult");
-typed_resolution_result!(CallDestinationTypeResolutionResult, "INCallDestinationTypeResolutionResult");
+typed_resolution_result!(
+    CallCapabilityResolutionResult,
+    "INCallCapabilityResolutionResult"
+);
+typed_resolution_result!(
+    CallDestinationTypeResolutionResult,
+    "INCallDestinationTypeResolutionResult"
+);
 typed_resolution_result!(CallRecordResolutionResult, "INCallRecordResolutionResult");
-typed_resolution_result!(CallRecordTypeOptionsResolutionResult, "INCallRecordTypeOptionsResolutionResult");
-typed_resolution_result!(CallRecordTypeResolutionResult, "INCallRecordTypeResolutionResult");
-typed_resolution_result!(CurrencyAmountResolutionResult, "INCurrencyAmountResolutionResult");
-typed_resolution_result!(DateComponentsResolutionResult, "INDateComponentsResolutionResult");
+typed_resolution_result!(
+    CallRecordTypeOptionsResolutionResult,
+    "INCallRecordTypeOptionsResolutionResult"
+);
+typed_resolution_result!(
+    CallRecordTypeResolutionResult,
+    "INCallRecordTypeResolutionResult"
+);
+typed_resolution_result!(
+    CurrencyAmountResolutionResult,
+    "INCurrencyAmountResolutionResult"
+);
+typed_resolution_result!(
+    DateComponentsResolutionResult,
+    "INDateComponentsResolutionResult"
+);
 typed_resolution_result!(DoubleResolutionResult, "INDoubleResolutionResult");
 typed_resolution_result!(EnergyResolutionResult, "INEnergyResolutionResult");
 typed_resolution_result!(EnumResolutionResult, "INEnumResolutionResult");
@@ -122,25 +143,47 @@ typed_resolution_result!(IntegerResolutionResult, "INIntegerResolutionResult");
 typed_resolution_result!(LengthResolutionResult, "INLengthResolutionResult");
 typed_resolution_result!(MassResolutionResult, "INMassResolutionResult");
 typed_resolution_result!(ObjectResolutionResult, "INObjectResolutionResult");
-typed_resolution_result!(OutgoingMessageTypeResolutionResult, "INOutgoingMessageTypeResolutionResult");
-typed_resolution_result!(PaymentMethodResolutionResult, "INPaymentMethodResolutionResult");
+typed_resolution_result!(
+    OutgoingMessageTypeResolutionResult,
+    "INOutgoingMessageTypeResolutionResult"
+);
+typed_resolution_result!(
+    PaymentMethodResolutionResult,
+    "INPaymentMethodResolutionResult"
+);
 typed_resolution_result!(PersonResolutionResult, "INPersonResolutionResult");
 typed_resolution_result!(PlacemarkResolutionResult, "INPlacemarkResolutionResult");
-typed_resolution_result!(SendMessageRecipientResolutionResult, "INSendMessageRecipientResolutionResult");
+typed_resolution_result!(
+    SendMessageRecipientResolutionResult,
+    "INSendMessageRecipientResolutionResult"
+);
 typed_resolution_result!(SpeedResolutionResult, "INSpeedResolutionResult");
-typed_resolution_result!(StartCallCallRecordToCallBackResolutionResult, "INStartCallCallRecordToCallBackResolutionResult");
+typed_resolution_result!(
+    StartCallCallRecordToCallBackResolutionResult,
+    "INStartCallCallRecordToCallBackResolutionResult"
+);
 typed_resolution_result!(StringResolutionResult, "INStringResolutionResult");
 typed_resolution_result!(TemperatureResolutionResult, "INTemperatureResolutionResult");
-typed_resolution_result!(TimeIntervalResolutionResult, "INTimeIntervalResolutionResult");
+typed_resolution_result!(
+    TimeIntervalResolutionResult,
+    "INTimeIntervalResolutionResult"
+);
 typed_resolution_result!(URLResolutionResult, "INURLResolutionResult");
 typed_resolution_result!(VolumeResolutionResult, "INVolumeResolutionResult");
 
 impl IntentResolutionResult {
     pub fn unsupported_with_reason(reason: i64) -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
-        let ptr = unsafe { ffi::inx_intent_resolution_result_unsupported_with_reason(reason, &mut error) };
+        let ptr = unsafe {
+            ffi::inx_intent_resolution_result_unsupported_with_reason(reason, &mut error)
+        };
         if ptr.is_null() {
-            Err(unsafe { private::take_error(error, "creating unsupported custom intent resolution result") })
+            Err(unsafe {
+                private::take_error(
+                    error,
+                    "creating unsupported custom intent resolution result",
+                )
+            })
         } else {
             unsafe { Self::from_owned(ptr) }
         }
@@ -159,7 +202,12 @@ impl IntentResolutionResult {
             )
         };
         if ptr.is_null() {
-            Err(unsafe { private::take_error(error, "creating confirmation-required custom intent resolution result") })
+            Err(unsafe {
+                private::take_error(
+                    error,
+                    "creating confirmation-required custom intent resolution result",
+                )
+            })
         } else {
             unsafe { Self::from_owned(ptr) }
         }
@@ -167,8 +215,13 @@ impl IntentResolutionResult {
 }
 
 impl SendMessageRecipientResolutionResult {
-    pub fn unsupported_for_reason(reason: SendMessageRecipientUnsupportedReason) -> Result<Self, IntentsError> {
-        let class_name = private::cstring(Self::OBJC_CLASS, "send-message recipient resolution result class name")?;
+    pub fn unsupported_for_reason(
+        reason: SendMessageRecipientUnsupportedReason,
+    ) -> Result<Self, IntentsError> {
+        let class_name = private::cstring(
+            Self::OBJC_CLASS,
+            "send-message recipient resolution result class name",
+        )?;
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
             ffi::inx_typed_intent_resolution_result_unsupported_for_reason(
@@ -178,7 +231,12 @@ impl SendMessageRecipientResolutionResult {
             )
         };
         if ptr.is_null() {
-            Err(unsafe { private::take_error(error, "creating send-message recipient unsupported resolution result") })
+            Err(unsafe {
+                private::take_error(
+                    error,
+                    "creating send-message recipient unsupported resolution result",
+                )
+            })
         } else {
             Self::try_from(unsafe { IntentResolutionResult::from_owned(ptr) }?)
         }
@@ -186,8 +244,13 @@ impl SendMessageRecipientResolutionResult {
 }
 
 impl StartCallCallRecordToCallBackResolutionResult {
-    pub fn unsupported_for_reason(reason: StartCallCallRecordToCallBackUnsupportedReason) -> Result<Self, IntentsError> {
-        let class_name = private::cstring(Self::OBJC_CLASS, "start-call callback resolution result class name")?;
+    pub fn unsupported_for_reason(
+        reason: StartCallCallRecordToCallBackUnsupportedReason,
+    ) -> Result<Self, IntentsError> {
+        let class_name = private::cstring(
+            Self::OBJC_CLASS,
+            "start-call callback resolution result class name",
+        )?;
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
             ffi::inx_typed_intent_resolution_result_unsupported_for_reason(
@@ -197,7 +260,12 @@ impl StartCallCallRecordToCallBackResolutionResult {
             )
         };
         if ptr.is_null() {
-            Err(unsafe { private::take_error(error, "creating start-call callback unsupported resolution result") })
+            Err(unsafe {
+                private::take_error(
+                    error,
+                    "creating start-call callback unsupported resolution result",
+                )
+            })
         } else {
             Self::try_from(unsafe { IntentResolutionResult::from_owned(ptr) }?)
         }
@@ -219,11 +287,21 @@ mod tests {
             StartCallCallRecordToCallBackUnsupportedReason::NoMatchingCall,
         )?;
         let object = IntentObject::new(Some("id"), "Object")?;
-        let custom = IntentResolutionResult::confirmation_required_with_item_for_reason(Some(&object), 42)?;
+        let custom =
+            IntentResolutionResult::confirmation_required_with_item_for_reason(Some(&object), 42)?;
 
-        assert_eq!(string_result.class_name(), StringResolutionResult::OBJC_CLASS);
-        assert_eq!(recipient.class_name(), SendMessageRecipientResolutionResult::OBJC_CLASS);
-        assert_eq!(callback.class_name(), StartCallCallRecordToCallBackResolutionResult::OBJC_CLASS);
+        assert_eq!(
+            string_result.class_name(),
+            StringResolutionResult::OBJC_CLASS
+        );
+        assert_eq!(
+            recipient.class_name(),
+            SendMessageRecipientResolutionResult::OBJC_CLASS
+        );
+        assert_eq!(
+            callback.class_name(),
+            StartCallCallRecordToCallBackResolutionResult::OBJC_CLASS
+        );
         assert_eq!(custom.class_name(), "INIntentResolutionResult");
         Ok(())
     }

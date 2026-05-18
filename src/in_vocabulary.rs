@@ -87,7 +87,10 @@ impl IntentVocabulary {
             .iter()
             .map(|value| private::cstring(value, "vocabulary string"))
             .collect::<Result<Vec<_>, _>>()?;
-        let pointers = cstrings.iter().map(|value| value.as_ptr()).collect::<Vec<_>>();
+        let pointers = cstrings
+            .iter()
+            .map(|value| value.as_ptr())
+            .collect::<Vec<_>>();
         let ok = unsafe {
             ffi::inx_vocabulary_set_strings(
                 self.as_ptr(),
@@ -114,7 +117,10 @@ impl IntentVocabulary {
         values: &[&T],
         type_: VocabularyStringType,
     ) -> Result<(), IntentsError> {
-        let pointers = values.iter().map(|value| value.as_ptr()).collect::<Vec<_>>();
+        let pointers = values
+            .iter()
+            .map(|value| value.as_ptr())
+            .collect::<Vec<_>>();
         let ok = unsafe {
             ffi::inx_vocabulary_set_speakables(
                 self.as_ptr(),

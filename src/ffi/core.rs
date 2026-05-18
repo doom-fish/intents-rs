@@ -58,11 +58,7 @@ extern "C" {
         key: *const c_char,
         value: i64,
     ) -> bool;
-    pub fn inx_object_set_bool_property(
-        ptr: *mut c_void,
-        key: *const c_char,
-        value: bool,
-    ) -> bool;
+    pub fn inx_object_set_bool_property(ptr: *mut c_void, key: *const c_char, value: bool) -> bool;
     pub fn inx_object_set_object_property(
         ptr: *mut c_void,
         key: *const c_char,

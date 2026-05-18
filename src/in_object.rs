@@ -33,9 +33,7 @@ impl Image {
 
     pub fn from_data(data: &[u8]) -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
-        let ptr = unsafe {
-            ffi::inx_image_create_with_data(data.as_ptr(), data.len(), &mut error)
-        };
+        let ptr = unsafe { ffi::inx_image_create_with_data(data.as_ptr(), data.len(), &mut error) };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating image from data") })
         } else {

@@ -146,12 +146,10 @@ mod async_api_tests {
             }
         };
         pollster::block_on(async {
-            let result = AsyncVoiceShortcutCenter::get(
-                &center,
-                "00000000-0000-0000-0000-000000000000",
-            )
-            .expect("get arg valid")
-            .await;
+            let result =
+                AsyncVoiceShortcutCenter::get(&center, "00000000-0000-0000-0000-000000000000")
+                    .expect("get arg valid")
+                    .await;
             println!("async_get_voice_shortcut_missing: {result:?}");
             // Accept any outcome: Ok(None) = not found, Ok(Some)/Err = CI quirks.
             let _ = result;

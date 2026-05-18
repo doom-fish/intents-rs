@@ -37,7 +37,11 @@ impl FocusStatus {
     pub fn new(is_focused: Option<bool>) -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
-            ffi::inx_focus_status_create(is_focused.is_some(), is_focused.unwrap_or_default(), &mut error)
+            ffi::inx_focus_status_create(
+                is_focused.is_some(),
+                is_focused.unwrap_or_default(),
+                &mut error,
+            )
         };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating focus status") })
@@ -100,15 +104,21 @@ impl FocusStatusCenter {
     }
 
     pub fn authorization_status(&self) -> FocusStatusAuthorizationStatus {
-        private::integer_property(self, "authorizationStatus")
-            .map_or(FocusStatusAuthorizationStatus::NotDetermined, FocusStatusAuthorizationStatus::from_raw)
+        private::integer_property(self, "authorizationStatus").map_or(
+            FocusStatusAuthorizationStatus::NotDetermined,
+            FocusStatusAuthorizationStatus::from_raw,
+        )
     }
 
     pub fn request_authorization(&self) -> Result<FocusStatusAuthorizationStatus, IntentsError> {
         let mut status = 0;
         let mut error = std::ptr::null_mut();
         let ok = unsafe {
-            ffi::inx_focus_status_center_request_authorization(self.as_ptr(), &mut status, &mut error)
+            ffi::inx_focus_status_center_request_authorization(
+                self.as_ptr(),
+                &mut status,
+                &mut error,
+            )
         };
         if ok {
             Ok(FocusStatusAuthorizationStatus::from_raw(status))

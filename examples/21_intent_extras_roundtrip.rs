@@ -12,8 +12,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("answer call id: {:?}", answer.call_identifier());
     println!("edit content: {:?}", edit.edited_content());
-    println!("share focused: {:?}", share.focus_status().and_then(|value| value.is_focused()));
-    println!("reservation refs: {}", reservation.reservation_item_references_count());
+    println!(
+        "share focused: {:?}",
+        share.focus_status().and_then(|value| value.is_focused())
+    );
+    println!(
+        "reservation refs: {}",
+        reservation.reservation_item_references_count()
+    );
     println!("unsend ids: {:?}", unsend.message_identifiers()?);
     println!("hang id: {:?}", hang.call_identifier());
     println!(

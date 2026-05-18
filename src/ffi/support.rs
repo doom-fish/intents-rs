@@ -5,10 +5,7 @@ extern "C" {
         format: *const c_char,
         table: *const c_char,
     ) -> *mut c_char;
-    pub fn inx_placemark_create(
-        name: *const c_char,
-        out_error: *mut *mut c_char,
-    ) -> *mut c_void;
+    pub fn inx_placemark_create(name: *const c_char, out_error: *mut *mut c_char) -> *mut c_void;
     pub fn inx_object_section_create(
         title: *const c_char,
         items: *const *mut c_void,

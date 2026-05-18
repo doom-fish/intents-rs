@@ -12,7 +12,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("sections: {}", collection.sections_count());
     println!("all items: {}", collection.all_items_count());
     println!("localized: {}", deferred_localized_intents_string("Hello")?);
-    println!("version: {} / {}", intents_version_number(), intents_version_string());
+    println!(
+        "version: {} / {}",
+        intents_version_number(),
+        intents_version_string()
+    );
     println!("✅ support OK");
     Ok(())
 }

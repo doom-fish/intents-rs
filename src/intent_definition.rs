@@ -50,7 +50,8 @@ impl Intent {
     }
 
     pub fn donation_metadata(&self) -> Option<IntentDonationMetadata> {
-        private::object_property(self, "donationMetadata").map(IntentDonationMetadata::from_retained)
+        private::object_property(self, "donationMetadata")
+            .map(IntentDonationMetadata::from_retained)
     }
 
     pub fn set_donation_metadata(
@@ -165,7 +166,8 @@ impl Shortcut {
     }
 
     pub fn user_activity_type(&self) -> Option<String> {
-        self.user_activity().and_then(|activity| activity.activity_type())
+        self.user_activity()
+            .and_then(|activity| activity.activity_type())
     }
 }
 

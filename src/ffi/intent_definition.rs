@@ -12,10 +12,7 @@ extern "C" {
         pronunciation_hint: *const c_char,
         out_error: *mut *mut c_char,
     ) -> *mut c_void;
-    pub fn inx_image_create_named(
-        name: *const c_char,
-        out_error: *mut *mut c_char,
-    ) -> *mut c_void;
+    pub fn inx_image_create_named(name: *const c_char, out_error: *mut *mut c_char) -> *mut c_void;
     pub fn inx_image_create_with_data(
         bytes: *const u8,
         count: usize,

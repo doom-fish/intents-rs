@@ -23,8 +23,8 @@ pub mod in_vocabulary;
 pub mod intent;
 pub mod intent_definition;
 pub mod intent_donation;
-pub mod intent_extras;
 pub mod intent_extension;
+pub mod intent_extras;
 pub mod intent_handler;
 pub mod intent_resolution;
 pub mod intent_response;
@@ -68,11 +68,11 @@ pub use intent_definition::{
     SetTimerIntent, Shortcut, StartCallIntent,
 };
 pub use intent_donation::{IntentDonationMetadata, SendMessageIntentDonationMetadata};
+pub use intent_extension::IntentExtension;
 pub use intent_extras::{
     AnswerCallIntent, EditMessageIntent, GetReservationDetailsIntent, HangUpCallIntent,
     ShareFocusStatusIntent, UnsendMessagesIntent,
 };
-pub use intent_extension::IntentExtension;
 pub use intent_handler::{IntentHandlerProvider, StartCallIntentHandling};
 pub use intent_resolution::IntentResolutionResult;
 pub use intent_response::{
@@ -88,23 +88,21 @@ pub use reservation::{
     CurrencyAmount, DateComponentsRange, Flight, FlightReservation, LodgingReservation,
     PaymentMethod, PaymentMethodType, RecurrenceFrequency, RentalCar, RentalCarReservation,
     Reservation, ReservationAction, ReservationActionType, ReservationStatus,
-    RestaurantReservation, Seat, TicketedEvent, TicketedEventCategory,
-    TicketedEventReservation, TrainReservation, TrainTrip,
+    RestaurantReservation, Seat, TicketedEvent, TicketedEventCategory, TicketedEventReservation,
+    TrainReservation, TrainTrip,
 };
 pub use resolution_extras::{
-    BooleanResolutionResult, CallCapabilityResolutionResult,
-    CallDestinationTypeResolutionResult, CallRecordResolutionResult,
-    CallRecordTypeOptionsResolutionResult, CallRecordTypeResolutionResult,
-    CurrencyAmountResolutionResult, DateComponentsResolutionResult, DoubleResolutionResult,
-    EnergyResolutionResult, EnumResolutionResult, FileResolutionResult, IntegerResolutionResult,
-    LengthResolutionResult, MassResolutionResult, ObjectResolutionResult,
+    BooleanResolutionResult, CallCapabilityResolutionResult, CallDestinationTypeResolutionResult,
+    CallRecordResolutionResult, CallRecordTypeOptionsResolutionResult,
+    CallRecordTypeResolutionResult, CurrencyAmountResolutionResult, DateComponentsResolutionResult,
+    DoubleResolutionResult, EnergyResolutionResult, EnumResolutionResult, FileResolutionResult,
+    IntegerResolutionResult, LengthResolutionResult, MassResolutionResult, ObjectResolutionResult,
     OutgoingMessageTypeResolutionResult, PaymentMethodResolutionResult, PersonResolutionResult,
     PlacemarkResolutionResult, SendMessageRecipientResolutionResult,
     SendMessageRecipientUnsupportedReason, SpeedResolutionResult,
-    StartCallCallRecordToCallBackResolutionResult,
-    StartCallCallRecordToCallBackUnsupportedReason, StringResolutionResult,
-    TemperatureResolutionResult, TimeIntervalResolutionResult, URLResolutionResult,
-    VolumeResolutionResult,
+    StartCallCallRecordToCallBackResolutionResult, StartCallCallRecordToCallBackUnsupportedReason,
+    StringResolutionResult, TemperatureResolutionResult, TimeIntervalResolutionResult,
+    URLResolutionResult, VolumeResolutionResult,
 };
 pub use response_extras::{
     AnswerCallIntentResponse, AnswerCallIntentResponseCode, EditMessageIntentResponse,
@@ -150,11 +148,11 @@ pub mod prelude {
         SetTimerIntent, Shortcut, StartCallIntent,
     };
     pub use crate::intent_donation::{IntentDonationMetadata, SendMessageIntentDonationMetadata};
+    pub use crate::intent_extension::IntentExtension;
     pub use crate::intent_extras::{
         AnswerCallIntent, EditMessageIntent, GetReservationDetailsIntent, HangUpCallIntent,
         ShareFocusStatusIntent, UnsendMessagesIntent,
     };
-    pub use crate::intent_extension::IntentExtension;
     pub use crate::intent_handler::{IntentHandlerProvider, StartCallIntentHandling};
     pub use crate::intent_resolution::IntentResolutionResult;
     pub use crate::intent_response::{
@@ -180,10 +178,10 @@ pub mod prelude {
         CurrencyAmountResolutionResult, DateComponentsResolutionResult, DoubleResolutionResult,
         EnergyResolutionResult, EnumResolutionResult, FileResolutionResult,
         IntegerResolutionResult, LengthResolutionResult, MassResolutionResult,
-        ObjectResolutionResult, OutgoingMessageTypeResolutionResult,
-        PaymentMethodResolutionResult, PersonResolutionResult, PlacemarkResolutionResult,
-        SendMessageRecipientResolutionResult, SendMessageRecipientUnsupportedReason,
-        SpeedResolutionResult, StartCallCallRecordToCallBackResolutionResult,
+        ObjectResolutionResult, OutgoingMessageTypeResolutionResult, PaymentMethodResolutionResult,
+        PersonResolutionResult, PlacemarkResolutionResult, SendMessageRecipientResolutionResult,
+        SendMessageRecipientUnsupportedReason, SpeedResolutionResult,
+        StartCallCallRecordToCallBackResolutionResult,
         StartCallCallRecordToCallBackUnsupportedReason, StringResolutionResult,
         TemperatureResolutionResult, TimeIntervalResolutionResult, URLResolutionResult,
         VolumeResolutionResult,

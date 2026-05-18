@@ -60,7 +60,10 @@ macro_rules! objc_wrapper {
 
             #[allow(dead_code)]
             pub(crate) fn new_blank() -> Result<Self, IntentsError> {
-                Ok(Self::from_retained(private::create_blank_object(Self::OBJC_CLASS, $context)?))
+                Ok(Self::from_retained(private::create_blank_object(
+                    Self::OBJC_CLASS,
+                    $context,
+                )?))
             }
 
             pub fn class_name(&self) -> String {
@@ -124,19 +127,47 @@ objc_wrapper!(BoatTrip, "INBoatTrip", "boat trip");
 objc_wrapper!(BusReservation, "INBusReservation", "bus reservation");
 objc_wrapper!(BusTrip, "INBusTrip", "bus trip");
 objc_wrapper!(CurrencyAmount, "INCurrencyAmount", "currency amount");
-objc_wrapper!(DateComponentsRange, "INDateComponentsRange", "date components range");
+objc_wrapper!(
+    DateComponentsRange,
+    "INDateComponentsRange",
+    "date components range"
+);
 objc_wrapper!(Flight, "INFlight", "flight");
-objc_wrapper!(FlightReservation, "INFlightReservation", "flight reservation");
-objc_wrapper!(LodgingReservation, "INLodgingReservation", "lodging reservation");
+objc_wrapper!(
+    FlightReservation,
+    "INFlightReservation",
+    "flight reservation"
+);
+objc_wrapper!(
+    LodgingReservation,
+    "INLodgingReservation",
+    "lodging reservation"
+);
 objc_wrapper!(PaymentMethod, "INPaymentMethod", "payment method");
 objc_wrapper!(RentalCar, "INRentalCar", "rental car");
-objc_wrapper!(RentalCarReservation, "INRentalCarReservation", "rental car reservation");
+objc_wrapper!(
+    RentalCarReservation,
+    "INRentalCarReservation",
+    "rental car reservation"
+);
 objc_wrapper!(Reservation, "INReservation", "reservation");
-objc_wrapper!(ReservationAction, "INReservationAction", "reservation action");
-objc_wrapper!(RestaurantReservation, "INRestaurantReservation", "restaurant reservation");
+objc_wrapper!(
+    ReservationAction,
+    "INReservationAction",
+    "reservation action"
+);
+objc_wrapper!(
+    RestaurantReservation,
+    "INRestaurantReservation",
+    "restaurant reservation"
+);
 objc_wrapper!(Seat, "INSeat", "seat");
 objc_wrapper!(TicketedEvent, "INTicketedEvent", "ticketed event");
-objc_wrapper!(TicketedEventReservation, "INTicketedEventReservation", "ticketed event reservation");
+objc_wrapper!(
+    TicketedEventReservation,
+    "INTicketedEventReservation",
+    "ticketed event reservation"
+);
 objc_wrapper!(TrainReservation, "INTrainReservation", "train reservation");
 objc_wrapper!(TrainTrip, "INTrainTrip", "train trip");
 
@@ -146,7 +177,9 @@ impl Airline {
         iata_code: Option<&str>,
         icao_code: Option<&str>,
     ) -> Result<Self, IntentsError> {
-        let name = name.map(|value| private::cstring(value, "airline name")).transpose()?;
+        let name = name
+            .map(|value| private::cstring(value, "airline name"))
+            .transpose()?;
         let iata_code = iata_code
             .map(|value| private::cstring(value, "airline iata code"))
             .transpose()?;
@@ -156,7 +189,8 @@ impl Airline {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
             ffi::inx_airline_create(
-                name.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
+                name.as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
                 iata_code
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
@@ -192,7 +226,9 @@ impl Airport {
         iata_code: Option<&str>,
         icao_code: Option<&str>,
     ) -> Result<Self, IntentsError> {
-        let name = name.map(|value| private::cstring(value, "airport name")).transpose()?;
+        let name = name
+            .map(|value| private::cstring(value, "airport name"))
+            .transpose()?;
         let iata_code = iata_code
             .map(|value| private::cstring(value, "airport iata code"))
             .transpose()?;
@@ -202,7 +238,8 @@ impl Airport {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
             ffi::inx_airport_create(
-                name.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
+                name.as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
                 iata_code
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
@@ -240,8 +277,11 @@ impl AirportGate {
         let ptr = unsafe {
             ffi::inx_airport_gate_create(
                 airport.as_ptr(),
-                terminal.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
-                gate.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
+                terminal
+                    .as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
+                gate.as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
                 &mut error,
             )
         };
@@ -281,7 +321,8 @@ impl CurrencyAmount {
     pub fn new(amount: f64, currency_code: &str) -> Result<Self, IntentsError> {
         let currency_code = private::cstring(currency_code, "currency amount currency code")?;
         let mut error = std::ptr::null_mut();
-        let ptr = unsafe { ffi::inx_currency_amount_create(amount, currency_code.as_ptr(), &mut error) };
+        let ptr =
+            unsafe { ffi::inx_currency_amount_create(amount, currency_code.as_ptr(), &mut error) };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating currency amount") })
         } else {
@@ -363,7 +404,8 @@ impl PaymentMethod {
         let ptr = unsafe {
             ffi::inx_payment_method_create(
                 payment_method_type.raw_value(),
-                name.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
+                name.as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
                 identification_hint
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
@@ -413,8 +455,12 @@ impl RentalCar {
         let rental_car_type = rental_car_type
             .map(|value| private::cstring(value, "rental car type"))
             .transpose()?;
-        let make = make.map(|value| private::cstring(value, "rental car make")).transpose()?;
-        let model = model.map(|value| private::cstring(value, "rental car model")).transpose()?;
+        let make = make
+            .map(|value| private::cstring(value, "rental car make"))
+            .transpose()?;
+        let model = model
+            .map(|value| private::cstring(value, "rental car model"))
+            .transpose()?;
         let rental_car_description = rental_car_description
             .map(|value| private::cstring(value, "rental car description"))
             .transpose()?;
@@ -425,8 +471,11 @@ impl RentalCar {
                 rental_car_type
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                make.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
-                model.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
+                make.as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
+                model
+                    .as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
                 rental_car_description
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
@@ -491,8 +540,10 @@ impl ReservationAction {
     }
 
     pub fn action_type(&self) -> ReservationActionType {
-        private::integer_property(self, "type")
-            .map_or(ReservationActionType::Unknown, ReservationActionType::from_raw)
+        private::integer_property(self, "type").map_or(
+            ReservationActionType::Unknown,
+            ReservationActionType::from_raw,
+        )
     }
 
     pub fn valid_duration(&self) -> Option<DateComponentsRange> {
@@ -529,7 +580,9 @@ impl Seat {
                 seat_section
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                seat_row.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
+                seat_row
+                    .as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
                 seat_number
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
@@ -577,8 +630,10 @@ impl TicketedEvent {
     }
 
     pub fn category(&self) -> TicketedEventCategory {
-        private::integer_property(self, "category")
-            .map_or(TicketedEventCategory::Unknown, TicketedEventCategory::from_raw)
+        private::integer_property(self, "category").map_or(
+            TicketedEventCategory::Unknown,
+            TicketedEventCategory::from_raw,
+        )
     }
 
     pub fn name(&self) -> Option<String> {
@@ -609,7 +664,10 @@ mod tests {
 
         assert_eq!(airline.name().as_deref(), Some("Test Air"));
         assert_eq!(flight.flight_number().as_deref(), Some("TA1"));
-        assert_eq!(payment_method.payment_method_type(), PaymentMethodType::ApplePay);
+        assert_eq!(
+            payment_method.payment_method_type(),
+            PaymentMethodType::ApplePay
+        );
         assert_eq!(seat.seat_number().as_deref(), Some("A"));
         assert_eq!(event.category(), TicketedEventCategory::Movie);
         Ok(())

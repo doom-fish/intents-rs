@@ -5,10 +5,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut provider = IntentHandlerProvider::new()?;
     provider.register_handler("INIntent", "ExampleIntentHandler")?;
 
-    println!(
-        "handler: {:?}",
-        provider.handler_name_for_intent(&intent)?
-    );
+    println!("handler: {:?}", provider.handler_name_for_intent(&intent)?);
     println!("✅ intent handler OK");
     Ok(())
 }

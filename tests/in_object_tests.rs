@@ -9,7 +9,10 @@ fn object_and_speakable_roundtrip() -> Result<(), Box<dyn std::error::Error>> {
 
     assert_eq!(object.identifier().as_deref(), Some("demo-object"));
     assert_eq!(object.display_string().as_deref(), Some("Demo Object"));
-    assert_eq!(object.subtitle_string().as_deref(), Some("Example subtitle"));
+    assert_eq!(
+        object.subtitle_string().as_deref(),
+        Some("Example subtitle")
+    );
     assert_eq!(object.alternative_speakable_matches_count(), 1);
     Ok(())
 }

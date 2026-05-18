@@ -10,8 +10,13 @@ fn send_message_donation_metadata_roundtrip() -> Result<(), Box<dyn std::error::
 
     let mut intent = Intent::new()?;
     intent.set_donation_metadata(Some(&metadata))?;
-    let metadata = intent.donation_metadata().expect("metadata should be attached");
+    let metadata = intent
+        .donation_metadata()
+        .expect("metadata should be attached");
 
-    assert_eq!(metadata.class_name(), SendMessageIntentDonationMetadata::OBJC_CLASS);
+    assert_eq!(
+        metadata.class_name(),
+        SendMessageIntentDonationMetadata::OBJC_CLASS
+    );
     Ok(())
 }

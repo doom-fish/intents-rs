@@ -74,7 +74,10 @@ typed_intent_extra!(ShareFocusStatusIntent, "INShareFocusStatusIntent");
 typed_intent_extra!(UnsendMessagesIntent, "INUnsendMessagesIntent");
 
 impl AnswerCallIntent {
-    pub fn new(audio_route: CallAudioRoute, call_identifier: Option<&str>) -> Result<Self, IntentsError> {
+    pub fn new(
+        audio_route: CallAudioRoute,
+        call_identifier: Option<&str>,
+    ) -> Result<Self, IntentsError> {
         let call_identifier = call_identifier
             .map(|value| private::cstring(value, "answer-call call identifier"))
             .transpose()?;
@@ -96,7 +99,8 @@ impl AnswerCallIntent {
     }
 
     pub fn audio_route(&self) -> CallAudioRoute {
-        private::integer_property(self, "audioRoute").map_or(CallAudioRoute::Unknown, CallAudioRoute::from_raw)
+        private::integer_property(self, "audioRoute")
+            .map_or(CallAudioRoute::Unknown, CallAudioRoute::from_raw)
     }
 
     pub fn call_identifier(&self) -> Option<String> {
@@ -105,7 +109,10 @@ impl AnswerCallIntent {
 }
 
 impl EditMessageIntent {
-    pub fn new(message_identifier: Option<&str>, edited_content: Option<&str>) -> Result<Self, IntentsError> {
+    pub fn new(
+        message_identifier: Option<&str>,
+        edited_content: Option<&str>,
+    ) -> Result<Self, IntentsError> {
         let message_identifier = message_identifier
             .map(|value| private::cstring(value, "edit-message identifier"))
             .transpose()?;
@@ -231,11 +238,18 @@ impl UnsendMessagesIntent {
             .iter()
             .map(|value| private::cstring(value, "unsend-message identifier"))
             .collect::<Result<Vec<_>, _>>()?;
-        let ptrs = values.iter().map(|value| value.as_ptr()).collect::<Vec<_>>();
+        let ptrs = values
+            .iter()
+            .map(|value| value.as_ptr())
+            .collect::<Vec<_>>();
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
             ffi::inx_unsend_messages_intent_create(
-                if ptrs.is_empty() { std::ptr::null() } else { ptrs.as_ptr() },
+                if ptrs.is_empty() {
+                    std::ptr::null()
+                } else {
+                    ptrs.as_ptr()
+                },
                 ptrs.len(),
                 &mut error,
             )

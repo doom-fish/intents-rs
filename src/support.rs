@@ -28,7 +28,10 @@ macro_rules! objc_wrapper {
 
             #[allow(dead_code)]
             pub(crate) fn new_blank() -> Result<Self, IntentsError> {
-                Ok(Self::from_retained(private::create_blank_object(Self::OBJC_CLASS, $context)?))
+                Ok(Self::from_retained(private::create_blank_object(
+                    Self::OBJC_CLASS,
+                    $context,
+                )?))
             }
 
             pub fn class_name(&self) -> String {
@@ -72,7 +75,9 @@ pub fn deferred_localized_intents_string_from_table(
     let ptr = unsafe {
         ffi::inx_deferred_localized_intents_string_copy(
             format.as_ptr(),
-            table.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
+            table
+                .as_ref()
+                .map_or(std::ptr::null(), |value| value.as_ptr()),
         )
     };
     unsafe { private::take_string(ptr) }.ok_or_else(|| {
@@ -88,7 +93,8 @@ impl Placemark {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
             ffi::inx_placemark_create(
-                name.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
+                name.as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
                 &mut error,
             )
         };
@@ -113,8 +119,14 @@ impl ObjectSection {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
             ffi::inx_object_section_create(
-                title.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
-                if items.is_empty() { std::ptr::null() } else { items.as_ptr() },
+                title
+                    .as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
+                if items.is_empty() {
+                    std::ptr::null()
+                } else {
+                    items.as_ptr()
+                },
                 items.len(),
                 &mut error,
             )
@@ -141,7 +153,11 @@ impl ObjectCollection {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
             ffi::inx_object_collection_create_with_items(
-                if items.is_empty() { std::ptr::null() } else { items.as_ptr() },
+                if items.is_empty() {
+                    std::ptr::null()
+                } else {
+                    items.as_ptr()
+                },
                 items.len(),
                 &mut error,
             )
@@ -154,7 +170,10 @@ impl ObjectCollection {
     }
 
     pub fn new_with_sections(sections: &[&ObjectSection]) -> Result<Self, IntentsError> {
-        let sections = sections.iter().map(|section| section.as_ptr()).collect::<Vec<_>>();
+        let sections = sections
+            .iter()
+            .map(|section| section.as_ptr())
+            .collect::<Vec<_>>();
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
             ffi::inx_object_collection_create_with_sections(

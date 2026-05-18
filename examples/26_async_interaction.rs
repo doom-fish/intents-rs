@@ -6,7 +6,7 @@
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     pollster::block_on(async {
         use intents::async_api::AsyncInteraction;
-        use intents::{Interaction, Intent};
+        use intents::{Intent, Interaction};
 
         let intent = Intent::new()?;
         let interaction = Interaction::new(&intent, None)?;

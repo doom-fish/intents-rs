@@ -15,8 +15,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("site: {:?}", metadata.site_name());
     println!("reaction: {:?}", reaction.reaction_type());
-    println!("attachment has audio: {}", attachment.audio_message_file_present());
-    println!("sticker: {:?} {:?}", sticker.sticker_type(), sticker.emoji());
+    println!(
+        "attachment has audio: {}",
+        attachment.audio_message_file_present()
+    );
+    println!(
+        "sticker: {:?} {:?}",
+        sticker.sticker_type(),
+        sticker.emoji()
+    );
     println!("✅ message OK");
     Ok(())
 }

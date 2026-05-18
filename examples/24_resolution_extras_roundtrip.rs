@@ -9,7 +9,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         StartCallCallRecordToCallBackUnsupportedReason::NoMatchingCall,
     )?;
     let object = IntentObject::new(Some("id"), "Object")?;
-    let confirmation = IntentResolutionResult::confirmation_required_with_item_for_reason(Some(&object), 42)?;
+    let confirmation =
+        IntentResolutionResult::confirmation_required_with_item_for_reason(Some(&object), 42)?;
 
     println!("unsupported: {}", unsupported.class_name());
     println!("recipient: {}", recipient.class_name());

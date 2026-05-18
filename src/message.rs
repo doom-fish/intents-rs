@@ -57,7 +57,10 @@ macro_rules! objc_wrapper {
 
             #[allow(dead_code)]
             pub(crate) fn new_blank() -> Result<Self, IntentsError> {
-                Ok(Self::from_retained(private::create_blank_object(Self::OBJC_CLASS, $context)?))
+                Ok(Self::from_retained(private::create_blank_object(
+                    Self::OBJC_CLASS,
+                    $context,
+                )?))
             }
 
             pub fn class_name(&self) -> String {
@@ -91,9 +94,17 @@ simple_enum!(StickerType {
     Generic = 2,
 });
 
-objc_wrapper!(MessageLinkMetadata, "INMessageLinkMetadata", "message link metadata");
+objc_wrapper!(
+    MessageLinkMetadata,
+    "INMessageLinkMetadata",
+    "message link metadata"
+);
 objc_wrapper!(MessageReaction, "INMessageReaction", "message reaction");
-objc_wrapper!(SendMessageAttachment, "INSendMessageAttachment", "send-message attachment");
+objc_wrapper!(
+    SendMessageAttachment,
+    "INSendMessageAttachment",
+    "send-message attachment"
+);
 objc_wrapper!(Sticker, "INSticker", "sticker");
 
 impl MessageLinkMetadata {
@@ -122,13 +133,21 @@ impl MessageLinkMetadata {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
             ffi::inx_message_link_metadata_create(
-                site_name.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
-                summary.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
-                title.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
+                site_name
+                    .as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
+                summary
+                    .as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
+                title
+                    .as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
                 open_graph_type
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                link_url.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
+                link_url
+                    .as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
                 &mut error,
             )
         };
@@ -179,7 +198,9 @@ impl MessageReaction {
                 reaction_description
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                emoji.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
+                emoji
+                    .as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
                 &mut error,
             )
         };
@@ -231,7 +252,9 @@ impl Sticker {
         let ptr = unsafe {
             ffi::inx_sticker_create(
                 sticker_type.raw_value(),
-                emoji.as_ref().map_or(std::ptr::null(), |value| value.as_ptr()),
+                emoji
+                    .as_ref()
+                    .map_or(std::ptr::null(), |value| value.as_ptr()),
                 &mut error,
             )
         };
@@ -243,8 +266,7 @@ impl Sticker {
     }
 
     pub fn sticker_type(&self) -> StickerType {
-        private::integer_property(self, "type")
-            .map_or(StickerType::Unknown, StickerType::from_raw)
+        private::integer_property(self, "type").map_or(StickerType::Unknown, StickerType::from_raw)
     }
 
     pub fn emoji(&self) -> Option<String> {
@@ -258,7 +280,13 @@ mod tests {
 
     #[test]
     fn message_roundtrip() -> Result<(), Box<dyn std::error::Error>> {
-        let metadata = MessageLinkMetadata::new(Some("doom.fish"), Some("summary"), Some("title"), Some("article"), Some("https://doom.fish"))?;
+        let metadata = MessageLinkMetadata::new(
+            Some("doom.fish"),
+            Some("summary"),
+            Some("title"),
+            Some("article"),
+            Some("https://doom.fish"),
+        )?;
         let reaction = MessageReaction::new(MessageReactionType::Emoji, Some("Like"), Some("👍"))?;
         let sticker = Sticker::new(StickerType::Emoji, Some("😀"))?;
 

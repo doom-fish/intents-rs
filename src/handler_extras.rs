@@ -15,9 +15,15 @@ macro_rules! intent_handling_helper {
             pub fn new() -> Result<Self, IntentsError> {
                 let kind = private::cstring($kind, "intent handling helper kind")?;
                 let mut error = std::ptr::null_mut();
-                let ptr = unsafe { ffi::inx_intent_handling_helper_create(kind.as_ptr(), &mut error) };
+                let ptr =
+                    unsafe { ffi::inx_intent_handling_helper_create(kind.as_ptr(), &mut error) };
                 if ptr.is_null() {
-                    Err(unsafe { private::take_error(error, concat!("creating ", $kind, " intent handling helper")) })
+                    Err(unsafe {
+                        private::take_error(
+                            error,
+                            concat!("creating ", $kind, " intent handling helper"),
+                        )
+                    })
                 } else {
                     unsafe { Self::from_owned(ptr) }
                 }
@@ -25,7 +31,9 @@ macro_rules! intent_handling_helper {
 
             pub(crate) unsafe fn from_owned(ptr: *mut c_void) -> Result<Self, IntentsError> {
                 Ok(Self {
-                    raw: unsafe { RetainedObject::from_owned(ptr, concat!($kind, " intent handling helper")) }?,
+                    raw: unsafe {
+                        RetainedObject::from_owned(ptr, concat!($kind, " intent handling helper"))
+                    }?,
                 })
             }
 
@@ -35,31 +43,43 @@ macro_rules! intent_handling_helper {
 
             pub fn simulate_handle(&mut self) -> Result<(), IntentsError> {
                 let mut error = std::ptr::null_mut();
-                let ok = unsafe { ffi::inx_intent_handling_helper_simulate_handle(self.as_ptr(), &mut error) };
+                let ok = unsafe {
+                    ffi::inx_intent_handling_helper_simulate_handle(self.as_ptr(), &mut error)
+                };
                 if ok {
                     Ok(())
                 } else {
-                    Err(unsafe { private::take_error(error, concat!("simulating ", $kind, " handle")) })
+                    Err(unsafe {
+                        private::take_error(error, concat!("simulating ", $kind, " handle"))
+                    })
                 }
             }
 
             pub fn simulate_confirm(&mut self) -> Result<(), IntentsError> {
                 let mut error = std::ptr::null_mut();
-                let ok = unsafe { ffi::inx_intent_handling_helper_simulate_confirm(self.as_ptr(), &mut error) };
+                let ok = unsafe {
+                    ffi::inx_intent_handling_helper_simulate_confirm(self.as_ptr(), &mut error)
+                };
                 if ok {
                     Ok(())
                 } else {
-                    Err(unsafe { private::take_error(error, concat!("simulating ", $kind, " confirm")) })
+                    Err(unsafe {
+                        private::take_error(error, concat!("simulating ", $kind, " confirm"))
+                    })
                 }
             }
 
             pub fn simulate_resolve(&mut self) -> Result<(), IntentsError> {
                 let mut error = std::ptr::null_mut();
-                let ok = unsafe { ffi::inx_intent_handling_helper_simulate_resolve(self.as_ptr(), &mut error) };
+                let ok = unsafe {
+                    ffi::inx_intent_handling_helper_simulate_resolve(self.as_ptr(), &mut error)
+                };
                 if ok {
                     Ok(())
                 } else {
-                    Err(unsafe { private::take_error(error, concat!("simulating ", $kind, " resolve")) })
+                    Err(unsafe {
+                        private::take_error(error, concat!("simulating ", $kind, " resolve"))
+                    })
                 }
             }
 

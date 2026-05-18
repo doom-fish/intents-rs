@@ -50,8 +50,12 @@ macro_rules! typed_response_extra {
                 Self::try_from(IntentResponse::from_retained(raw))
             }
 
-            pub fn new(code: $code_ty, user_activity: Option<&UserActivity>) -> Result<Self, IntentsError> {
-                let class_name = private::cstring(Self::OBJC_CLASS, "intent response subclass class name")?;
+            pub fn new(
+                code: $code_ty,
+                user_activity: Option<&UserActivity>,
+            ) -> Result<Self, IntentsError> {
+                let class_name =
+                    private::cstring(Self::OBJC_CLASS, "intent response subclass class name")?;
                 let mut error = std::ptr::null_mut();
                 let ptr = unsafe {
                     ffi::inx_intent_response_subclass_create(
@@ -185,12 +189,36 @@ simple_enum!(UnsendMessagesIntentResponseCode {
     FailureRequiringInAppAuthentication = 11,
 });
 
-typed_response_extra!(AnswerCallIntentResponse, "INAnswerCallIntentResponse", AnswerCallIntentResponseCode);
-typed_response_extra!(EditMessageIntentResponse, "INEditMessageIntentResponse", EditMessageIntentResponseCode);
-typed_response_extra!(GetReservationDetailsIntentResponse, "INGetReservationDetailsIntentResponse", GetReservationDetailsIntentResponseCode);
-typed_response_extra!(HangUpCallIntentResponse, "INHangUpCallIntentResponse", HangUpCallIntentResponseCode);
-typed_response_extra!(ShareFocusStatusIntentResponse, "INShareFocusStatusIntentResponse", ShareFocusStatusIntentResponseCode);
-typed_response_extra!(UnsendMessagesIntentResponse, "INUnsendMessagesIntentResponse", UnsendMessagesIntentResponseCode);
+typed_response_extra!(
+    AnswerCallIntentResponse,
+    "INAnswerCallIntentResponse",
+    AnswerCallIntentResponseCode
+);
+typed_response_extra!(
+    EditMessageIntentResponse,
+    "INEditMessageIntentResponse",
+    EditMessageIntentResponseCode
+);
+typed_response_extra!(
+    GetReservationDetailsIntentResponse,
+    "INGetReservationDetailsIntentResponse",
+    GetReservationDetailsIntentResponseCode
+);
+typed_response_extra!(
+    HangUpCallIntentResponse,
+    "INHangUpCallIntentResponse",
+    HangUpCallIntentResponseCode
+);
+typed_response_extra!(
+    ShareFocusStatusIntentResponse,
+    "INShareFocusStatusIntentResponse",
+    ShareFocusStatusIntentResponseCode
+);
+typed_response_extra!(
+    UnsendMessagesIntentResponse,
+    "INUnsendMessagesIntentResponse",
+    UnsendMessagesIntentResponseCode
+);
 
 impl AnswerCallIntentResponse {
     pub fn call_records_count(&self) -> usize {
@@ -227,17 +255,37 @@ mod tests {
         let mut activity = UserActivity::new("com.doomfish.intents-rs.response-extras")?;
         activity.set_suggested_invocation_phrase("Reply now")?;
 
-        let answer = AnswerCallIntentResponse::new(AnswerCallIntentResponseCode::Ready, Some(&activity))?;
-        let edit = EditMessageIntentResponse::new(EditMessageIntentResponseCode::Success, Some(&activity))?;
-        let reservation = GetReservationDetailsIntentResponse::new(GetReservationDetailsIntentResponseCode::Ready, Some(&activity))?;
-        let hang = HangUpCallIntentResponse::new(HangUpCallIntentResponseCode::Success, Some(&activity))?;
-        let focus = ShareFocusStatusIntentResponse::new(ShareFocusStatusIntentResponseCode::Ready, Some(&activity))?;
-        let unsend = UnsendMessagesIntentResponse::new(UnsendMessagesIntentResponseCode::InProgress, Some(&activity))?;
+        let answer =
+            AnswerCallIntentResponse::new(AnswerCallIntentResponseCode::Ready, Some(&activity))?;
+        let edit = EditMessageIntentResponse::new(
+            EditMessageIntentResponseCode::Success,
+            Some(&activity),
+        )?;
+        let reservation = GetReservationDetailsIntentResponse::new(
+            GetReservationDetailsIntentResponseCode::Ready,
+            Some(&activity),
+        )?;
+        let hang =
+            HangUpCallIntentResponse::new(HangUpCallIntentResponseCode::Success, Some(&activity))?;
+        let focus = ShareFocusStatusIntentResponse::new(
+            ShareFocusStatusIntentResponseCode::Ready,
+            Some(&activity),
+        )?;
+        let unsend = UnsendMessagesIntentResponse::new(
+            UnsendMessagesIntentResponseCode::InProgress,
+            Some(&activity),
+        )?;
 
-        assert_eq!(activity.suggested_invocation_phrase().as_deref(), Some("Reply now"));
+        assert_eq!(
+            activity.suggested_invocation_phrase().as_deref(),
+            Some("Reply now")
+        );
         assert_eq!(answer.code(), AnswerCallIntentResponseCode::Ready);
         assert_eq!(edit.code(), EditMessageIntentResponseCode::Success);
-        assert_eq!(reservation.code(), GetReservationDetailsIntentResponseCode::Ready);
+        assert_eq!(
+            reservation.code(),
+            GetReservationDetailsIntentResponseCode::Ready
+        );
         assert_eq!(hang.code(), HangUpCallIntentResponseCode::Success);
         assert_eq!(focus.code(), ShareFocusStatusIntentResponseCode::Ready);
         assert_eq!(unsend.code(), UnsendMessagesIntentResponseCode::InProgress);

@@ -16,7 +16,10 @@ fn reservation_roundtrip() -> Result<(), Box<dyn std::error::Error>> {
 
     assert_eq!(airline.name().as_deref(), Some("Test Air"));
     assert_eq!(flight.flight_number().as_deref(), Some("TA1"));
-    assert_eq!(payment_method.payment_method_type(), PaymentMethodType::ApplePay);
+    assert_eq!(
+        payment_method.payment_method_type(),
+        PaymentMethodType::ApplePay
+    );
     assert_eq!(action.action_type(), ReservationActionType::CheckIn);
     assert_eq!(seat.seat_number().as_deref(), Some("A"));
     assert_eq!(event.category(), TicketedEventCategory::Movie);
