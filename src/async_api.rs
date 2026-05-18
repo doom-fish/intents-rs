@@ -82,6 +82,29 @@ unsafe extern "C" fn void_completion_cb(ctx: *mut c_void, error: *const c_char) 
     });
 }
 
+struct OpaqueCompletionFuture<T>(AsyncCompletionFuture<T>);
+
+impl<T> From<AsyncCompletionFuture<T>> for OpaqueCompletionFuture<T> {
+    fn from(inner: AsyncCompletionFuture<T>) -> Self {
+        Self(inner)
+    }
+}
+
+impl<T> std::fmt::Debug for OpaqueCompletionFuture<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AsyncCompletionFuture")
+            .finish_non_exhaustive()
+    }
+}
+
+impl<T> Future for OpaqueCompletionFuture<T> {
+    type Output = Result<T, String>;
+
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        Pin::new(&mut self.0).poll(cx)
+    }
+}
+
 // ============================================================================
 // INInteraction.donate(completion:)
 // ============================================================================
@@ -90,15 +113,9 @@ unsafe extern "C" fn void_completion_cb(ctx: *mut c_void, error: *const c_char) 
 ///
 /// Resolves to `Ok(())` when the donation is acknowledged by Siri,
 /// or `Err(IntentsError)` on failure.
+#[derive(Debug)]
 pub struct InteractionDonateFuture {
-    inner: AsyncCompletionFuture<()>,
-}
-
-impl std::fmt::Debug for InteractionDonateFuture {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("InteractionDonateFuture")
-            .finish_non_exhaustive()
-    }
+    inner: OpaqueCompletionFuture<()>,
 }
 
 impl Future for InteractionDonateFuture {
@@ -119,15 +136,9 @@ impl Future for InteractionDonateFuture {
 /// [`AsyncInteraction::delete_by_group`].
 ///
 /// Resolves to `Ok(())` on success or `Err(IntentsError)` on failure.
+#[derive(Debug)]
 pub struct InteractionDeleteFuture {
-    inner: AsyncCompletionFuture<()>,
-}
-
-impl std::fmt::Debug for InteractionDeleteFuture {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("InteractionDeleteFuture")
-            .finish_non_exhaustive()
-    }
+    inner: OpaqueCompletionFuture<()>,
 }
 
 impl Future for InteractionDeleteFuture {
@@ -147,15 +158,9 @@ impl Future for InteractionDeleteFuture {
 /// Future returned by [`AsyncInteraction::delete_all`].
 ///
 /// Resolves to `Ok(())` on success or `Err(IntentsError)` on failure.
+#[derive(Debug)]
 pub struct InteractionDeleteAllFuture {
-    inner: AsyncCompletionFuture<()>,
-}
-
-impl std::fmt::Debug for InteractionDeleteAllFuture {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("InteractionDeleteAllFuture")
-            .finish_non_exhaustive()
-    }
+    inner: OpaqueCompletionFuture<()>,
 }
 
 impl Future for InteractionDeleteAllFuture {
@@ -191,7 +196,9 @@ impl AsyncInteraction {
     pub fn donate(interaction: &Interaction) -> InteractionDonateFuture {
         let (future, ctx) = AsyncCompletion::create();
         unsafe { ffi::inx_interaction_donate(interaction.as_ptr(), void_completion_cb, ctx) };
-        InteractionDonateFuture { inner: future }
+        InteractionDonateFuture {
+            inner: future.into(),
+        }
     }
 
     /// Asynchronously delete interactions by their identifiers.
@@ -221,7 +228,9 @@ impl AsyncInteraction {
         unsafe {
             ffi::inx_interaction_delete_by_identifiers(ptr, ptrs.len(), void_completion_cb, ctx);
         }
-        Ok(InteractionDeleteFuture { inner: future })
+        Ok(InteractionDeleteFuture {
+            inner: future.into(),
+        })
     }
 
     /// Asynchronously delete interactions belonging to a group identifier.
@@ -244,7 +253,9 @@ impl AsyncInteraction {
                 ctx,
             );
         }
-        Ok(InteractionDeleteFuture { inner: future })
+        Ok(InteractionDeleteFuture {
+            inner: future.into(),
+        })
     }
 
     /// Asynchronously delete all donated interactions.
@@ -253,7 +264,9 @@ impl AsyncInteraction {
     pub fn delete_all() -> InteractionDeleteAllFuture {
         let (future, ctx) = AsyncCompletion::create();
         unsafe { ffi::inx_interaction_delete_all(void_completion_cb, ctx) };
-        InteractionDeleteAllFuture { inner: future }
+        InteractionDeleteAllFuture {
+            inner: future.into(),
+        }
     }
 }
 
@@ -280,15 +293,9 @@ unsafe extern "C" fn siri_auth_cb(ctx: *mut c_void, status: i64, error: *const c
 ///
 /// Resolves to the resulting [`SiriAuthorizationStatus`] on success, or
 /// `Err(IntentsError)` if the system couldn't complete the request.
+#[derive(Debug)]
 pub struct SiriAuthorizationFuture {
-    inner: AsyncCompletionFuture<SiriAuthorizationStatus>,
-}
-
-impl std::fmt::Debug for SiriAuthorizationFuture {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("SiriAuthorizationFuture")
-            .finish_non_exhaustive()
-    }
+    inner: OpaqueCompletionFuture<SiriAuthorizationStatus>,
 }
 
 impl Future for SiriAuthorizationFuture {
@@ -321,7 +328,9 @@ impl AsyncPreferences {
     pub fn request_siri_authorization() -> SiriAuthorizationFuture {
         let (future, ctx) = AsyncCompletion::create();
         unsafe { ffi::inx_preferences_request_siri_authorization(siri_auth_cb, ctx) };
-        SiriAuthorizationFuture { inner: future }
+        SiriAuthorizationFuture {
+            inner: future.into(),
+        }
     }
 }
 
@@ -365,15 +374,9 @@ unsafe extern "C" fn all_shortcuts_cb(
 ///
 /// Resolves to a `Vec<VoiceShortcut>` (possibly empty) on success, or
 /// `Err(IntentsError)` on failure.
+#[derive(Debug)]
 pub struct AllVoiceShortcutsFuture {
-    inner: AsyncCompletionFuture<Vec<VoiceShortcut>>,
-}
-
-impl std::fmt::Debug for AllVoiceShortcutsFuture {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("AllVoiceShortcutsFuture")
-            .finish_non_exhaustive()
-    }
+    inner: OpaqueCompletionFuture<Vec<VoiceShortcut>>,
 }
 
 impl Future for AllVoiceShortcutsFuture {
@@ -421,15 +424,9 @@ unsafe extern "C" fn voice_shortcut_cb(
 ///
 /// Resolves to `Ok(Some(shortcut))` when found, `Ok(None)` when no matching
 /// shortcut exists, or `Err(IntentsError)` on failure.
+#[derive(Debug)]
 pub struct VoiceShortcutFuture {
-    inner: AsyncCompletionFuture<Option<VoiceShortcut>>,
-}
-
-impl std::fmt::Debug for VoiceShortcutFuture {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("VoiceShortcutFuture")
-            .finish_non_exhaustive()
-    }
+    inner: OpaqueCompletionFuture<Option<VoiceShortcut>>,
 }
 
 impl Future for VoiceShortcutFuture {
@@ -463,7 +460,9 @@ impl AsyncVoiceShortcutCenter {
     pub fn get_all(center: &VoiceShortcutCenter) -> AllVoiceShortcutsFuture {
         let (future, ctx) = AsyncCompletion::create();
         unsafe { ffi::inx_voice_shortcut_center_get_all(center.as_ptr(), all_shortcuts_cb, ctx) };
-        AllVoiceShortcutsFuture { inner: future }
+        AllVoiceShortcutsFuture {
+            inner: future.into(),
+        }
     }
 
     /// Asynchronously look up a voice shortcut by UUID string.
@@ -490,6 +489,8 @@ impl AsyncVoiceShortcutCenter {
                 ctx,
             );
         }
-        Ok(VoiceShortcutFuture { inner: future })
+        Ok(VoiceShortcutFuture {
+            inner: future.into(),
+        })
     }
 }

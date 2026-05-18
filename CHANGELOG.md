@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.2] - 2026-05-18
+
+### Changed
+
+- Derived `Debug` for the six public async future wrappers (`InteractionDonateFuture`, `InteractionDeleteFuture`, `InteractionDeleteAllFuture`, `SiriAuthorizationFuture`, `AllVoiceShortcutsFuture`, and `VoiceShortcutFuture`) by routing their private completion state through an internal opaque helper, bringing every public struct in `intents` onto `#[derive(Debug)]`.
+
 ## [0.3.1] - 2026-05-17
 
 ### Fixed
