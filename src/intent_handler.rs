@@ -5,12 +5,14 @@ use crate::ffi;
 use crate::intent_definition::Intent;
 use crate::private::{self, RawObject, RetainedObject};
 
+/// Wraps `INIntentHandlerProviding`.
 #[derive(Debug)]
 pub struct IntentHandlerProvider {
     raw: RetainedObject,
 }
 
 impl IntentHandlerProvider {
+    /// Creates a `INIntentHandlerProviding` wrapper.
     pub fn new() -> Result<Self, IntentsError> {
         let ptr = unsafe { ffi::inx_intent_handler_provider_create() };
         unsafe { Self::from_owned(ptr) }
@@ -22,10 +24,12 @@ impl IntentHandlerProvider {
         })
     }
 
+    /// Returns the Objective-C class name for this `INIntentHandlerProviding` instance.
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
 
+    /// Returns the corresponding value from `INIntentHandlerProviding`.
     pub fn register_handler(
         &mut self,
         intent_class_name: &str,
@@ -49,6 +53,7 @@ impl IntentHandlerProvider {
         }
     }
 
+    /// Wraps the corresponding method on `INIntentHandlerProviding`.
     pub fn handler_name_for_intent(&self, intent: &Intent) -> Result<Option<String>, IntentsError> {
         let ptr = unsafe {
             ffi::inx_intent_handler_provider_copy_handler_name_for_intent(
@@ -66,12 +71,14 @@ impl RawObject for IntentHandlerProvider {
     }
 }
 
+/// Wraps `INStartCallIntentHandling`.
 #[derive(Debug)]
 pub struct StartCallIntentHandling {
     raw: RetainedObject,
 }
 
 impl StartCallIntentHandling {
+    /// Creates a `INStartCallIntentHandling` wrapper.
     pub fn new() -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe { ffi::inx_start_call_intent_handling_create(&mut error) };
@@ -88,10 +95,12 @@ impl StartCallIntentHandling {
         })
     }
 
+    /// Returns the Objective-C class name for this `INStartCallIntentHandling` instance.
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
 
+    /// Exercises the corresponding `INStartCallIntentHandling` handling path in the helper.
     pub fn simulate_handle(&mut self) -> Result<(), IntentsError> {
         let mut error = std::ptr::null_mut();
         let ok = unsafe {
@@ -104,6 +113,7 @@ impl StartCallIntentHandling {
         }
     }
 
+    /// Exercises the corresponding `INStartCallIntentHandling` handling path in the helper.
     pub fn simulate_confirm(&mut self) -> Result<(), IntentsError> {
         let mut error = std::ptr::null_mut();
         let ok = unsafe {
@@ -116,18 +126,21 @@ impl StartCallIntentHandling {
         }
     }
 
+    /// Returns the number of corresponding values exposed by `INStartCallIntentHandling`.
     pub fn handle_call_count(&self) -> usize {
         private::integer_property(self, "handleCallCount")
             .and_then(|value| usize::try_from(value).ok())
             .unwrap_or_default()
     }
 
+    /// Returns the number of corresponding values exposed by `INStartCallIntentHandling`.
     pub fn confirm_call_count(&self) -> usize {
         private::integer_property(self, "confirmCallCount")
             .and_then(|value| usize::try_from(value).ok())
             .unwrap_or_default()
     }
 
+    /// Returns the corresponding value from `INStartCallIntentHandling`.
     pub fn last_intent_class_name(&self) -> Option<String> {
         private::string_property(self, "lastIntentClassName")
     }

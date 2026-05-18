@@ -7,6 +7,7 @@ use std::ptr::NonNull;
 use crate::error::IntentsError;
 use crate::ffi;
 
+/// Owns a retained Objective-C object used by the Intents.framework bridge.
 #[derive(Debug)]
 pub struct RetainedObject(NonNull<c_void>);
 
@@ -26,6 +27,7 @@ impl RetainedObject {
             .ok_or_else(|| IntentsError::framework(format!("{context} returned a null object")))
     }
 
+    /// Returns the raw Objective-C pointer for this retained Intents object.
     pub const fn as_ptr(&self) -> *mut c_void {
         self.0.as_ptr()
     }
@@ -37,7 +39,9 @@ impl Drop for RetainedObject {
     }
 }
 
+/// Trait for wrapper types backed by Objective-C Intents objects.
 pub trait RawObject {
+    /// Returns the raw Objective-C pointer for this wrapped Intents object.
     fn as_ptr(&self) -> *mut c_void;
 }
 
@@ -47,6 +51,7 @@ impl RawObject for RetainedObject {
     }
 }
 
+/// Converts a Rust string into a C string for Intents.framework bridge calls.
 pub fn cstring(value: &str, context: &str) -> Result<CString, IntentsError> {
     CString::new(value).map_err(|error| {
         IntentsError::invalid_argument(format!("{context} contains a NUL byte: {error}"))
@@ -83,21 +88,25 @@ pub unsafe fn take_error(ptr: *mut c_char, context: &'static str) -> IntentsErro
     )
 }
 
+/// Returns the Objective-C class name for a wrapped Intents object.
 pub fn class_name(object: &impl RawObject) -> String {
     let ptr = unsafe { ffi::inx_object_class_name(object.as_ptr()) };
     unsafe { take_string(ptr) }.unwrap_or_else(|| "<unknown>".to_string())
 }
 
+/// Reads an Objective-C string property from a wrapped Intents object.
 pub fn string_property(object: &impl RawObject, key: &str) -> Option<String> {
     let key = property_key(key);
     let ptr = unsafe { ffi::inx_object_copy_string_property(object.as_ptr(), key.as_ptr()) };
     unsafe { take_string(ptr) }
 }
 
+/// Wraps Objective-C equality checks for two wrapped Intents objects.
 pub fn object_is_equal(lhs: &impl RawObject, rhs: &impl RawObject) -> bool {
     unsafe { ffi::inx_object_is_equal(lhs.as_ptr(), rhs.as_ptr()) }
 }
 
+/// Reads an Objective-C object property from a wrapped Intents object.
 pub fn object_property(object: &impl RawObject, key: &str) -> Option<RetainedObject> {
     let key = property_key(key);
     let ptr = unsafe { ffi::inx_object_copy_object_property(object.as_ptr(), key.as_ptr()) };
@@ -107,6 +116,7 @@ pub fn object_property(object: &impl RawObject, key: &str) -> Option<RetainedObj
     unsafe { RetainedObject::from_owned(ptr, "object property") }.ok()
 }
 
+/// Reads an Objective-C string-array property from a wrapped Intents object.
 pub fn string_array_property(
     object: &impl RawObject,
     key: &str,
@@ -127,6 +137,7 @@ pub fn string_array_property(
     Ok(Some(values))
 }
 
+/// Reads an Objective-C integer property from a wrapped Intents object.
 pub fn integer_property(object: &impl RawObject, key: &str) -> Option<i64> {
     let key = property_key(key);
     let mut present = false;
@@ -136,6 +147,7 @@ pub fn integer_property(object: &impl RawObject, key: &str) -> Option<i64> {
     present.then_some(value)
 }
 
+/// Reads an Objective-C floating-point property from a wrapped Intents object.
 pub fn double_property(object: &impl RawObject, key: &str) -> Option<f64> {
     let key = property_key(key);
     let mut present = false;
@@ -144,6 +156,7 @@ pub fn double_property(object: &impl RawObject, key: &str) -> Option<f64> {
     present.then_some(value)
 }
 
+/// Reads an Objective-C boolean property from a wrapped Intents object.
 pub fn bool_property(object: &impl RawObject, key: &str) -> Option<bool> {
     let key = property_key(key);
     let mut present = false;
@@ -152,6 +165,7 @@ pub fn bool_property(object: &impl RawObject, key: &str) -> Option<bool> {
     present.then_some(value)
 }
 
+/// Reads the count of an Objective-C array property from a wrapped Intents object.
 pub fn array_count_property(object: &impl RawObject, key: &str) -> Option<usize> {
     let key = property_key(key);
     let mut present = false;
@@ -161,6 +175,7 @@ pub fn array_count_property(object: &impl RawObject, key: &str) -> Option<usize>
     present.then_some(value)
 }
 
+/// Reads an Objective-C date-interval property from a wrapped Intents object.
 pub fn date_interval_property(object: &impl RawObject, key: &str) -> Option<(f64, f64)> {
     let key = property_key(key);
     let mut start = 0.0;
@@ -178,6 +193,7 @@ pub fn date_interval_property(object: &impl RawObject, key: &str) -> Option<(f64
     (ok && present).then_some((start, end))
 }
 
+/// Writes an Objective-C string property on a wrapped Intents object.
 pub fn set_string_property(
     object: &impl RawObject,
     key: &str,
@@ -198,6 +214,7 @@ pub fn set_string_property(
     }
 }
 
+/// Creates an empty Objective-C object for the given Intents.framework class.
 pub fn create_blank_object(
     class_name: &str,
     context: &'static str,
@@ -212,6 +229,7 @@ pub fn create_blank_object(
     }
 }
 
+/// Checks whether an Objective-C Intents class conforms to a protocol.
 pub fn class_conforms_to_protocol(
     class_name: &str,
     protocol_name: &str,
@@ -221,6 +239,7 @@ pub fn class_conforms_to_protocol(
     Ok(unsafe { ffi::inx_class_conforms_to_protocol(class_name.as_ptr(), protocol_name.as_ptr()) })
 }
 
+/// Writes an Objective-C integer property on a wrapped Intents object.
 pub fn set_integer_property(
     object: &impl RawObject,
     key: &str,
@@ -238,6 +257,7 @@ pub fn set_integer_property(
     }
 }
 
+/// Writes an Objective-C boolean property on a wrapped Intents object.
 pub fn set_bool_property(
     object: &impl RawObject,
     key: &str,
@@ -255,6 +275,7 @@ pub fn set_bool_property(
     }
 }
 
+/// Writes an Objective-C object property on a wrapped Intents object.
 pub fn set_object_property(
     object: &impl RawObject,
     key: &str,
@@ -278,6 +299,7 @@ pub fn set_object_property(
     }
 }
 
+/// Writes an Objective-C date-interval property on a wrapped Intents object.
 pub fn set_date_interval_property(
     object: &impl RawObject,
     key: &str,
@@ -298,6 +320,7 @@ pub fn set_date_interval_property(
     }
 }
 
+/// Writes an Objective-C object-array property on a wrapped Intents object.
 pub fn set_object_array_property(
     object: &impl RawObject,
     key: &str,

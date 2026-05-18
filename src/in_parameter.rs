@@ -4,12 +4,14 @@ use crate::error::IntentsError;
 use crate::ffi;
 use crate::private::{self, RawObject, RetainedObject};
 
+/// Wraps `INParameter`.
 #[derive(Debug)]
 pub struct IntentParameter {
     raw: RetainedObject,
 }
 
 impl IntentParameter {
+    /// Creates a `INParameter` wrapper.
     pub fn new(intent_class_name: &str, key_path: &str) -> Result<Self, IntentsError> {
         let intent_class_name = private::cstring(intent_class_name, "intent class name")?;
         let key_path = private::cstring(key_path, "intent parameter key path")?;
@@ -30,22 +32,27 @@ impl IntentParameter {
         })
     }
 
+    /// Returns the Objective-C class name for this `INParameter` instance.
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
 
+    /// Returns the corresponding value from `INParameter`.
     pub fn parameter_class_name(&self) -> Option<String> {
         private::string_property(self, "parameterClass")
     }
 
+    /// Returns the corresponding value from `INParameter`.
     pub fn parameter_key_path(&self) -> Option<String> {
         private::string_property(self, "parameterKeyPath")
     }
 
+    /// Returns the corresponding boolean value from `INParameter`.
     pub fn is_equal_to_parameter(&self, other: &Self) -> bool {
         private::object_is_equal(self, other)
     }
 
+    /// Sets the corresponding `index_for_sub_key_path` value on `INParameter`.
     pub fn set_index_for_sub_key_path(
         &mut self,
         index: usize,
@@ -65,6 +72,7 @@ impl IntentParameter {
         }
     }
 
+    /// Returns the corresponding value from `INParameter`.
     pub fn index_for_sub_key_path(
         &self,
         sub_key_path: &str,

@@ -4,6 +4,7 @@ use crate::error::IntentsError;
 use crate::ffi;
 use crate::private::{self, RawObject, RetainedObject};
 
+/// Wraps `INImage`.
 #[derive(Debug)]
 pub struct Image {
     raw: RetainedObject,
@@ -20,6 +21,7 @@ impl Image {
         Self { raw }
     }
 
+    /// Creates a `INImage` wrapper using the corresponding initializer.
     pub fn named(name: &str) -> Result<Self, IntentsError> {
         let name = private::cstring(name, "image name")?;
         let mut error = std::ptr::null_mut();
@@ -31,6 +33,7 @@ impl Image {
         }
     }
 
+    /// Creates a `INImage` wrapper using the corresponding initializer.
     pub fn from_data(data: &[u8]) -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe { ffi::inx_image_create_with_data(data.as_ptr(), data.len(), &mut error) };
@@ -41,6 +44,7 @@ impl Image {
         }
     }
 
+    /// Creates a `INImage` wrapper using the corresponding initializer.
     pub fn from_url(url: &str) -> Result<Self, IntentsError> {
         let url = private::cstring(url, "image URL")?;
         let mut error = std::ptr::null_mut();
@@ -52,6 +56,7 @@ impl Image {
         }
     }
 
+    /// Returns the Objective-C class name for this `INImage` instance.
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
@@ -63,6 +68,7 @@ impl RawObject for Image {
     }
 }
 
+/// Wraps `INSpeakableString`.
 #[derive(Debug)]
 pub struct SpeakableString {
     raw: RetainedObject,
@@ -75,6 +81,7 @@ impl SpeakableString {
         })
     }
 
+    /// Creates a `INSpeakableString` wrapper.
     pub fn new(
         vocabulary_identifier: &str,
         spoken_phrase: &str,
@@ -105,18 +112,22 @@ impl SpeakableString {
         }
     }
 
+    /// Returns the Objective-C class name for this `INSpeakableString` instance.
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
 
+    /// Returns the corresponding value from `INSpeakableString`.
     pub fn vocabulary_identifier(&self) -> Option<String> {
         private::string_property(self, "vocabularyIdentifier")
     }
 
+    /// Returns the corresponding value from `INSpeakableString`.
     pub fn spoken_phrase(&self) -> Option<String> {
         private::string_property(self, "spokenPhrase")
     }
 
+    /// Returns the corresponding value from `INSpeakableString`.
     pub fn pronunciation_hint(&self) -> Option<String> {
         private::string_property(self, "pronunciationHint")
     }
@@ -128,7 +139,9 @@ impl RawObject for SpeakableString {
     }
 }
 
+/// Trait for values that can be passed to Intents.framework APIs expecting `INSpeakable`-compatible objects.
 pub trait Speakable {
+    /// Returns the raw Objective-C pointer for this wrapped Intents object.
     fn as_ptr(&self) -> *mut c_void;
 }
 
@@ -138,6 +151,7 @@ impl Speakable for SpeakableString {
     }
 }
 
+/// Wraps `INObject`.
 #[derive(Debug)]
 pub struct IntentObject {
     raw: RetainedObject,
@@ -150,10 +164,12 @@ impl IntentObject {
         })
     }
 
+    /// Creates a `INObject` wrapper.
     pub fn new(identifier: Option<&str>, display_string: &str) -> Result<Self, IntentsError> {
         Self::with_details(identifier, display_string, None, None, None)
     }
 
+    /// Returns the corresponding value from `INObject`.
     pub fn with_details(
         identifier: Option<&str>,
         display_string: &str,
@@ -196,42 +212,52 @@ impl IntentObject {
         }
     }
 
+    /// Returns the Objective-C class name for this `INObject` instance.
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
 
+    /// Returns the corresponding value from `INObject`.
     pub fn identifier(&self) -> Option<String> {
         private::string_property(self, "identifier")
     }
 
+    /// Returns the corresponding value from `INObject`.
     pub fn display_string(&self) -> Option<String> {
         private::string_property(self, "displayString")
     }
 
+    /// Returns the corresponding value from `INObject`.
     pub fn pronunciation_hint(&self) -> Option<String> {
         private::string_property(self, "pronunciationHint")
     }
 
+    /// Returns the corresponding value from `INObject`.
     pub fn subtitle_string(&self) -> Option<String> {
         private::string_property(self, "subtitleString")
     }
 
+    /// Sets the corresponding `subtitle_string` value on `INObject`.
     pub fn set_subtitle_string(&mut self, subtitle_string: &str) -> Result<(), IntentsError> {
         private::set_string_property(self, "subtitleString", subtitle_string)
     }
 
+    /// Returns the corresponding value from `INObject`.
     pub fn display_image(&self) -> Option<Image> {
         private::object_property(self, "displayImage").map(Image::from_retained)
     }
 
+    /// Sets the corresponding `display_image` value on `INObject`.
     pub fn set_display_image(&mut self, display_image: Option<&Image>) -> Result<(), IntentsError> {
         private::set_object_property(self, "displayImage", display_image.map(RawObject::as_ptr))
     }
 
+    /// Returns the number of corresponding values exposed by `INObject`.
     pub fn alternative_speakable_matches_count(&self) -> usize {
         private::array_count_property(self, "alternativeSpeakableMatches").unwrap_or_default()
     }
 
+    /// Sets the corresponding `alternative_speakable_matches` value on `INObject`.
     pub fn set_alternative_speakable_matches(
         &mut self,
         matches: &[&SpeakableString],

@@ -6,39 +6,71 @@
     clippy::must_use_candidate
 )]
 
+/// Wrappers for `INCall*` types and related enums from Intents.framework.
 pub mod call;
+/// Error types used by the safe Intents.framework bindings.
 pub mod error;
+/// Rust mirrors of `INIntentErrorCode` values from Intents.framework.
 pub mod error_code;
+/// Low-level FFI bindings used to call into Intents.framework.
 pub mod ffi;
+/// Wrappers for `INFocusStatus*` types from Intents.framework.
 pub mod focus;
+/// Helpers for `IN*IntentHandling` protocols from Intents.framework.
 pub mod handler_extras;
+/// Wrappers for `INFile` from Intents.framework.
 pub mod in_file;
+/// Wrappers for `INInteraction` and related enums from Intents.framework.
 pub mod in_interaction;
+/// Wrappers for `INObject`, `INImage`, and `INSpeakable*` types.
 pub mod in_object;
+/// Wrappers for `INParameter` from Intents.framework.
 pub mod in_parameter;
+/// Wrappers for `INPerson*` types from Intents.framework.
 pub mod in_person;
+/// Wrappers for `INRelevantShortcut*` types from Intents.framework.
 pub mod in_relevant_shortcut;
+/// Wrappers for `INRelevantShortcutStore` from Intents.framework.
 pub mod in_relevant_shortcut_store;
+/// Wrappers for `INVocabulary` and related enums from Intents.framework.
 pub mod in_vocabulary;
+/// Re-exported `INIntent` wrapper types.
 pub mod intent;
+/// Wrappers for `INIntent`, `INShortcut`, and typed intent classes.
 pub mod intent_definition;
+/// Wrappers for `INIntentDonationMetadata` types.
 pub mod intent_donation;
+/// Wrappers for `INExtension` from Intents.framework.
 pub mod intent_extension;
+/// Wrappers for additional Siri intent families from Intents.framework.
 pub mod intent_extras;
+/// Wrappers for `INIntentHandlerProviding` and related helpers.
 pub mod intent_handler;
+/// Wrappers for `INIntentResolutionResult` from Intents.framework.
 pub mod intent_resolution;
+/// Wrappers for `INIntentResponse` and related response types.
 pub mod intent_response;
+/// Re-exported `INInteraction` wrapper types.
 pub mod interaction;
+/// Wrappers for `INMessage*` and related messaging types.
 pub mod message;
+/// Wrappers for `INPreferences` authorization APIs.
 pub mod preferences;
 mod private;
+/// Re-exported `INRelevantShortcut*` wrapper types.
 pub mod relevant;
+/// Wrappers for reservation, travel, and payment types from Intents.framework.
 pub mod reservation;
+/// Wrappers for typed `INIntentResolutionResult` subclasses.
 pub mod resolution_extras;
+/// Wrappers for additional typed `INIntentResponse` subclasses.
 pub mod response_extras;
+/// Support wrappers and exported constants from Intents.framework.
 pub mod support;
+/// Wrappers for `INVoiceShortcut` and `INVoiceShortcutCenter`.
 pub mod voice_shortcut;
 
+/// Async wrappers over callback-based Intents.framework APIs.
 #[cfg(feature = "async")]
 pub mod async_api;
 
@@ -118,6 +150,7 @@ pub use support::{
 };
 pub use voice_shortcut::{VoiceShortcut, VoiceShortcutCenter};
 
+/// Convenience re-exports for the main Intents.framework wrapper types.
 pub mod prelude {
     pub use crate::call::{
         CallAudioRoute, CallCapability, CallCapabilityOptions, CallDestinationType, CallGroup,

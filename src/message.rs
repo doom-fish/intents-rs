@@ -7,10 +7,13 @@ use crate::private::{self, RawObject, RetainedObject};
 
 macro_rules! simple_enum {
     ($name:ident { $($variant:ident = $raw:expr,)* }) => {
+        #[doc = concat!("Mirrors `IN", stringify!($name), "`.")]
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
         #[non_exhaustive]
         pub enum $name {
-            $($variant,)*
+            $(#[doc = concat!("Corresponds to the `", stringify!($variant), "` case of `IN", stringify!($name), "`.")]
+            $variant,)*
+            #[doc = concat!("Stores an unknown raw value from `IN", stringify!($name), "`.")]
             Other(i64),
         }
 
@@ -36,12 +39,14 @@ macro_rules! simple_enum {
 
 macro_rules! objc_wrapper {
     ($name:ident, $objc_class:literal, $context:literal) => {
+        #[doc = concat!("Wraps `", $objc_class, "`.")]
         #[derive(Debug)]
         pub struct $name {
             raw: RetainedObject,
         }
 
         impl $name {
+            #[doc = concat!("Objective-C class name for `", $objc_class, "`.")]
             pub const OBJC_CLASS: &'static str = $objc_class;
 
             pub(crate) unsafe fn from_owned(ptr: *mut c_void) -> Result<Self, IntentsError> {
@@ -63,6 +68,7 @@ macro_rules! objc_wrapper {
                 )?))
             }
 
+            #[doc = concat!("Returns the Objective-C class name for this `", $objc_class, "` instance.")]
             pub fn class_name(&self) -> String {
                 private::class_name(self)
             }
@@ -108,6 +114,7 @@ objc_wrapper!(
 objc_wrapper!(Sticker, "INSticker", "sticker");
 
 impl MessageLinkMetadata {
+    /// Creates a `INMessageLinkMetadata` wrapper.
     pub fn new(
         site_name: Option<&str>,
         summary: Option<&str>,
@@ -158,28 +165,34 @@ impl MessageLinkMetadata {
         }
     }
 
+    /// Returns the corresponding value from `INMessageLinkMetadata`.
     pub fn site_name(&self) -> Option<String> {
         private::string_property(self, "siteName")
     }
 
+    /// Returns the corresponding value from `INMessageLinkMetadata`.
     pub fn summary(&self) -> Option<String> {
         private::string_property(self, "summary")
     }
 
+    /// Returns the corresponding value from `INMessageLinkMetadata`.
     pub fn title(&self) -> Option<String> {
         private::string_property(self, "title")
     }
 
+    /// Returns the corresponding value from `INMessageLinkMetadata`.
     pub fn open_graph_type(&self) -> Option<String> {
         private::string_property(self, "openGraphType")
     }
 
+    /// Returns the corresponding value from `INMessageLinkMetadata`.
     pub fn link_url(&self) -> Option<String> {
         private::string_property(self, "linkURL")
     }
 }
 
 impl MessageReaction {
+    /// Creates a `INMessageReaction` wrapper.
     pub fn new(
         reaction_type: MessageReactionType,
         reaction_description: Option<&str>,
@@ -211,21 +224,25 @@ impl MessageReaction {
         }
     }
 
+    /// Returns the corresponding value from `INMessageReaction`.
     pub fn reaction_type(&self) -> MessageReactionType {
         private::integer_property(self, "reactionType")
             .map_or(MessageReactionType::Unknown, MessageReactionType::from_raw)
     }
 
+    /// Returns the corresponding value from `INMessageReaction`.
     pub fn reaction_description(&self) -> Option<String> {
         private::string_property(self, "reactionDescription")
     }
 
+    /// Returns the corresponding value from `INMessageReaction`.
     pub fn emoji(&self) -> Option<String> {
         private::string_property(self, "emoji")
     }
 }
 
 impl SendMessageAttachment {
+    /// Wraps the corresponding method on `INSendMessageAttachment`.
     pub fn audio_message_file(file: &IntentFile) -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
@@ -238,12 +255,14 @@ impl SendMessageAttachment {
         }
     }
 
+    /// Returns the corresponding value from `INSendMessageAttachment`.
     pub fn audio_message_file_present(&self) -> bool {
         private::object_property(self, "audioMessageFile").is_some()
     }
 }
 
 impl Sticker {
+    /// Creates a `INSticker` wrapper.
     pub fn new(sticker_type: StickerType, emoji: Option<&str>) -> Result<Self, IntentsError> {
         let emoji = emoji
             .map(|value| private::cstring(value, "sticker emoji"))
@@ -265,10 +284,12 @@ impl Sticker {
         }
     }
 
+    /// Returns the corresponding value from `INSticker`.
     pub fn sticker_type(&self) -> StickerType {
         private::integer_property(self, "type").map_or(StickerType::Unknown, StickerType::from_raw)
     }
 
+    /// Returns the corresponding value from `INSticker`.
     pub fn emoji(&self) -> Option<String> {
         private::string_property(self, "emoji")
     }

@@ -6,12 +6,14 @@ use crate::private::{self, RawObject, RetainedObject};
 
 macro_rules! intent_handling_helper {
     ($name:ident, $kind:literal) => {
+        #[doc = concat!("Wraps `", concat!("IN", stringify!($name)), "`.")]
         #[derive(Debug)]
         pub struct $name {
             raw: RetainedObject,
         }
 
         impl $name {
+            #[doc = concat!("Wraps the corresponding member on `", concat!("IN", stringify!($name)), "`.")]
             pub fn new() -> Result<Self, IntentsError> {
                 let kind = private::cstring($kind, "intent handling helper kind")?;
                 let mut error = std::ptr::null_mut();
@@ -37,10 +39,12 @@ macro_rules! intent_handling_helper {
                 })
             }
 
+            #[doc = concat!("Returns the Objective-C class name for this `", concat!("IN", stringify!($name)), "` instance.")]
             pub fn class_name(&self) -> String {
                 private::class_name(self)
             }
 
+            #[doc = concat!("Wraps the corresponding member on `", concat!("IN", stringify!($name)), "`.")]
             pub fn simulate_handle(&mut self) -> Result<(), IntentsError> {
                 let mut error = std::ptr::null_mut();
                 let ok = unsafe {
@@ -55,6 +59,7 @@ macro_rules! intent_handling_helper {
                 }
             }
 
+            #[doc = concat!("Wraps the corresponding member on `", concat!("IN", stringify!($name)), "`.")]
             pub fn simulate_confirm(&mut self) -> Result<(), IntentsError> {
                 let mut error = std::ptr::null_mut();
                 let ok = unsafe {
@@ -69,6 +74,7 @@ macro_rules! intent_handling_helper {
                 }
             }
 
+            #[doc = concat!("Wraps the corresponding member on `", concat!("IN", stringify!($name)), "`.")]
             pub fn simulate_resolve(&mut self) -> Result<(), IntentsError> {
                 let mut error = std::ptr::null_mut();
                 let ok = unsafe {
@@ -83,24 +89,28 @@ macro_rules! intent_handling_helper {
                 }
             }
 
+            #[doc = concat!("Wraps the corresponding member on `", concat!("IN", stringify!($name)), "`.")]
             pub fn handle_call_count(&self) -> usize {
                 private::integer_property(self, "handleCallCount")
                     .and_then(|value| usize::try_from(value).ok())
                     .unwrap_or_default()
             }
 
+            #[doc = concat!("Wraps the corresponding member on `", concat!("IN", stringify!($name)), "`.")]
             pub fn confirm_call_count(&self) -> usize {
                 private::integer_property(self, "confirmCallCount")
                     .and_then(|value| usize::try_from(value).ok())
                     .unwrap_or_default()
             }
 
+            #[doc = concat!("Wraps the corresponding member on `", concat!("IN", stringify!($name)), "`.")]
             pub fn resolve_call_count(&self) -> usize {
                 private::integer_property(self, "resolveCallCount")
                     .and_then(|value| usize::try_from(value).ok())
                     .unwrap_or_default()
             }
 
+            #[doc = concat!("Wraps the corresponding member on `", concat!("IN", stringify!($name)), "`.")]
             pub fn last_intent_class_name(&self) -> Option<String> {
                 private::string_property(self, "lastIntentClassName")
             }

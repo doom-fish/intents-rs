@@ -11,10 +11,12 @@ use crate::private::{self, RawObject};
 
 macro_rules! typed_intent_extra {
     ($name:ident, $objc_class:literal) => {
+        #[doc = concat!("Wraps `", $objc_class, "`.")]
         #[derive(Debug)]
         pub struct $name(Intent);
 
         impl $name {
+            #[doc = concat!("Objective-C class name for `", $objc_class, "`.")]
             pub const OBJC_CLASS: &'static str = $objc_class;
 
             #[allow(dead_code)]
@@ -23,6 +25,7 @@ macro_rules! typed_intent_extra {
                 Self::try_from(Intent::from_retained(raw))
             }
 
+            #[doc = concat!("Returns the Objective-C class name for this `", $objc_class, "` instance.")]
             pub fn class_name(&self) -> String {
                 self.0.class_name()
             }
@@ -74,6 +77,7 @@ typed_intent_extra!(ShareFocusStatusIntent, "INShareFocusStatusIntent");
 typed_intent_extra!(UnsendMessagesIntent, "INUnsendMessagesIntent");
 
 impl AnswerCallIntent {
+    /// Creates a `INAnswerCallIntent` wrapper.
     pub fn new(
         audio_route: CallAudioRoute,
         call_identifier: Option<&str>,
@@ -98,17 +102,20 @@ impl AnswerCallIntent {
         }
     }
 
+    /// Returns the corresponding value from `INAnswerCallIntent`.
     pub fn audio_route(&self) -> CallAudioRoute {
         private::integer_property(self, "audioRoute")
             .map_or(CallAudioRoute::Unknown, CallAudioRoute::from_raw)
     }
 
+    /// Returns the corresponding value from `INAnswerCallIntent`.
     pub fn call_identifier(&self) -> Option<String> {
         private::string_property(self, "callIdentifier")
     }
 }
 
 impl EditMessageIntent {
+    /// Creates a `INEditMessageIntent` wrapper.
     pub fn new(
         message_identifier: Option<&str>,
         edited_content: Option<&str>,
@@ -138,16 +145,19 @@ impl EditMessageIntent {
         }
     }
 
+    /// Returns the corresponding value from `INEditMessageIntent`.
     pub fn message_identifier(&self) -> Option<String> {
         private::string_property(self, "messageIdentifier")
     }
 
+    /// Returns the corresponding value from `INEditMessageIntent`.
     pub fn edited_content(&self) -> Option<String> {
         private::string_property(self, "editedContent")
     }
 }
 
 impl GetReservationDetailsIntent {
+    /// Creates a `INGetReservationDetailsIntent` wrapper.
     pub fn new(
         reservation_container_reference: Option<&SpeakableString>,
         reservation_item_references: &[&SpeakableString],
@@ -176,16 +186,19 @@ impl GetReservationDetailsIntent {
         }
     }
 
+    /// Returns the corresponding value from `INGetReservationDetailsIntent`.
     pub fn reservation_container_reference_present(&self) -> bool {
         private::object_property(self, "reservationContainerReference").is_some()
     }
 
+    /// Returns the number of corresponding values exposed by `INGetReservationDetailsIntent`.
     pub fn reservation_item_references_count(&self) -> usize {
         private::array_count_property(self, "reservationItemReferences").unwrap_or_default()
     }
 }
 
 impl HangUpCallIntent {
+    /// Creates a `INHangUpCallIntent` wrapper.
     pub fn new(call_identifier: Option<&str>) -> Result<Self, IntentsError> {
         let call_identifier = call_identifier
             .map(|value| private::cstring(value, "hang-up call identifier"))
@@ -206,12 +219,14 @@ impl HangUpCallIntent {
         }
     }
 
+    /// Returns the corresponding value from `INHangUpCallIntent`.
     pub fn call_identifier(&self) -> Option<String> {
         private::string_property(self, "callIdentifier")
     }
 }
 
 impl ShareFocusStatusIntent {
+    /// Creates a `INShareFocusStatusIntent` wrapper.
     pub fn new(focus_status: Option<&FocusStatus>) -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
@@ -227,12 +242,14 @@ impl ShareFocusStatusIntent {
         }
     }
 
+    /// Returns the corresponding value from `INShareFocusStatusIntent`.
     pub fn focus_status(&self) -> Option<FocusStatus> {
         private::object_property(self, "focusStatus").map(FocusStatus::from_retained)
     }
 }
 
 impl UnsendMessagesIntent {
+    /// Creates a `INUnsendMessagesIntent` wrapper.
     pub fn new(message_identifiers: &[&str]) -> Result<Self, IntentsError> {
         let values = message_identifiers
             .iter()
@@ -261,18 +278,21 @@ impl UnsendMessagesIntent {
         }
     }
 
+    /// Wraps the corresponding method on `INUnsendMessagesIntent`.
     pub fn message_identifiers(&self) -> Result<Option<Vec<String>>, IntentsError> {
         private::string_array_property(self, "messageIdentifiers")
     }
 }
 
 impl SendMessageIntent {
+    /// Reports whether `INSendMessageIntent` supports the corresponding capability.
     pub fn supports_user_notifications() -> Result<bool, IntentsError> {
         private::class_conforms_to_protocol(Self::OBJC_CLASS, "UNNotificationContentProviding")
     }
 }
 
 impl StartCallIntent {
+    /// Reports whether `INStartCallIntent` supports the corresponding capability.
     pub fn supports_user_notifications() -> Result<bool, IntentsError> {
         private::class_conforms_to_protocol(Self::OBJC_CLASS, "UNNotificationContentProviding")
     }

@@ -5,6 +5,7 @@ use crate::error::IntentsError;
 use crate::ffi;
 use crate::private::{self, RawObject, RetainedObject};
 
+/// Wraps `INIntentDonationMetadata`.
 #[derive(Debug)]
 pub struct IntentDonationMetadata {
     raw: RetainedObject,
@@ -21,6 +22,7 @@ impl IntentDonationMetadata {
         Self { raw }
     }
 
+    /// Returns the Objective-C class name for this `INIntentDonationMetadata` instance.
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
@@ -32,12 +34,15 @@ impl RawObject for IntentDonationMetadata {
     }
 }
 
+/// Wraps `INSendMessageIntentDonationMetadata`.
 #[derive(Debug)]
 pub struct SendMessageIntentDonationMetadata(IntentDonationMetadata);
 
 impl SendMessageIntentDonationMetadata {
+    /// Objective-C class name for `INSendMessageIntentDonationMetadata`.
     pub const OBJC_CLASS: &'static str = "INSendMessageIntentDonationMetadata";
 
+    /// Creates a `INSendMessageIntentDonationMetadata` wrapper.
     pub fn new() -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe { ffi::inx_send_message_intent_donation_metadata_create(&mut error) };
@@ -54,40 +59,49 @@ impl SendMessageIntentDonationMetadata {
         Ok(Self(unsafe { IntentDonationMetadata::from_owned(ptr) }?))
     }
 
+    /// Returns the Objective-C class name for this `INSendMessageIntentDonationMetadata` instance.
     pub fn class_name(&self) -> String {
         self.0.class_name()
     }
 
+    /// Returns the corresponding value from `INSendMessageIntentDonationMetadata`.
     pub fn mentions_current_user(&self) -> bool {
         private::bool_property(self, "mentionsCurrentUser").unwrap_or_default()
     }
 
+    /// Sets the corresponding `mentions_current_user` value on `INSendMessageIntentDonationMetadata`.
     pub fn set_mentions_current_user(&mut self, value: bool) -> Result<(), IntentsError> {
         private::set_integer_property(self, "mentionsCurrentUser", i64::from(value))
     }
 
+    /// Returns the corresponding boolean value from `INSendMessageIntentDonationMetadata`.
     pub fn is_reply_to_current_user(&self) -> bool {
         private::bool_property(self, "replyToCurrentUser").unwrap_or_default()
     }
 
+    /// Sets the corresponding `reply_to_current_user` value on `INSendMessageIntentDonationMetadata`.
     pub fn set_reply_to_current_user(&mut self, value: bool) -> Result<(), IntentsError> {
         private::set_integer_property(self, "replyToCurrentUser", i64::from(value))
     }
 
+    /// Returns the corresponding value from `INSendMessageIntentDonationMetadata`.
     pub fn notify_recipient_anyway(&self) -> bool {
         private::bool_property(self, "notifyRecipientAnyway").unwrap_or_default()
     }
 
+    /// Sets the corresponding `notify_recipient_anyway` value on `INSendMessageIntentDonationMetadata`.
     pub fn set_notify_recipient_anyway(&mut self, value: bool) -> Result<(), IntentsError> {
         private::set_integer_property(self, "notifyRecipientAnyway", i64::from(value))
     }
 
+    /// Returns the number of corresponding values exposed by `INSendMessageIntentDonationMetadata`.
     pub fn recipient_count(&self) -> usize {
         private::integer_property(self, "recipientCount")
             .and_then(|value| usize::try_from(value).ok())
             .unwrap_or_default()
     }
 
+    /// Sets the corresponding `recipient_count` value on `INSendMessageIntentDonationMetadata`.
     pub fn set_recipient_count(&mut self, value: usize) -> Result<(), IntentsError> {
         private::set_integer_property(
             self,

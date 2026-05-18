@@ -1,12 +1,18 @@
 use core::fmt;
 
+/// Errors surfaced by the safe Intents.framework bindings.
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[non_exhaustive]
 pub enum IntentsError {
+    /// Corresponds to the `InvalidArgument` case of `Intents.framework`.
     InvalidArgument(String),
+    /// Corresponds to the `Framework` case of `Intents.framework`.
     Framework(String),
+    /// Indicates that a wrapper expected one Intents.framework class but received another.
     UnexpectedClass {
+        /// Expected Objective-C class name from Intents.framework.
         expected: &'static str,
+        /// Actual Objective-C class name returned by Intents.framework.
         actual: String,
     },
 }

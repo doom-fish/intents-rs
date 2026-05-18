@@ -8,22 +8,34 @@ use crate::intent_definition::Intent;
 use crate::intent_response::IntentResponse;
 use crate::private::{self, RawObject, RetainedObject};
 
+/// Rust representation of `NSDateInterval` values exposed by `INInteraction`.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct DateInterval {
+    /// Start timestamp from `NSDateInterval.start`.
     pub start: f64,
+    /// End timestamp from `NSDateInterval.end`.
     pub end: f64,
 }
 
+/// Mirrors `INIntentHandlingStatus`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum IntentHandlingStatus {
+    /// Corresponds to the `Unspecified` case of `INIntentHandlingStatus`.
     Unspecified,
+    /// Corresponds to the `Ready` case of `INIntentHandlingStatus`.
     Ready,
+    /// Corresponds to the `InProgress` case of `INIntentHandlingStatus`.
     InProgress,
+    /// Corresponds to the `Success` case of `INIntentHandlingStatus`.
     Success,
+    /// Corresponds to the `Failure` case of `INIntentHandlingStatus`.
     Failure,
+    /// Corresponds to the `DeferredToApplication` case of `INIntentHandlingStatus`.
     DeferredToApplication,
+    /// Corresponds to the `UserConfirmationRequired` case of `INIntentHandlingStatus`.
     UserConfirmationRequired,
+    /// Stores an unknown raw value from `INIntentHandlingStatus`.
     Unknown(i64),
 }
 
@@ -42,12 +54,17 @@ impl IntentHandlingStatus {
     }
 }
 
+/// Mirrors `INInteractionDirection`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum InteractionDirection {
+    /// Corresponds to the `Unspecified` case of `INInteractionDirection`.
     Unspecified,
+    /// Corresponds to the `Outgoing` case of `INInteractionDirection`.
     Outgoing,
+    /// Corresponds to the `Incoming` case of `INInteractionDirection`.
     Incoming,
+    /// Stores an unknown raw value from `INInteractionDirection`.
     Unknown(i64),
 }
 
@@ -71,12 +88,14 @@ impl InteractionDirection {
     }
 }
 
+/// Wraps `INInteraction`.
 #[derive(Debug)]
 pub struct Interaction {
     raw: RetainedObject,
 }
 
 impl Interaction {
+    /// Creates a `INInteraction` wrapper.
     pub fn new(intent: &Intent, response: Option<&IntentResponse>) -> Result<Self, IntentsError> {
         let response_ptr = response.map_or(std::ptr::null_mut(), RawObject::as_ptr);
         let mut error = std::ptr::null_mut();
@@ -98,6 +117,7 @@ impl Interaction {
         Self { raw }
     }
 
+    /// Wraps the corresponding action on `INInteraction`.
     pub fn donate(&self) -> Result<(), IntentsError> {
         let (sender, receiver) = mpsc::channel();
         let context = Box::into_raw(Box::new(sender)).cast::<c_void>();
@@ -105,6 +125,7 @@ impl Interaction {
         recv_result(&receiver, "interaction callback channel dropped")
     }
 
+    /// Wraps the corresponding action on `INInteraction`.
     pub fn delete_all() -> Result<(), IntentsError> {
         let (sender, receiver) = mpsc::channel();
         let context = Box::into_raw(Box::new(sender)).cast::<c_void>();
@@ -112,6 +133,7 @@ impl Interaction {
         recv_result(&receiver, "interaction delete-all callback channel dropped")
     }
 
+    /// Wraps the corresponding action on `INInteraction`.
     pub fn delete_by_identifiers(identifiers: &[&str]) -> Result<(), IntentsError> {
         let cstrings = identifiers
             .iter()
@@ -143,6 +165,7 @@ impl Interaction {
         )
     }
 
+    /// Wraps the corresponding action on `INInteraction`.
     pub fn delete_by_group_identifier(group_identifier: &str) -> Result<(), IntentsError> {
         let group_identifier = private::cstring(group_identifier, "interaction group identifier")?;
         let (sender, receiver) = mpsc::channel();
@@ -160,22 +183,27 @@ impl Interaction {
         )
     }
 
+    /// Returns the corresponding value from `INInteraction`.
     pub fn identifier(&self) -> Option<String> {
         private::string_property(self, "identifier")
     }
 
+    /// Sets the corresponding `identifier` value on `INInteraction`.
     pub fn set_identifier(&mut self, identifier: &str) -> Result<(), IntentsError> {
         private::set_string_property(self, "identifier", identifier)
     }
 
+    /// Returns the corresponding value from `INInteraction`.
     pub fn group_identifier(&self) -> Option<String> {
         private::string_property(self, "groupIdentifier")
     }
 
+    /// Sets the corresponding `group_identifier` value on `INInteraction`.
     pub fn set_group_identifier(&mut self, group_identifier: &str) -> Result<(), IntentsError> {
         private::set_string_property(self, "groupIdentifier", group_identifier)
     }
 
+    /// Returns the corresponding value from `INInteraction`.
     pub fn direction(&self) -> InteractionDirection {
         private::integer_property(self, "direction").map_or(
             InteractionDirection::Unspecified,
@@ -183,19 +211,23 @@ impl Interaction {
         )
     }
 
+    /// Sets the corresponding `direction` value on `INInteraction`.
     pub fn set_direction(&mut self, direction: InteractionDirection) -> Result<(), IntentsError> {
         private::set_integer_property(self, "direction", direction.raw_value())
     }
 
+    /// Returns the corresponding value from `INInteraction`.
     pub fn date_interval(&self) -> Option<DateInterval> {
         private::date_interval_property(self, "dateInterval")
             .map(|(start, end)| DateInterval { start, end })
     }
 
+    /// Sets the corresponding `date_interval` value on `INInteraction`.
     pub fn set_date_interval(&mut self, start: f64, end: f64) -> Result<(), IntentsError> {
         private::set_date_interval_property(self, "dateInterval", start, end)
     }
 
+    /// Returns the corresponding value from `INInteraction`.
     pub fn intent_handling_status(&self) -> IntentHandlingStatus {
         private::integer_property(self, "intentHandlingStatus").map_or(
             IntentHandlingStatus::Unspecified,
@@ -203,10 +235,12 @@ impl Interaction {
         )
     }
 
+    /// Returns the corresponding value from `INInteraction`.
     pub fn intent(&self) -> Option<Intent> {
         private::object_property(self, "intent").map(Intent::from_retained)
     }
 
+    /// Returns the corresponding value from `INInteraction`.
     pub fn intent_response(&self) -> Option<IntentResponse> {
         private::object_property(self, "intentResponse").map(IntentResponse::from_retained)
     }

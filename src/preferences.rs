@@ -5,13 +5,19 @@ use std::sync::mpsc;
 use crate::error::IntentsError;
 use crate::ffi;
 
+/// Mirrors `INSiriAuthorizationStatus`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum SiriAuthorizationStatus {
+    /// Corresponds to the `NotDetermined` case of `INSiriAuthorizationStatus`.
     NotDetermined,
+    /// Corresponds to the `Restricted` case of `INSiriAuthorizationStatus`.
     Restricted,
+    /// Corresponds to the `Denied` case of `INSiriAuthorizationStatus`.
     Denied,
+    /// Corresponds to the `Authorized` case of `INSiriAuthorizationStatus`.
     Authorized,
+    /// Stores an unknown raw value from `INSiriAuthorizationStatus`.
     Unknown(i64),
 }
 
@@ -27,15 +33,18 @@ impl SiriAuthorizationStatus {
     }
 }
 
+/// Namespace wrapper for `INPreferences` APIs.
 #[derive(Debug, Default, Clone, Copy)]
 pub struct Preferences;
 
 impl Preferences {
+    /// Returns the corresponding value from `INPreferences`.
     pub fn siri_authorization_status() -> SiriAuthorizationStatus {
         let raw = unsafe { ffi::inx_preferences_siri_authorization_status() };
         SiriAuthorizationStatus::from_raw(raw)
     }
 
+    /// Wraps the corresponding request API on `INPreferences`.
     pub fn request_siri_authorization() -> Result<SiriAuthorizationStatus, IntentsError> {
         let (sender, receiver) = mpsc::channel();
         let context = Box::into_raw(Box::new(sender)).cast::<c_void>();

@@ -7,6 +7,7 @@ use crate::ffi;
 use crate::intent::Shortcut;
 use crate::private::{self, RawObject, RetainedObject};
 
+/// Wraps `INVoiceShortcut`.
 #[derive(Debug)]
 pub struct VoiceShortcut {
     raw: RetainedObject,
@@ -19,14 +20,17 @@ impl VoiceShortcut {
         })
     }
 
+    /// Returns the corresponding value from `INVoiceShortcut`.
     pub fn identifier(&self) -> Option<String> {
         private::string_property(self, "identifier")
     }
 
+    /// Returns the corresponding value from `INVoiceShortcut`.
     pub fn invocation_phrase(&self) -> Option<String> {
         private::string_property(self, "invocationPhrase")
     }
 
+    /// Returns the corresponding value from `INVoiceShortcut`.
     pub fn shortcut(&self) -> Option<Shortcut> {
         private::object_property(self, "shortcut").map(Shortcut::from_retained)
     }
@@ -38,12 +42,14 @@ impl RawObject for VoiceShortcut {
     }
 }
 
+/// Wraps `INVoiceShortcutCenter`.
 #[derive(Debug)]
 pub struct VoiceShortcutCenter {
     raw: RetainedObject,
 }
 
 impl VoiceShortcutCenter {
+    /// Returns the shared `INVoiceShortcutCenter` instance.
     pub fn shared() -> Result<Self, IntentsError> {
         let ptr = unsafe { ffi::inx_voice_shortcut_center_shared() };
         if ptr.is_null() {
@@ -61,6 +67,7 @@ impl VoiceShortcutCenter {
         })
     }
 
+    /// Wraps the corresponding method on `INVoiceShortcutCenter`.
     pub fn get_all_voice_shortcuts(&self) -> Result<Vec<VoiceShortcut>, IntentsError> {
         let (sender, receiver) = mpsc::channel();
         let context = Box::into_raw(Box::new(sender)).cast::<c_void>();
@@ -70,6 +77,7 @@ impl VoiceShortcutCenter {
         })?
     }
 
+    /// Returns the corresponding value from `INVoiceShortcutCenter`.
     pub fn get_voice_shortcut(
         &self,
         identifier: &str,

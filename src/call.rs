@@ -8,10 +8,13 @@ use crate::private::{self, RawObject, RetainedObject};
 
 macro_rules! simple_enum {
     ($name:ident { $($variant:ident = $raw:expr,)* }) => {
+        #[doc = concat!("Mirrors `IN", stringify!($name), "`.")]
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
         #[non_exhaustive]
         pub enum $name {
-            $($variant,)*
+            $(#[doc = concat!("Corresponds to the `", stringify!($variant), "` case of `IN", stringify!($name), "`.")]
+            $variant,)*
+            #[doc = concat!("Stores an unknown raw value from `IN", stringify!($name), "`.")]
             Other(i64),
         }
 
@@ -37,12 +40,14 @@ macro_rules! simple_enum {
 
 macro_rules! objc_wrapper {
     ($name:ident, $objc_class:literal, $context:literal) => {
+        #[doc = concat!("Wraps `", $objc_class, "`.")]
         #[derive(Debug)]
         pub struct $name {
             raw: RetainedObject,
         }
 
         impl $name {
+            #[doc = concat!("Objective-C class name for `", $objc_class, "`.")]
             pub const OBJC_CLASS: &'static str = $objc_class;
 
             pub(crate) unsafe fn from_owned(ptr: *mut c_void) -> Result<Self, IntentsError> {
@@ -64,6 +69,7 @@ macro_rules! objc_wrapper {
                 )?))
             }
 
+            #[doc = concat!("Returns the Objective-C class name for this `", $objc_class, "` instance.")]
             pub fn class_name(&self) -> String {
                 private::class_name(self)
             }
@@ -110,25 +116,32 @@ simple_enum!(CallRecordType {
     OnHold = 8,
 });
 
+/// Wraps `INCallCapabilityOptions`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct CallCapabilityOptions(u64);
 
 impl CallCapabilityOptions {
+    /// Bit flag corresponding to `AUDIO_CALL` on `INCallCapabilityOptions`.
     pub const AUDIO_CALL: Self = Self(1 << 0);
+    /// Bit flag corresponding to `VIDEO_CALL` on `INCallCapabilityOptions`.
     pub const VIDEO_CALL: Self = Self(1 << 1);
 
+    /// Returns an empty set of `INCallCapabilityOptions` flags.
     pub const fn empty() -> Self {
         Self(0)
     }
 
+    /// Returns the raw bit pattern for this `INCallCapabilityOptions` flag set.
     pub const fn bits(self) -> u64 {
         self.0
     }
 
+    /// Builds an `INCallCapabilityOptions` flag set from raw bits.
     pub const fn from_bits_truncate(bits: u64) -> Self {
         Self(bits)
     }
 
+    /// Returns whether this `INCallCapabilityOptions` flag set contains the provided bits.
     pub const fn contains(self, other: Self) -> bool {
         (self.0 & other.0) == other.0
     }
@@ -148,31 +161,44 @@ impl BitOrAssign for CallCapabilityOptions {
     }
 }
 
+/// Wraps `INCallRecordTypeOptions`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct CallRecordTypeOptions(u64);
 
 impl CallRecordTypeOptions {
+    /// Bit flag corresponding to `OUTGOING` on `INCallRecordTypeOptions`.
     pub const OUTGOING: Self = Self(1 << 0);
+    /// Bit flag corresponding to `MISSED` on `INCallRecordTypeOptions`.
     pub const MISSED: Self = Self(1 << 1);
+    /// Bit flag corresponding to `RECEIVED` on `INCallRecordTypeOptions`.
     pub const RECEIVED: Self = Self(1 << 2);
+    /// Bit flag corresponding to `LATEST` on `INCallRecordTypeOptions`.
     pub const LATEST: Self = Self(1 << 3);
+    /// Bit flag corresponding to `VOICEMAIL` on `INCallRecordTypeOptions`.
     pub const VOICEMAIL: Self = Self(1 << 4);
+    /// Bit flag corresponding to `RINGING` on `INCallRecordTypeOptions`.
     pub const RINGING: Self = Self(1 << 5);
+    /// Bit flag corresponding to `IN_PROGRESS` on `INCallRecordTypeOptions`.
     pub const IN_PROGRESS: Self = Self(1 << 6);
+    /// Bit flag corresponding to `ON_HOLD` on `INCallRecordTypeOptions`.
     pub const ON_HOLD: Self = Self(1 << 7);
 
+    /// Returns an empty set of `INCallRecordTypeOptions` flags.
     pub const fn empty() -> Self {
         Self(0)
     }
 
+    /// Returns the raw bit pattern for this `INCallRecordTypeOptions` flag set.
     pub const fn bits(self) -> u64 {
         self.0
     }
 
+    /// Builds an `INCallRecordTypeOptions` flag set from raw bits.
     pub const fn from_bits_truncate(bits: u64) -> Self {
         Self(bits)
     }
 
+    /// Returns whether this `INCallRecordTypeOptions` flag set contains the provided bits.
     pub const fn contains(self, other: Self) -> bool {
         (self.0 & other.0) == other.0
     }
@@ -197,6 +223,7 @@ objc_wrapper!(CallRecord, "INCallRecord", "call record");
 objc_wrapper!(CallRecordFilter, "INCallRecordFilter", "call record filter");
 
 impl CallGroup {
+    /// Creates a `INCallGroup` wrapper.
     pub fn new(group_name: Option<&str>, group_id: Option<&str>) -> Result<Self, IntentsError> {
         let group_name = group_name
             .map(|value| private::cstring(value, "call group name"))
@@ -223,16 +250,19 @@ impl CallGroup {
         }
     }
 
+    /// Returns the corresponding value from `INCallGroup`.
     pub fn group_name(&self) -> Option<String> {
         private::string_property(self, "groupName")
     }
 
+    /// Returns the corresponding value from `INCallGroup`.
     pub fn group_id(&self) -> Option<String> {
         private::string_property(self, "groupId")
     }
 }
 
 impl CallRecord {
+    /// Creates a `INCallRecord` wrapper.
     pub fn new(
         identifier: &str,
         call_record_type: CallRecordType,
@@ -255,42 +285,51 @@ impl CallRecord {
         }
     }
 
+    /// Returns the corresponding value from `INCallRecord`.
     pub fn identifier(&self) -> Option<String> {
         private::string_property(self, "identifier")
     }
 
+    /// Returns the corresponding value from `INCallRecord`.
     pub fn call_record_type(&self) -> CallRecordType {
         private::integer_property(self, "callRecordType")
             .map_or(CallRecordType::Unknown, CallRecordType::from_raw)
     }
 
+    /// Returns the corresponding value from `INCallRecord`.
     pub fn call_capability(&self) -> CallCapability {
         private::integer_property(self, "callCapability")
             .map_or(CallCapability::Unknown, CallCapability::from_raw)
     }
 
+    /// Returns the number of corresponding values exposed by `INCallRecord`.
     pub fn participants_count(&self) -> usize {
         private::array_count_property(self, "participants").unwrap_or_default()
     }
 
+    /// Returns the corresponding value from `INCallRecord`.
     pub fn call_duration(&self) -> Option<f64> {
         private::double_property(self, "callDuration")
     }
 
+    /// Returns the corresponding value from `INCallRecord`.
     pub fn unseen(&self) -> Option<bool> {
         private::bool_property(self, "unseen")
     }
 
+    /// Returns the corresponding value from `INCallRecord`.
     pub fn number_of_calls(&self) -> Option<i64> {
         private::integer_property(self, "numberOfCalls")
     }
 
+    /// Returns the corresponding boolean value from `INCallRecord`.
     pub fn is_caller_id_blocked(&self) -> Option<bool> {
         private::bool_property(self, "isCallerIdBlocked")
     }
 }
 
 impl CallRecordFilter {
+    /// Creates a `INCallRecordFilter` wrapper.
     pub fn new(
         participants: &[&Person],
         call_types: CallRecordTypeOptions,
@@ -321,10 +360,12 @@ impl CallRecordFilter {
         }
     }
 
+    /// Returns the number of corresponding values exposed by `INCallRecordFilter`.
     pub fn participants_count(&self) -> usize {
         private::array_count_property(self, "participants").unwrap_or_default()
     }
 
+    /// Returns the corresponding value from `INCallRecordFilter`.
     pub fn call_types(&self) -> CallRecordTypeOptions {
         private::integer_property(self, "callTypes")
             .and_then(|value| u64::try_from(value).ok())
@@ -334,6 +375,7 @@ impl CallRecordFilter {
             )
     }
 
+    /// Returns the corresponding value from `INCallRecordFilter`.
     pub fn call_capability(&self) -> CallCapability {
         private::integer_property(self, "callCapability")
             .map_or(CallCapability::Unknown, CallCapability::from_raw)

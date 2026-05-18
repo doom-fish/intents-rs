@@ -8,10 +8,13 @@ use crate::private::{self, RawObject};
 
 macro_rules! simple_enum {
     ($name:ident { $($variant:ident = $raw:expr,)* }) => {
+        #[doc = concat!("Mirrors `IN", stringify!($name), "`.")]
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
         #[non_exhaustive]
         pub enum $name {
-            $($variant,)*
+            $(#[doc = concat!("Corresponds to the `", stringify!($variant), "` case of `IN", stringify!($name), "`.")]
+            $variant,)*
+            #[doc = concat!("Stores an unknown raw value from `IN", stringify!($name), "`.")]
             Other(i64),
         }
 
@@ -37,10 +40,12 @@ macro_rules! simple_enum {
 
 macro_rules! typed_resolution_result {
     ($name:ident, $objc_class:literal) => {
+        #[doc = concat!("Wraps `", $objc_class, "`.")]
         #[derive(Debug)]
         pub struct $name(IntentResolutionResult);
 
         impl $name {
+            #[doc = concat!("Objective-C class name for `", $objc_class, "`.")]
             pub const OBJC_CLASS: &'static str = $objc_class;
 
             #[allow(dead_code)]
@@ -52,6 +57,7 @@ macro_rules! typed_resolution_result {
                 Self::try_from(IntentResolutionResult::from_retained(raw))
             }
 
+            #[doc = concat!("Returns the Objective-C class name for this `", $objc_class, "` instance.")]
             pub fn class_name(&self) -> String {
                 self.0.class_name()
             }
@@ -172,6 +178,7 @@ typed_resolution_result!(URLResolutionResult, "INURLResolutionResult");
 typed_resolution_result!(VolumeResolutionResult, "INVolumeResolutionResult");
 
 impl IntentResolutionResult {
+    /// Wraps the corresponding method on `INIntentResolutionResult`.
     pub fn unsupported_with_reason(reason: i64) -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
@@ -189,6 +196,7 @@ impl IntentResolutionResult {
         }
     }
 
+    /// Returns the corresponding value from `INIntentResolutionResult`.
     pub fn confirmation_required_with_item_for_reason(
         item: Option<&impl RawObject>,
         reason: i64,
@@ -215,6 +223,7 @@ impl IntentResolutionResult {
 }
 
 impl SendMessageRecipientResolutionResult {
+    /// Returns the corresponding value from `INSendMessageRecipientResolutionResult`.
     pub fn unsupported_for_reason(
         reason: SendMessageRecipientUnsupportedReason,
     ) -> Result<Self, IntentsError> {
@@ -244,6 +253,7 @@ impl SendMessageRecipientResolutionResult {
 }
 
 impl StartCallCallRecordToCallBackResolutionResult {
+    /// Returns the corresponding value from `INStartCallCallRecordToCallBackResolutionResult`.
     pub fn unsupported_for_reason(
         reason: StartCallCallRecordToCallBackUnsupportedReason,
     ) -> Result<Self, IntentsError> {

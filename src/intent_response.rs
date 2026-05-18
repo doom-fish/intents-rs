@@ -5,6 +5,7 @@ use crate::error::IntentsError;
 use crate::ffi;
 use crate::private::{self, RawObject, RetainedObject};
 
+/// Wraps `NSUserActivity`.
 #[derive(Debug)]
 pub struct UserActivity {
     raw: RetainedObject,
@@ -21,6 +22,7 @@ impl UserActivity {
         Self { raw }
     }
 
+    /// Creates a `NSUserActivity` wrapper.
     pub fn new(activity_type: &str) -> Result<Self, IntentsError> {
         let activity_type = private::cstring(activity_type, "user activity type")?;
         let mut error = std::ptr::null_mut();
@@ -32,10 +34,12 @@ impl UserActivity {
         }
     }
 
+    /// Returns the Objective-C class name for this `NSUserActivity` instance.
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
 
+    /// Returns the corresponding value from `NSUserActivity`.
     pub fn activity_type(&self) -> Option<String> {
         private::string_property(self, "activityType")
     }
@@ -47,12 +51,14 @@ impl RawObject for UserActivity {
     }
 }
 
+/// Wraps `INIntentResponse`.
 #[derive(Debug)]
 pub struct IntentResponse {
     raw: RetainedObject,
 }
 
 impl IntentResponse {
+    /// Creates a `INIntentResponse` wrapper.
     pub fn new() -> Result<Self, IntentsError> {
         let ptr = unsafe { ffi::inx_intent_response_create() };
         unsafe { Self::from_owned(ptr) }
@@ -68,23 +74,28 @@ impl IntentResponse {
         Self { raw }
     }
 
+    /// Returns the Objective-C class name for this `INIntentResponse` instance.
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
 
+    /// Returns the corresponding value from `INIntentResponse`.
     pub fn result_code(&self) -> Option<i64> {
         private::integer_property(self, "code")
     }
 
+    /// Returns the corresponding value from `INIntentResponse`.
     pub fn user_activity(&self) -> Option<UserActivity> {
         private::object_property(self, "userActivity").map(UserActivity::from_retained)
     }
 
+    /// Returns the corresponding value from `INIntentResponse`.
     pub fn user_activity_type(&self) -> Option<String> {
         self.user_activity()
             .and_then(|activity| activity.activity_type())
     }
 
+    /// Sets the corresponding `user_activity` value on `INIntentResponse`.
     pub fn set_user_activity(
         &mut self,
         user_activity: Option<&UserActivity>,
@@ -92,6 +103,7 @@ impl IntentResponse {
         private::set_object_property(self, "userActivity", user_activity.map(RawObject::as_ptr))
     }
 
+    /// Sets the corresponding `user_activity_type` value on `INIntentResponse`.
     pub fn set_user_activity_type(&mut self, activity_type: &str) -> Result<(), IntentsError> {
         let activity = UserActivity::new(activity_type)?;
         self.set_user_activity(Some(&activity))
@@ -104,17 +116,27 @@ impl RawObject for IntentResponse {
     }
 }
 
+/// Mirrors `INSendMessageIntentResponseCode`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum SendMessageIntentResponseCode {
+    /// Corresponds to the `Unspecified` case of `INSendMessageIntentResponseCode`.
     Unspecified,
+    /// Corresponds to the `Ready` case of `INSendMessageIntentResponseCode`.
     Ready,
+    /// Corresponds to the `InProgress` case of `INSendMessageIntentResponseCode`.
     InProgress,
+    /// Corresponds to the `Success` case of `INSendMessageIntentResponseCode`.
     Success,
+    /// Corresponds to the `Failure` case of `INSendMessageIntentResponseCode`.
     Failure,
+    /// Corresponds to the `FailureRequiringAppLaunch` case of `INSendMessageIntentResponseCode`.
     FailureRequiringAppLaunch,
+    /// Corresponds to the `FailureMessageServiceNotAvailable` case of `INSendMessageIntentResponseCode`.
     FailureMessageServiceNotAvailable,
+    /// Corresponds to the `FailureRequiringInAppAuthentication` case of `INSendMessageIntentResponseCode`.
     FailureRequiringInAppAuthentication,
+    /// Stores an unknown raw value from `INSendMessageIntentResponseCode`.
     Other(i64),
 }
 
@@ -148,12 +170,15 @@ impl SendMessageIntentResponseCode {
     }
 }
 
+/// Wraps `INSendMessageIntentResponse`.
 #[derive(Debug)]
 pub struct SendMessageIntentResponse(IntentResponse);
 
 impl SendMessageIntentResponse {
+    /// Objective-C class name for `INSendMessageIntentResponse`.
     pub const OBJC_CLASS: &'static str = "INSendMessageIntentResponse";
 
+    /// Creates a `INSendMessageIntentResponse` wrapper.
     pub fn new(
         code: SendMessageIntentResponseCode,
         user_activity: Option<&UserActivity>,
@@ -177,10 +202,12 @@ impl SendMessageIntentResponse {
         Ok(Self(unsafe { IntentResponse::from_owned(ptr) }?))
     }
 
+    /// Returns the Objective-C class name for this `INSendMessageIntentResponse` instance.
     pub fn class_name(&self) -> String {
         self.0.class_name()
     }
 
+    /// Returns the corresponding value from `INSendMessageIntentResponse`.
     pub fn code(&self) -> SendMessageIntentResponseCode {
         self.0.result_code().map_or(
             SendMessageIntentResponseCode::Unspecified,

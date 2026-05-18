@@ -4,12 +4,14 @@ use crate::error::IntentsError;
 use crate::ffi;
 use crate::private::{self, RawObject, RetainedObject};
 
+/// Wraps `INFile`.
 #[derive(Debug)]
 pub struct IntentFile {
     raw: RetainedObject,
 }
 
 impl IntentFile {
+    /// Creates a `INFile` wrapper using the corresponding initializer.
     pub fn from_data(
         data: &[u8],
         filename: &str,
@@ -38,6 +40,7 @@ impl IntentFile {
         }
     }
 
+    /// Creates a `INFile` wrapper using the corresponding initializer.
     pub fn from_file_url(
         file_url: &str,
         filename: Option<&str>,
@@ -76,10 +79,12 @@ impl IntentFile {
         })
     }
 
+    /// Returns the Objective-C class name for this `INFile` instance.
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
 
+    /// Wraps the corresponding method on `INFile`.
     pub fn data(&self) -> Result<Vec<u8>, IntentsError> {
         let ptr = unsafe { ffi::inx_file_copy_data_json(self.as_ptr()) };
         let Some(json) = (unsafe { private::take_string(ptr) }) else {
@@ -90,18 +95,22 @@ impl IntentFile {
         })
     }
 
+    /// Returns the corresponding value from `INFile`.
     pub fn filename(&self) -> Option<String> {
         private::string_property(self, "filename")
     }
 
+    /// Sets the corresponding `filename` value on `INFile`.
     pub fn set_filename(&mut self, filename: &str) -> Result<(), IntentsError> {
         private::set_string_property(self, "filename", filename)
     }
 
+    /// Returns the corresponding value from `INFile`.
     pub fn type_identifier(&self) -> Option<String> {
         private::string_property(self, "typeIdentifier")
     }
 
+    /// Returns the corresponding value from `INFile`.
     pub fn file_url(&self) -> Option<String> {
         private::string_property(self, "fileURL")
     }

@@ -5,12 +5,17 @@ use crate::ffi;
 use crate::in_object::Image;
 use crate::private::{self, RawObject, RetainedObject};
 
+/// Mirrors `INPersonHandleType`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum PersonHandleType {
+    /// Stores an unknown raw value from `INPersonHandleType`.
     Unknown,
+    /// Corresponds to the `EmailAddress` case of `INPersonHandleType`.
     EmailAddress,
+    /// Corresponds to the `PhoneNumber` case of `INPersonHandleType`.
     PhoneNumber,
+    /// Stores an unknown raw value from `INPersonHandleType`.
     Other(i64),
 }
 
@@ -34,12 +39,17 @@ impl PersonHandleType {
     }
 }
 
+/// Mirrors `INPersonSuggestionType`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum PersonSuggestionType {
+    /// Corresponds to the `None` case of `INPersonSuggestionType`.
     None,
+    /// Corresponds to the `SocialProfile` case of `INPersonSuggestionType`.
     SocialProfile,
+    /// Corresponds to the `InstantMessageAddress` case of `INPersonSuggestionType`.
     InstantMessageAddress,
+    /// Stores an unknown raw value from `INPersonSuggestionType`.
     Other(i64),
 }
 
@@ -63,12 +73,14 @@ impl PersonSuggestionType {
     }
 }
 
+/// Wraps `INPersonHandle`.
 #[derive(Debug)]
 pub struct PersonHandle {
     raw: RetainedObject,
 }
 
 impl PersonHandle {
+    /// Creates a `INPersonHandle` wrapper.
     pub fn new(value: Option<&str>, handle_type: PersonHandleType) -> Result<Self, IntentsError> {
         let value = value
             .map(|value| private::cstring(value, "person handle value"))
@@ -100,14 +112,17 @@ impl PersonHandle {
         Self { raw }
     }
 
+    /// Returns the Objective-C class name for this `INPersonHandle` instance.
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
 
+    /// Returns the corresponding value from `INPersonHandle`.
     pub fn value(&self) -> Option<String> {
         private::string_property(self, "value")
     }
 
+    /// Returns the corresponding value from `INPersonHandle`.
     pub fn handle_type(&self) -> PersonHandleType {
         private::integer_property(self, "type")
             .map_or(PersonHandleType::Unknown, PersonHandleType::from_raw)
@@ -120,12 +135,14 @@ impl RawObject for PersonHandle {
     }
 }
 
+/// Wraps `INPerson`.
 #[derive(Debug)]
 pub struct Person {
     raw: RetainedObject,
 }
 
 impl Person {
+    /// Creates a `INPerson` wrapper.
     pub fn new(
         person_handle: &PersonHandle,
         display_name: Option<&str>,
@@ -141,6 +158,7 @@ impl Person {
         )
     }
 
+    /// Returns the corresponding value from `INPerson`.
     pub fn with_details(
         person_handle: &PersonHandle,
         display_name: Option<&str>,
@@ -202,39 +220,48 @@ impl Person {
         })
     }
 
+    /// Returns the Objective-C class name for this `INPerson` instance.
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
 
+    /// Returns the corresponding value from `INPerson`.
     pub fn person_handle(&self) -> Option<PersonHandle> {
         private::object_property(self, "personHandle").map(PersonHandle::from_retained)
     }
 
+    /// Returns the corresponding value from `INPerson`.
     pub fn display_name(&self) -> Option<String> {
         private::string_property(self, "displayName")
     }
 
+    /// Returns the corresponding value from `INPerson`.
     pub fn image(&self) -> Option<Image> {
         private::object_property(self, "image").map(Image::from_retained)
     }
 
+    /// Returns the corresponding value from `INPerson`.
     pub fn contact_identifier(&self) -> Option<String> {
         private::string_property(self, "contactIdentifier")
     }
 
+    /// Returns the corresponding value from `INPerson`.
     pub fn custom_identifier(&self) -> Option<String> {
         private::string_property(self, "customIdentifier")
     }
 
+    /// Returns the number of corresponding values exposed by `INPerson`.
     pub fn aliases_count(&self) -> usize {
         private::array_count_property(self, "aliases").unwrap_or_default()
     }
 
+    /// Returns the corresponding value from `INPerson`.
     pub fn suggestion_type(&self) -> PersonSuggestionType {
         private::integer_property(self, "suggestionType")
             .map_or(PersonSuggestionType::None, PersonSuggestionType::from_raw)
     }
 
+    /// Returns the corresponding boolean value from `INPerson`.
     pub fn is_me(&self) -> bool {
         private::bool_property(self, "isMe").unwrap_or_default()
     }

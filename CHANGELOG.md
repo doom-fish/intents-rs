@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3] - 2026-05-18
+
+### Changed
+
+- Added `///` documentation across the public Rust surface in `src/` (excluding `src/ffi/`), with each wrapper referencing its Intents.framework counterpart so the crate now clears the doc-pass target and the public API is meaningfully browsable in rustdoc.
+- Fixed the README async example so the default-feature doctest compiles cleanly while the `async` example still shows the feature-gated workflow.
+
 ## [0.3.2] - 2026-05-18
 
 ### Changed

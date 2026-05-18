@@ -2,7 +2,7 @@
 
 Safe Rust bindings for Apple's [Intents](https://developer.apple.com/documentation/intents) framework on macOS.
 
-> **Status:** v0.3.0 adds an async API module (Tier 1) on top of the 100%-audited v0.2.2 sync surface.
+> **Status:** v0.3.3 keeps the async API module (Tier 1) and adds broad rustdoc coverage across the public sync + async surface.
 
 ## Quick start
 
@@ -26,10 +26,11 @@ intents = { version = "0.3", features = ["async"] }
 ```
 
 ```rust,no_run
-use intents::async_api::{AsyncInteraction, AsyncPreferences, AsyncVoiceShortcutCenter};
-use intents::{Intent, Interaction, VoiceShortcutCenter};
-
+#[cfg(feature = "async")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    use intents::async_api::AsyncInteraction;
+    use intents::{Intent, Interaction};
+
     pollster::block_on(async {
         // Donate an interaction
         let intent = Intent::new()?;
@@ -42,6 +43,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok::<_, Box<dyn std::error::Error>>(())
     })
 }
+
+#[cfg(not(feature = "async"))]
+fn main() {}
 ```
 
 ### Async API surface

@@ -9,10 +9,13 @@ use crate::private::{self, RawObject};
 
 macro_rules! simple_enum {
     ($name:ident { $($variant:ident = $raw:expr,)* }) => {
+        #[doc = concat!("Mirrors `IN", stringify!($name), "`.")]
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
         #[non_exhaustive]
         pub enum $name {
-            $($variant,)*
+            $(#[doc = concat!("Corresponds to the `", stringify!($variant), "` case of `IN", stringify!($name), "`.")]
+            $variant,)*
+            #[doc = concat!("Stores an unknown raw value from `IN", stringify!($name), "`.")]
             Other(i64),
         }
 
@@ -38,10 +41,12 @@ macro_rules! simple_enum {
 
 macro_rules! typed_response_extra {
     ($name:ident, $objc_class:literal, $code_ty:ident) => {
+        #[doc = concat!("Wraps `", $objc_class, "`.")]
         #[derive(Debug)]
         pub struct $name(IntentResponse);
 
         impl $name {
+            #[doc = concat!("Objective-C class name for `", $objc_class, "`.")]
             pub const OBJC_CLASS: &'static str = $objc_class;
 
             #[allow(dead_code)]
@@ -50,6 +55,7 @@ macro_rules! typed_response_extra {
                 Self::try_from(IntentResponse::from_retained(raw))
             }
 
+            #[doc = concat!("Wraps the corresponding member on `", $objc_class, "`.")]
             pub fn new(
                 code: $code_ty,
                 user_activity: Option<&UserActivity>,
@@ -72,10 +78,12 @@ macro_rules! typed_response_extra {
                 }
             }
 
+            #[doc = concat!("Returns the Objective-C class name for this `", $objc_class, "` instance.")]
             pub fn class_name(&self) -> String {
                 self.0.class_name()
             }
 
+            #[doc = concat!("Wraps the corresponding member on `", $objc_class, "`.")]
             pub fn code(&self) -> $code_ty {
                 self.0
                     .result_code()
@@ -221,26 +229,31 @@ typed_response_extra!(
 );
 
 impl AnswerCallIntentResponse {
+    /// Returns the number of corresponding values exposed by `INAnswerCallIntentResponse`.
     pub fn call_records_count(&self) -> usize {
         private::array_count_property(self, "callRecords").unwrap_or_default()
     }
 }
 
 impl GetReservationDetailsIntentResponse {
+    /// Returns the number of corresponding values exposed by `INGetReservationDetailsIntentResponse`.
     pub fn reservations_count(&self) -> usize {
         private::array_count_property(self, "reservations").unwrap_or_default()
     }
 }
 
 impl UserActivity {
+    /// Returns the corresponding value from `NSUserActivity`.
     pub fn interaction(&self) -> Option<Interaction> {
         private::object_property(self, "interaction").map(Interaction::from_retained)
     }
 
+    /// Returns the corresponding value from `NSUserActivity`.
     pub fn suggested_invocation_phrase(&self) -> Option<String> {
         private::string_property(self, "suggestedInvocationPhrase")
     }
 
+    /// Sets the corresponding `suggested_invocation_phrase` value on `NSUserActivity`.
     pub fn set_suggested_invocation_phrase(&mut self, phrase: &str) -> Result<(), IntentsError> {
         private::set_string_property(self, "suggestedInvocationPhrase", phrase)
     }

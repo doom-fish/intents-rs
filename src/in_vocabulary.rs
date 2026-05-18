@@ -5,25 +5,43 @@ use crate::ffi;
 use crate::in_object::Speakable;
 use crate::private::{self, RawObject, RetainedObject};
 
+/// Mirrors `INVocabularyStringType`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum VocabularyStringType {
+    /// Corresponds to the `ContactName` case of `INVocabularyStringType`.
     ContactName,
+    /// Corresponds to the `ContactGroupName` case of `INVocabularyStringType`.
     ContactGroupName,
+    /// Corresponds to the `PhotoTag` case of `INVocabularyStringType`.
     PhotoTag,
+    /// Corresponds to the `PhotoAlbumName` case of `INVocabularyStringType`.
     PhotoAlbumName,
+    /// Corresponds to the `WorkoutActivityName` case of `INVocabularyStringType`.
     WorkoutActivityName,
+    /// Corresponds to the `CarProfileName` case of `INVocabularyStringType`.
     CarProfileName,
+    /// Corresponds to the `CarName` case of `INVocabularyStringType`.
     CarName,
+    /// Corresponds to the `PaymentsOrganizationName` case of `INVocabularyStringType`.
     PaymentsOrganizationName,
+    /// Corresponds to the `PaymentsAccountNickname` case of `INVocabularyStringType`.
     PaymentsAccountNickname,
+    /// Corresponds to the `NotebookItemTitle` case of `INVocabularyStringType`.
     NotebookItemTitle,
+    /// Corresponds to the `NotebookItemGroupName` case of `INVocabularyStringType`.
     NotebookItemGroupName,
+    /// Corresponds to the `MediaPlaylistTitle` case of `INVocabularyStringType`.
     MediaPlaylistTitle,
+    /// Corresponds to the `MediaMusicArtistName` case of `INVocabularyStringType`.
     MediaMusicArtistName,
+    /// Corresponds to the `MediaAudiobookTitle` case of `INVocabularyStringType`.
     MediaAudiobookTitle,
+    /// Corresponds to the `MediaAudiobookAuthorName` case of `INVocabularyStringType`.
     MediaAudiobookAuthorName,
+    /// Corresponds to the `MediaShowTitle` case of `INVocabularyStringType`.
     MediaShowTitle,
+    /// Stores an unknown raw value from `INVocabularyStringType`.
     Unknown(i64),
 }
 
@@ -51,12 +69,14 @@ impl VocabularyStringType {
     }
 }
 
+/// Wraps `INVocabulary`.
 #[derive(Debug)]
 pub struct IntentVocabulary {
     raw: RetainedObject,
 }
 
 impl IntentVocabulary {
+    /// Returns the shared `INVocabulary` instance.
     pub fn shared() -> Result<Self, IntentsError> {
         let ptr = unsafe { ffi::inx_vocabulary_shared() };
         if ptr.is_null() {
@@ -74,10 +94,12 @@ impl IntentVocabulary {
         })
     }
 
+    /// Returns the Objective-C class name for this `INVocabulary` instance.
     pub fn class_name(&self) -> String {
         private::class_name(self)
     }
 
+    /// Sets the corresponding `vocabulary_strings` value on `INVocabulary`.
     pub fn set_vocabulary_strings(
         &self,
         values: &[&str],
@@ -112,6 +134,7 @@ impl IntentVocabulary {
         }
     }
 
+    /// Sets the corresponding `vocabulary_speakables` value on `INVocabulary`.
     pub fn set_vocabulary_speakables<T: Speakable>(
         &self,
         values: &[&T],
@@ -142,6 +165,7 @@ impl IntentVocabulary {
         }
     }
 
+    /// Wraps the corresponding action on `INVocabulary`.
     pub fn remove_all_vocabulary_strings(&self) -> Result<(), IntentsError> {
         let ok = unsafe { ffi::inx_vocabulary_remove_all(self.as_ptr()) };
         if ok {

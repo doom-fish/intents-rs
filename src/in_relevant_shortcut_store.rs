@@ -7,12 +7,14 @@ use crate::ffi;
 use crate::in_relevant_shortcut::RelevantShortcut;
 use crate::private::{RawObject, RetainedObject};
 
+/// Wraps `INRelevantShortcutStore`.
 #[derive(Debug)]
 pub struct RelevantShortcutStore {
     raw: RetainedObject,
 }
 
 impl RelevantShortcutStore {
+    /// Returns the shared `INRelevantShortcutStore` instance.
     pub fn default_store() -> Result<Self, IntentsError> {
         let ptr = unsafe { ffi::inx_relevant_shortcut_store_default() };
         if ptr.is_null() {
@@ -30,6 +32,7 @@ impl RelevantShortcutStore {
         })
     }
 
+    /// Sets the corresponding `relevant_shortcuts` value on `INRelevantShortcutStore`.
     pub fn set_relevant_shortcuts(
         &self,
         shortcuts: &[&RelevantShortcut],

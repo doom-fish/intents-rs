@@ -9,10 +9,13 @@ use crate::support::Placemark;
 
 macro_rules! simple_enum {
     ($name:ident { $($variant:ident = $raw:expr,)* }) => {
+        #[doc = concat!("Mirrors `IN", stringify!($name), "`.")]
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
         #[non_exhaustive]
         pub enum $name {
-            $($variant,)*
+            $(#[doc = concat!("Corresponds to the `", stringify!($variant), "` case of `IN", stringify!($name), "`.")]
+            $variant,)*
+            #[doc = concat!("Stores an unknown raw value from `IN", stringify!($name), "`.")]
             Other(i64),
         }
 
@@ -38,12 +41,14 @@ macro_rules! simple_enum {
 
 macro_rules! objc_wrapper {
     ($name:ident, $objc_class:literal, $context:literal) => {
+        #[doc = concat!("Wraps `", $objc_class, "`.")]
         #[derive(Debug)]
         pub struct $name {
             raw: RetainedObject,
         }
 
         impl $name {
+            #[doc = concat!("Objective-C class name for `", $objc_class, "`.")]
             pub const OBJC_CLASS: &'static str = $objc_class;
 
             #[allow(dead_code)]
@@ -66,6 +71,7 @@ macro_rules! objc_wrapper {
                 )?))
             }
 
+            #[doc = concat!("Returns the Objective-C class name for this `", $objc_class, "` instance.")]
             pub fn class_name(&self) -> String {
                 private::class_name(self)
             }
@@ -172,6 +178,7 @@ objc_wrapper!(TrainReservation, "INTrainReservation", "train reservation");
 objc_wrapper!(TrainTrip, "INTrainTrip", "train trip");
 
 impl Airline {
+    /// Creates a `INAirline` wrapper.
     pub fn new(
         name: Option<&str>,
         iata_code: Option<&str>,
@@ -207,20 +214,24 @@ impl Airline {
         }
     }
 
+    /// Returns the corresponding value from `INAirline`.
     pub fn name(&self) -> Option<String> {
         private::string_property(self, "name")
     }
 
+    /// Returns the corresponding value from `INAirline`.
     pub fn iata_code(&self) -> Option<String> {
         private::string_property(self, "iataCode")
     }
 
+    /// Returns the corresponding value from `INAirline`.
     pub fn icao_code(&self) -> Option<String> {
         private::string_property(self, "icaoCode")
     }
 }
 
 impl Airport {
+    /// Creates a `INAirport` wrapper.
     pub fn new(
         name: Option<&str>,
         iata_code: Option<&str>,
@@ -256,12 +267,14 @@ impl Airport {
         }
     }
 
+    /// Returns the corresponding value from `INAirport`.
     pub fn name(&self) -> Option<String> {
         private::string_property(self, "name")
     }
 }
 
 impl AirportGate {
+    /// Creates a `INAirportGate` wrapper.
     pub fn new(
         airport: &Airport,
         terminal: Option<&str>,
@@ -292,32 +305,38 @@ impl AirportGate {
         }
     }
 
+    /// Returns the corresponding value from `INAirportGate`.
     pub fn airport(&self) -> Option<Airport> {
         private::object_property(self, "airport").map(Airport::from_retained)
     }
 
+    /// Returns the corresponding value from `INAirportGate`.
     pub fn terminal(&self) -> Option<String> {
         private::string_property(self, "terminal")
     }
 
+    /// Returns the corresponding value from `INAirportGate`.
     pub fn gate(&self) -> Option<String> {
         private::string_property(self, "gate")
     }
 }
 
 impl BoatTrip {
+    /// Returns the corresponding value from `INBoatTrip`.
     pub fn provider(&self) -> Option<String> {
         private::string_property(self, "provider")
     }
 }
 
 impl BusTrip {
+    /// Returns the corresponding value from `INBusTrip`.
     pub fn provider(&self) -> Option<String> {
         private::string_property(self, "provider")
     }
 }
 
 impl CurrencyAmount {
+    /// Creates a `INCurrencyAmount` wrapper.
     pub fn new(amount: f64, currency_code: &str) -> Result<Self, IntentsError> {
         let currency_code = private::cstring(currency_code, "currency amount currency code")?;
         let mut error = std::ptr::null_mut();
@@ -330,16 +349,19 @@ impl CurrencyAmount {
         }
     }
 
+    /// Returns the corresponding value from `INCurrencyAmount`.
     pub fn amount(&self) -> Option<f64> {
         private::double_property(self, "amount")
     }
 
+    /// Returns the corresponding value from `INCurrencyAmount`.
     pub fn currency_code(&self) -> Option<String> {
         private::string_property(self, "currencyCode")
     }
 }
 
 impl DateComponentsRange {
+    /// Creates a `INDateComponentsRange` wrapper using the corresponding initializer.
     pub fn new_empty() -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe { ffi::inx_date_components_range_create_empty(&mut error) };
@@ -352,6 +374,7 @@ impl DateComponentsRange {
 }
 
 impl Flight {
+    /// Creates a `INFlight` wrapper.
     pub fn new(
         airline: &Airline,
         flight_number: &str,
@@ -378,16 +401,19 @@ impl Flight {
         }
     }
 
+    /// Returns the corresponding value from `INFlight`.
     pub fn flight_number(&self) -> Option<String> {
         private::string_property(self, "flightNumber")
     }
 
+    /// Returns the corresponding value from `INFlight`.
     pub fn airline(&self) -> Option<Airline> {
         private::object_property(self, "airline").map(Airline::from_retained)
     }
 }
 
 impl PaymentMethod {
+    /// Creates a `INPaymentMethod` wrapper.
     pub fn new(
         payment_method_type: PaymentMethodType,
         name: Option<&str>,
@@ -420,30 +446,36 @@ impl PaymentMethod {
         }
     }
 
+    /// Wraps the corresponding method on `INPaymentMethod`.
     pub fn apple_pay() -> Result<Self, IntentsError> {
         let ptr = unsafe { ffi::inx_payment_method_copy_apple_pay() };
         unsafe { Self::from_owned(ptr) }
     }
 
+    /// Returns the corresponding value from `INPaymentMethod`.
     pub fn payment_method_type(&self) -> PaymentMethodType {
         private::integer_property(self, "type")
             .map_or(PaymentMethodType::Unknown, PaymentMethodType::from_raw)
     }
 
+    /// Returns the corresponding value from `INPaymentMethod`.
     pub fn name(&self) -> Option<String> {
         private::string_property(self, "name")
     }
 
+    /// Returns the corresponding value from `INPaymentMethod`.
     pub fn identification_hint(&self) -> Option<String> {
         private::string_property(self, "identificationHint")
     }
 
+    /// Returns the corresponding value from `INPaymentMethod`.
     pub fn icon(&self) -> Option<Image> {
         private::object_property(self, "icon").map(Image::from_retained)
     }
 }
 
 impl RentalCar {
+    /// Creates a `INRentalCar` wrapper.
     pub fn new(
         rental_company_name: &str,
         rental_car_type: Option<&str>,
@@ -489,35 +521,42 @@ impl RentalCar {
         }
     }
 
+    /// Returns the corresponding value from `INRentalCar`.
     pub fn rental_company_name(&self) -> Option<String> {
         private::string_property(self, "rentalCompanyName")
     }
 }
 
 impl Reservation {
+    /// Returns the corresponding value from `INReservation`.
     pub fn reservation_number(&self) -> Option<String> {
         private::string_property(self, "reservationNumber")
     }
 
+    /// Returns the corresponding value from `INReservation`.
     pub fn reservation_status(&self) -> ReservationStatus {
         private::integer_property(self, "reservationStatus")
             .map_or(ReservationStatus::Unknown, ReservationStatus::from_raw)
     }
 
+    /// Returns the corresponding value from `INReservation`.
     pub fn reservation_holder_name(&self) -> Option<String> {
         private::string_property(self, "reservationHolderName")
     }
 
+    /// Returns the number of corresponding values exposed by `INReservation`.
     pub fn actions_count(&self) -> usize {
         private::array_count_property(self, "actions").unwrap_or_default()
     }
 
+    /// Returns the corresponding value from `INReservation`.
     pub fn url(&self) -> Option<String> {
         private::string_property(self, "URL")
     }
 }
 
 impl ReservationAction {
+    /// Creates a `INReservationAction` wrapper.
     pub fn new(
         action_type: ReservationActionType,
         valid_duration: &DateComponentsRange,
@@ -539,6 +578,7 @@ impl ReservationAction {
         }
     }
 
+    /// Returns the corresponding value from `INReservationAction`.
     pub fn action_type(&self) -> ReservationActionType {
         private::integer_property(self, "type").map_or(
             ReservationActionType::Unknown,
@@ -546,16 +586,19 @@ impl ReservationAction {
         )
     }
 
+    /// Returns the corresponding value from `INReservationAction`.
     pub fn valid_duration(&self) -> Option<DateComponentsRange> {
         private::object_property(self, "validDuration").map(DateComponentsRange::from_retained)
     }
 
+    /// Returns the corresponding value from `INReservationAction`.
     pub fn user_activity(&self) -> Option<UserActivity> {
         private::object_property(self, "userActivity").map(UserActivity::from_retained)
     }
 }
 
 impl Seat {
+    /// Creates a `INSeat` wrapper.
     pub fn new(
         seat_section: Option<&str>,
         seat_row: Option<&str>,
@@ -599,12 +642,14 @@ impl Seat {
         }
     }
 
+    /// Returns the corresponding value from `INSeat`.
     pub fn seat_number(&self) -> Option<String> {
         private::string_property(self, "seatNumber")
     }
 }
 
 impl TicketedEvent {
+    /// Creates a `INTicketedEvent` wrapper.
     pub fn new(
         category: TicketedEventCategory,
         name: &str,
@@ -629,6 +674,7 @@ impl TicketedEvent {
         }
     }
 
+    /// Returns the corresponding value from `INTicketedEvent`.
     pub fn category(&self) -> TicketedEventCategory {
         private::integer_property(self, "category").map_or(
             TicketedEventCategory::Unknown,
@@ -636,12 +682,14 @@ impl TicketedEvent {
         )
     }
 
+    /// Returns the corresponding value from `INTicketedEvent`.
     pub fn name(&self) -> Option<String> {
         private::string_property(self, "name")
     }
 }
 
 impl TrainTrip {
+    /// Returns the corresponding value from `INTrainTrip`.
     pub fn provider(&self) -> Option<String> {
         private::string_property(self, "provider")
     }

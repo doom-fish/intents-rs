@@ -1,44 +1,81 @@
+/// Mirrors `INIntentErrorCode`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum IntentErrorCode {
+    /// Corresponds to the `InteractionOperationNotSupported` case of `INIntentErrorCode`.
     InteractionOperationNotSupported,
+    /// Corresponds to the `DonatingInteraction` case of `INIntentErrorCode`.
     DonatingInteraction,
+    /// Corresponds to the `DeletingAllInteractions` case of `INIntentErrorCode`.
     DeletingAllInteractions,
+    /// Corresponds to the `DeletingInteractionWithIdentifiers` case of `INIntentErrorCode`.
     DeletingInteractionWithIdentifiers,
+    /// Corresponds to the `DeletingInteractionWithGroupIdentifier` case of `INIntentErrorCode`.
     DeletingInteractionWithGroupIdentifier,
+    /// Corresponds to the `IntentSupportedByMultipleExtension` case of `INIntentErrorCode`.
     IntentSupportedByMultipleExtension,
+    /// Corresponds to the `RestrictedIntentsNotSupportedByExtension` case of `INIntentErrorCode`.
     RestrictedIntentsNotSupportedByExtension,
+    /// Corresponds to the `NoHandlerProvidedForIntent` case of `INIntentErrorCode`.
     NoHandlerProvidedForIntent,
+    /// Corresponds to the `InvalidIntentName` case of `INIntentErrorCode`.
     InvalidIntentName,
+    /// Corresponds to the `NoAppAvailable` case of `INIntentErrorCode`.
     NoAppAvailable,
+    /// Corresponds to the `RequestTimedOut` case of `INIntentErrorCode`.
     RequestTimedOut,
+    /// Corresponds to the `MissingInformation` case of `INIntentErrorCode`.
     MissingInformation,
+    /// Corresponds to the `InvalidUserVocabularyFileLocation` case of `INIntentErrorCode`.
     InvalidUserVocabularyFileLocation,
+    /// Corresponds to the `ExtensionLaunchingTimeout` case of `INIntentErrorCode`.
     ExtensionLaunchingTimeout,
+    /// Corresponds to the `ExtensionBringUpFailed` case of `INIntentErrorCode`.
     ExtensionBringUpFailed,
+    /// Corresponds to the `ImageGeneric` case of `INIntentErrorCode`.
     ImageGeneric,
+    /// Corresponds to the `ImageNoServiceAvailable` case of `INIntentErrorCode`.
     ImageNoServiceAvailable,
+    /// Corresponds to the `ImageStorageFailed` case of `INIntentErrorCode`.
     ImageStorageFailed,
+    /// Corresponds to the `ImageLoadingFailed` case of `INIntentErrorCode`.
     ImageLoadingFailed,
+    /// Corresponds to the `ImageRetrievalFailed` case of `INIntentErrorCode`.
     ImageRetrievalFailed,
+    /// Corresponds to the `ImageProxyLoop` case of `INIntentErrorCode`.
     ImageProxyLoop,
+    /// Corresponds to the `ImageProxyInvalid` case of `INIntentErrorCode`.
     ImageProxyInvalid,
+    /// Corresponds to the `ImageProxyTimeout` case of `INIntentErrorCode`.
     ImageProxyTimeout,
+    /// Corresponds to the `ImageServiceFailure` case of `INIntentErrorCode`.
     ImageServiceFailure,
+    /// Corresponds to the `ImageScalingFailed` case of `INIntentErrorCode`.
     ImageScalingFailed,
+    /// Corresponds to the `PermissionDenied` case of `INIntentErrorCode`.
     PermissionDenied,
+    /// Corresponds to the `VoiceShortcutCreationFailed` case of `INIntentErrorCode`.
     VoiceShortcutCreationFailed,
+    /// Corresponds to the `VoiceShortcutGetFailed` case of `INIntentErrorCode`.
     VoiceShortcutGetFailed,
+    /// Corresponds to the `VoiceShortcutDeleteFailed` case of `INIntentErrorCode`.
     VoiceShortcutDeleteFailed,
+    /// Corresponds to the `EncodingGeneric` case of `INIntentErrorCode`.
     EncodingGeneric,
+    /// Corresponds to the `EncodingFailed` case of `INIntentErrorCode`.
     EncodingFailed,
+    /// Corresponds to the `DecodingGeneric` case of `INIntentErrorCode`.
     DecodingGeneric,
+    /// Corresponds to the `UnableToCreateAppIntentRepresentation` case of `INIntentErrorCode`.
     UnableToCreateAppIntentRepresentation,
+    /// Corresponds to the `NoAppIntent` case of `INIntentErrorCode`.
     NoAppIntent,
+    /// Stores an unknown raw value from `INIntentErrorCode`.
     Other(i64),
 }
 
 impl IntentErrorCode {
+    /// Converts a raw `INIntentErrorCode` value into the typed wrapper.
     pub const fn from_raw(raw: i64) -> Self {
         match raw {
             1900 => Self::InteractionOperationNotSupported,
@@ -79,6 +116,7 @@ impl IntentErrorCode {
         }
     }
 
+    /// Returns the raw `INIntentErrorCode` value.
     pub const fn raw_value(self) -> i64 {
         match self {
             Self::InteractionOperationNotSupported => 1900,
