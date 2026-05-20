@@ -1,7 +1,7 @@
 #![allow(clippy::missing_errors_doc)]
 
 use core::ffi::{c_char, c_void};
-use std::ffi::{CStr, CString};
+use std::ffi::CString;
 use std::ptr::NonNull;
 
 use crate::error::IntentsError;
@@ -69,13 +69,7 @@ fn property_key(key: &str) -> CString {
 /// The pointer must not be used after this call returns; ownership is transferred
 /// to this function.
 pub unsafe fn take_string(ptr: *mut c_char) -> Option<String> {
-    if ptr.is_null() {
-        return None;
-    }
-
-    let value = CStr::from_ptr(ptr).to_string_lossy().into_owned();
-    ffi::inx_string_free(ptr);
-    Some(value)
+    doom_fish_utils::ffi_string::take_owned_cstring_c(ptr, |p| ffi::inx_string_free(p))
 }
 
 /// # Safety
