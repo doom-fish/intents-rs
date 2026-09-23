@@ -155,7 +155,7 @@ impl MessageLinkMetadata {
                 link_url
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -214,7 +214,7 @@ impl MessageReaction {
                 emoji
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -246,7 +246,7 @@ impl SendMessageAttachment {
     pub fn audio_message_file(file: &IntentFile) -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
-            ffi::inx_send_message_attachment_create_with_audio_file(file.as_ptr(), &mut error)
+            ffi::inx_send_message_attachment_create_with_audio_file(file.as_ptr(), &raw mut error)
         };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating send-message attachment") })
@@ -274,7 +274,7 @@ impl Sticker {
                 emoji
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {

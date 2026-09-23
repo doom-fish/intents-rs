@@ -182,7 +182,7 @@ impl IntentResolutionResult {
     pub fn unsupported_with_reason(reason: i64) -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
-            ffi::inx_intent_resolution_result_unsupported_with_reason(reason, &mut error)
+            ffi::inx_intent_resolution_result_unsupported_with_reason(reason, &raw mut error)
         };
         if ptr.is_null() {
             Err(unsafe {
@@ -206,7 +206,7 @@ impl IntentResolutionResult {
             ffi::inx_intent_resolution_result_confirmation_required_with_item_for_reason(
                 item.map_or(std::ptr::null_mut(), RawObject::as_ptr),
                 reason,
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -236,7 +236,7 @@ impl SendMessageRecipientResolutionResult {
             ffi::inx_typed_intent_resolution_result_unsupported_for_reason(
                 class_name.as_ptr(),
                 reason.raw_value(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -266,7 +266,7 @@ impl StartCallCallRecordToCallBackResolutionResult {
             ffi::inx_typed_intent_resolution_result_unsupported_for_reason(
                 class_name.as_ptr(),
                 reason.raw_value(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {

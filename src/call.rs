@@ -240,7 +240,7 @@ impl CallGroup {
                 group_id
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -275,7 +275,7 @@ impl CallRecord {
                 identifier.as_ptr(),
                 call_record_type.raw_value(),
                 call_capability.raw_value(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -350,7 +350,7 @@ impl CallRecordFilter {
                 participants.len(),
                 call_types.bits(),
                 call_capability.raw_value(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {

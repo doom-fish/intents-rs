@@ -49,7 +49,7 @@ impl FocusStatus {
             ffi::inx_focus_status_create(
                 is_focused.is_some(),
                 is_focused.unwrap_or_default(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -134,8 +134,8 @@ impl FocusStatusCenter {
         let ok = unsafe {
             ffi::inx_focus_status_center_request_authorization(
                 self.as_ptr(),
-                &mut status,
-                &mut error,
+                &raw mut status,
+                &raw mut error,
             )
         };
         if ok {

@@ -30,7 +30,7 @@ impl IntentFile {
                 type_identifier
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -63,7 +63,7 @@ impl IntentFile {
                 type_identifier
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {

@@ -204,7 +204,7 @@ impl Airline {
                 icao_code
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -257,7 +257,7 @@ impl Airport {
                 icao_code
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -295,7 +295,7 @@ impl AirportGate {
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
                 gate.as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -341,7 +341,7 @@ impl CurrencyAmount {
         let currency_code = private::cstring(currency_code, "currency amount currency code")?;
         let mut error = std::ptr::null_mut();
         let ptr =
-            unsafe { ffi::inx_currency_amount_create(amount, currency_code.as_ptr(), &mut error) };
+            unsafe { ffi::inx_currency_amount_create(amount, currency_code.as_ptr(), &raw mut error) };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating currency amount") })
         } else {
@@ -364,7 +364,7 @@ impl DateComponentsRange {
     /// Creates a `INDateComponentsRange` wrapper using the corresponding initializer.
     pub fn new_empty() -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
-        let ptr = unsafe { ffi::inx_date_components_range_create_empty(&mut error) };
+        let ptr = unsafe { ffi::inx_date_components_range_create_empty(&raw mut error) };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating date components range") })
         } else {
@@ -391,7 +391,7 @@ impl Flight {
                 flight_duration.as_ptr(),
                 departure_airport_gate.as_ptr(),
                 arrival_airport_gate.as_ptr(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -436,7 +436,7 @@ impl PaymentMethod {
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
                 icon.map_or(std::ptr::null_mut(), RawObject::as_ptr),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -511,7 +511,7 @@ impl RentalCar {
                 rental_car_description
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -568,7 +568,7 @@ impl ReservationAction {
                 action_type.raw_value(),
                 valid_duration.as_ptr(),
                 user_activity.as_ptr(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -632,7 +632,7 @@ impl Seat {
                 seating_type
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -664,7 +664,7 @@ impl TicketedEvent {
                 name.as_ptr(),
                 event_duration.as_ptr(),
                 location.map_or(std::ptr::null_mut(), RawObject::as_ptr),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {

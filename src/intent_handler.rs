@@ -81,7 +81,7 @@ impl StartCallIntentHandling {
     /// Creates a `INStartCallIntentHandling` wrapper.
     pub fn new() -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
-        let ptr = unsafe { ffi::inx_start_call_intent_handling_create(&mut error) };
+        let ptr = unsafe { ffi::inx_start_call_intent_handling_create(&raw mut error) };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating start-call intent handling helper") })
         } else {
@@ -104,7 +104,7 @@ impl StartCallIntentHandling {
     pub fn simulate_handle(&mut self) -> Result<(), IntentsError> {
         let mut error = std::ptr::null_mut();
         let ok = unsafe {
-            ffi::inx_start_call_intent_handling_simulate_handle(self.as_ptr(), &mut error)
+            ffi::inx_start_call_intent_handling_simulate_handle(self.as_ptr(), &raw mut error)
         };
         if ok {
             Ok(())
@@ -117,7 +117,7 @@ impl StartCallIntentHandling {
     pub fn simulate_confirm(&mut self) -> Result<(), IntentsError> {
         let mut error = std::ptr::null_mut();
         let ok = unsafe {
-            ffi::inx_start_call_intent_handling_simulate_confirm(self.as_ptr(), &mut error)
+            ffi::inx_start_call_intent_handling_simulate_confirm(self.as_ptr(), &raw mut error)
         };
         if ok {
             Ok(())

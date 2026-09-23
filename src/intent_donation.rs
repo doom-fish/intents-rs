@@ -45,7 +45,7 @@ impl SendMessageIntentDonationMetadata {
     /// Creates a `INSendMessageIntentDonationMetadata` wrapper.
     pub fn new() -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
-        let ptr = unsafe { ffi::inx_send_message_intent_donation_metadata_create(&mut error) };
+        let ptr = unsafe { ffi::inx_send_message_intent_donation_metadata_create(&raw mut error) };
         if ptr.is_null() {
             Err(unsafe {
                 private::take_error(error, "creating send-message intent donation metadata")

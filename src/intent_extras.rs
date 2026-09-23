@@ -92,7 +92,7 @@ impl AnswerCallIntent {
                 call_identifier
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -135,7 +135,7 @@ impl EditMessageIntent {
                 edited_content
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -176,7 +176,7 @@ impl GetReservationDetailsIntent {
                     item_refs.as_ptr()
                 },
                 item_refs.len(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -209,7 +209,7 @@ impl HangUpCallIntent {
                 call_identifier
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -232,7 +232,7 @@ impl ShareFocusStatusIntent {
         let ptr = unsafe {
             ffi::inx_share_focus_status_intent_create(
                 focus_status.map_or(std::ptr::null_mut(), RawObject::as_ptr),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -268,7 +268,7 @@ impl UnsendMessagesIntent {
                     ptrs.as_ptr()
                 },
                 ptrs.len(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {

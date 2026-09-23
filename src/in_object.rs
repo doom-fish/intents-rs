@@ -25,7 +25,7 @@ impl Image {
     pub fn named(name: &str) -> Result<Self, IntentsError> {
         let name = private::cstring(name, "image name")?;
         let mut error = std::ptr::null_mut();
-        let ptr = unsafe { ffi::inx_image_create_named(name.as_ptr(), &mut error) };
+        let ptr = unsafe { ffi::inx_image_create_named(name.as_ptr(), &raw mut error) };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating image by name") })
         } else {
@@ -36,7 +36,7 @@ impl Image {
     /// Creates a `INImage` wrapper using the corresponding initializer.
     pub fn from_data(data: &[u8]) -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
-        let ptr = unsafe { ffi::inx_image_create_with_data(data.as_ptr(), data.len(), &mut error) };
+        let ptr = unsafe { ffi::inx_image_create_with_data(data.as_ptr(), data.len(), &raw mut error) };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating image from data") })
         } else {
@@ -48,7 +48,7 @@ impl Image {
     pub fn from_url(url: &str) -> Result<Self, IntentsError> {
         let url = private::cstring(url, "image URL")?;
         let mut error = std::ptr::null_mut();
-        let ptr = unsafe { ffi::inx_image_create_with_url(url.as_ptr(), &mut error) };
+        let ptr = unsafe { ffi::inx_image_create_with_url(url.as_ptr(), &raw mut error) };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating image from URL") })
         } else {
@@ -102,7 +102,7 @@ impl SpeakableString {
                 pronunciation_hint
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -202,7 +202,7 @@ impl IntentObject {
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
                 display_image.map_or(std::ptr::null_mut(), RawObject::as_ptr),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {

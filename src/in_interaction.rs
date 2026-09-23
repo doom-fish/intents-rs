@@ -101,7 +101,7 @@ impl Interaction {
     pub fn new(intent: &Intent, response: Option<&IntentResponse>) -> Result<Self, IntentsError> {
         let response_ptr = response.map_or(std::ptr::null_mut(), RawObject::as_ptr);
         let mut error = std::ptr::null_mut();
-        let ptr = unsafe { ffi::inx_interaction_create(intent.as_ptr(), response_ptr, &mut error) };
+        let ptr = unsafe { ffi::inx_interaction_create(intent.as_ptr(), response_ptr, &raw mut error) };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating interaction") })
         } else {

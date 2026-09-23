@@ -147,7 +147,7 @@ impl Shortcut {
     /// Creates a `INShortcut` wrapper.
     pub fn new(intent: &Intent) -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
-        let ptr = unsafe { ffi::inx_shortcut_create_with_intent(intent.as_ptr(), &mut error) };
+        let ptr = unsafe { ffi::inx_shortcut_create_with_intent(intent.as_ptr(), &raw mut error) };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating shortcut") })
         } else {
@@ -159,7 +159,7 @@ impl Shortcut {
     pub fn new_with_user_activity(user_activity: &UserActivity) -> Result<Self, IntentsError> {
         let mut error = std::ptr::null_mut();
         let ptr = unsafe {
-            ffi::inx_shortcut_create_with_user_activity(user_activity.as_ptr(), &mut error)
+            ffi::inx_shortcut_create_with_user_activity(user_activity.as_ptr(), &raw mut error)
         };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating shortcut from user activity") })

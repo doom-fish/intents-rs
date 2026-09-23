@@ -26,7 +26,7 @@ impl UserActivity {
     pub fn new(activity_type: &str) -> Result<Self, IntentsError> {
         let activity_type = private::cstring(activity_type, "user activity type")?;
         let mut error = std::ptr::null_mut();
-        let ptr = unsafe { ffi::inx_user_activity_create(activity_type.as_ptr(), &mut error) };
+        let ptr = unsafe { ffi::inx_user_activity_create(activity_type.as_ptr(), &raw mut error) };
         if ptr.is_null() {
             Err(unsafe { private::take_error(error, "creating user activity") })
         } else {
@@ -188,7 +188,7 @@ impl SendMessageIntentResponse {
             ffi::inx_send_message_intent_response_create(
                 code.raw_value(),
                 user_activity.map_or(std::ptr::null_mut(), RawObject::as_ptr),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {

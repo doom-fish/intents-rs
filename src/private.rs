@@ -131,7 +131,7 @@ pub fn integer_property(object: &impl RawObject, key: &str) -> Option<i64> {
     let key = property_key(key);
     let mut present = false;
     let value = unsafe {
-        ffi::inx_object_get_integer_property(object.as_ptr(), key.as_ptr(), &mut present)
+        ffi::inx_object_get_integer_property(object.as_ptr(), key.as_ptr(), &raw mut present)
     };
     present.then_some(value)
 }
@@ -141,7 +141,7 @@ pub fn double_property(object: &impl RawObject, key: &str) -> Option<f64> {
     let key = property_key(key);
     let mut present = false;
     let value =
-        unsafe { ffi::inx_object_get_double_property(object.as_ptr(), key.as_ptr(), &mut present) };
+        unsafe { ffi::inx_object_get_double_property(object.as_ptr(), key.as_ptr(), &raw mut present) };
     present.then_some(value)
 }
 
@@ -150,7 +150,7 @@ pub fn bool_property(object: &impl RawObject, key: &str) -> Option<bool> {
     let key = property_key(key);
     let mut present = false;
     let value =
-        unsafe { ffi::inx_object_get_bool_property(object.as_ptr(), key.as_ptr(), &mut present) };
+        unsafe { ffi::inx_object_get_bool_property(object.as_ptr(), key.as_ptr(), &raw mut present) };
     present.then_some(value)
 }
 
@@ -159,7 +159,7 @@ pub fn array_count_property(object: &impl RawObject, key: &str) -> Option<usize>
     let key = property_key(key);
     let mut present = false;
     let value = unsafe {
-        ffi::inx_object_get_array_count_property(object.as_ptr(), key.as_ptr(), &mut present)
+        ffi::inx_object_get_array_count_property(object.as_ptr(), key.as_ptr(), &raw mut present)
     };
     present.then_some(value)
 }
@@ -174,9 +174,9 @@ pub fn date_interval_property(object: &impl RawObject, key: &str) -> Option<(f64
         ffi::inx_object_get_date_interval_property(
             object.as_ptr(),
             key.as_ptr(),
-            &mut start,
-            &mut end,
-            &mut present,
+            &raw mut start,
+            &raw mut end,
+            &raw mut present,
         )
     };
     (ok && present).then_some((start, end))
@@ -210,7 +210,7 @@ pub fn create_blank_object(
 ) -> Result<RetainedObject, IntentsError> {
     let class_name = cstring(class_name, context)?;
     let mut error = std::ptr::null_mut();
-    let ptr = unsafe { ffi::inx_object_create_blank(class_name.as_ptr(), &mut error) };
+    let ptr = unsafe { ffi::inx_object_create_blank(class_name.as_ptr(), &raw mut error) };
     if ptr.is_null() {
         Err(unsafe { take_error(error, context) })
     } else {

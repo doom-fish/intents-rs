@@ -103,7 +103,7 @@ impl Placemark {
             ffi::inx_placemark_create(
                 name.as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -138,7 +138,7 @@ impl ObjectSection {
                     items.as_ptr()
                 },
                 items.len(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -172,7 +172,7 @@ impl ObjectCollection {
                     items.as_ptr()
                 },
                 items.len(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -197,7 +197,7 @@ impl ObjectCollection {
                     sections.as_ptr()
                 },
                 sections.len(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {

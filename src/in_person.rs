@@ -92,7 +92,7 @@ impl PersonHandle {
                     .as_ref()
                     .map_or(std::ptr::null(), |value| value.as_ptr()),
                 handle_type.raw_value(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
@@ -204,7 +204,7 @@ impl Person {
                 aliases_ptr,
                 aliases.len(),
                 suggestion_type.raw_value(),
-                &mut error,
+                &raw mut error,
             )
         };
         if ptr.is_null() {
