@@ -1,6 +1,8 @@
 use core::ffi::{c_char, c_void};
 use std::ffi::CStr;
-use std::sync::mpsc;
+
+use doom_fish_utils::completion::SyncCompletion;
+use doom_fish_utils::panic_safe::{catch_user_panic, catch_user_panic_result};
 
 use crate::error::IntentsError;
 use crate::ffi;
@@ -119,18 +121,16 @@ impl Interaction {
 
     /// Wraps the corresponding action on `INInteraction`.
     pub fn donate(&self) -> Result<(), IntentsError> {
-        let (sender, receiver) = mpsc::channel();
-        let context = Box::into_raw(Box::new(sender)).cast::<c_void>();
+        let (completion, context) = SyncCompletion::<()>::new();
         unsafe { ffi::inx_interaction_donate(self.as_ptr(), callback, context) };
-        recv_result(&receiver, "interaction callback channel dropped")
+        completion.wait().map_err(IntentsError::framework)
     }
 
     /// Wraps the corresponding action on `INInteraction`.
     pub fn delete_all() -> Result<(), IntentsError> {
-        let (sender, receiver) = mpsc::channel();
-        let context = Box::into_raw(Box::new(sender)).cast::<c_void>();
+        let (completion, context) = SyncCompletion::<()>::new();
         unsafe { ffi::inx_interaction_delete_all(callback, context) };
-        recv_result(&receiver, "interaction delete-all callback channel dropped")
+        completion.wait().map_err(IntentsError::framework)
     }
 
     /// Wraps the corresponding action on `INInteraction`.
@@ -149,8 +149,7 @@ impl Interaction {
             pointers.as_ptr()
         };
 
-        let (sender, receiver) = mpsc::channel();
-        let context = Box::into_raw(Box::new(sender)).cast::<c_void>();
+        let (completion, context) = SyncCompletion::<()>::new();
         unsafe {
             ffi::inx_interaction_delete_by_identifiers(
                 values_ptr,
@@ -159,17 +158,13 @@ impl Interaction {
                 context,
             );
         }
-        recv_result(
-            &receiver,
-            "interaction delete-by-identifiers callback channel dropped",
-        )
+        completion.wait().map_err(IntentsError::framework)
     }
 
     /// Wraps the corresponding action on `INInteraction`.
     pub fn delete_by_group_identifier(group_identifier: &str) -> Result<(), IntentsError> {
         let group_identifier = private::cstring(group_identifier, "interaction group identifier")?;
-        let (sender, receiver) = mpsc::channel();
-        let context = Box::into_raw(Box::new(sender)).cast::<c_void>();
+        let (completion, context) = SyncCompletion::<()>::new();
         unsafe {
             ffi::inx_interaction_delete_by_group_identifier(
                 group_identifier.as_ptr(),
@@ -177,10 +172,7 @@ impl Interaction {
                 context,
             );
         }
-        recv_result(
-            &receiver,
-            "interaction delete-by-group-identifier callback channel dropped",
-        )
+        completion.wait().map_err(IntentsError::framework)
     }
 
     /// Returns the corresponding value from `INInteraction`.
@@ -252,35 +244,18 @@ impl RawObject for Interaction {
     }
 }
 
-fn recv_result(
-    receiver: &mpsc::Receiver<Result<(), IntentsError>>,
-    context: &str,
-) -> Result<(), IntentsError> {
-    receiver
-        .recv()
-        .map_err(|error| IntentsError::framework(format!("{context}: {error}")))?
-}
-
 unsafe extern "C" fn callback(context: *mut c_void, error: *const c_char) {
-    if std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        // SAFETY: context is a valid Box<mpsc::Sender<...>> obtained via Box::into_raw
-        // in the calling function; ownership is transferred to this callback.
-        let sender =
-            unsafe { Box::from_raw(context.cast::<mpsc::Sender<Result<(), IntentsError>>>()) };
-        let result = if error.is_null() {
+    let outcome = catch_user_panic_result("intents interaction callback", || {
+        if error.is_null() {
             Ok(())
         } else {
-            let message = unsafe { CStr::from_ptr(error) }
+            Err(unsafe { CStr::from_ptr(error) }
                 .to_string_lossy()
-                .into_owned();
-            Err(IntentsError::framework(message))
-        };
-        let _ = sender.send(result);
-    }))
-    .is_err()
-    {
-        eprintln!(
-            "intents: panic in callback caught at C ABI boundary; channel will return RecvError"
-        );
-    }
+                .into_owned())
+        }
+    })
+    .unwrap_or_else(|| Err("interaction callback panicked".to_owned()));
+    catch_user_panic("intents interaction completion", || unsafe {
+        SyncCompletion::complete_with_result(context, outcome);
+    });
 }
