@@ -42,14 +42,14 @@ public func inx_call_record_create(
         outError?.pointee = inxCString("invalid INCallCapability raw value")
         return nil
     }
-    guard let record = (NSClassFromString("INCallRecord") as? NSObject.Type)?.init() else {
-        outError?.pointee = inxCString("INCallRecord class was unavailable")
-        return nil
-    }
-
-    record.setValue(String(cString: identifier), forKey: "identifier")
-    record.setValue(NSNumber(value: recordType.rawValue), forKey: "callRecordType")
-    record.setValue(NSNumber(value: capability.rawValue), forKey: "callCapability")
+    let record = INCallRecord(
+        __identifier: String(cString: identifier),
+        dateCreated: nil,
+        callRecordType: recordType,
+        callCapability: capability,
+        callDuration: nil,
+        unseen: nil
+    )
     return inxRetain(record)
 }
 
@@ -87,13 +87,10 @@ public func inx_call_record_filter_create(
         outError?.pointee = inxCString("invalid INCallCapability raw value")
         return nil
     }
-    guard let filter = (NSClassFromString("INCallRecordFilter") as? NSObject.Type)?.init() else {
-        outError?.pointee = inxCString("INCallRecordFilter class was unavailable")
-        return nil
-    }
-
-    filter.setValue(people.isEmpty ? nil : people, forKey: "participants")
-    filter.setValue(NSNumber(value: callTypes), forKey: "callTypes")
-    filter.setValue(NSNumber(value: capability.rawValue), forKey: "callCapability")
+    let filter = INCallRecordFilter(
+        participants: people.isEmpty ? nil : people,
+        callTypes: INCallRecordTypeOptions(rawValue: callTypes),
+        callCapability: capability
+    )
     return inxRetain(filter)
 }

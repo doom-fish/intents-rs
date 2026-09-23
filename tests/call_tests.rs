@@ -17,7 +17,10 @@ fn call_roundtrip() -> Result<(), Box<dyn std::error::Error>> {
     )?;
 
     assert_eq!(group.group_name().as_deref(), Some("Friends"));
+    assert_eq!(record.identifier().as_deref(), Some("call-1"));
     assert_eq!(record.call_record_type(), CallRecordType::Outgoing);
+    assert_eq!(record.call_capability(), CallCapability::AudioCall);
+    assert_eq!(filter.call_capability(), CallCapability::AudioCall);
     assert_eq!(filter.participants_count(), 1);
     assert!(filter
         .call_types()
