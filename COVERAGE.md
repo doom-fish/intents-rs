@@ -1,4 +1,4 @@
-# Intents.framework coverage notes (v0.2.2)
+# Intents.framework coverage notes (v0.4.0)
 
 Legend:
 
@@ -6,17 +6,16 @@ Legend:
 - 🟡 partial
 - ⏭️ skipped / exempt
 
-## Core surface retained from v0.1.0–v0.2.1
+## Core surface
 
 | Area | Status | Notes |
 | --- | --- | --- |
-| Preferences / authorization | ✅ | `Preferences` wraps Siri authorization status and callback-based authorization requests. |
 | IntentDefinition / Shortcut | ✅ | `Intent`, `Shortcut`, `SendMessageIntent`, and `StartCallIntent` remain available, including image and donation metadata helpers. |
 | IntentResponse / UserActivity | ✅ | `IntentResponse`, `SendMessageIntentResponse`, and `UserActivity` remain available. |
 | IntentHandler / IntentExtension | ✅ | `IntentHandlerProvider`, `StartCallIntentHandling`, and `IntentExtension` remain available. |
 | IntentDonation | ✅ | `IntentDonationMetadata` and `SendMessageIntentDonationMetadata` remain available. |
-| INParameter / INObject / INFile / INPerson | ✅ | `IntentParameter`, `IntentObject`, `IntentFile`, `Person`, `PersonHandle`, and related enums remain available. |
-| Vocabulary / relevant shortcuts / interaction | ✅ | `IntentVocabulary`, `RelevantShortcut`, `RelevantShortcutStore`, `Interaction`, and related helpers remain available. |
+| INObject / INFile / INPerson | ✅ | `IntentObject`, `IntentFile`, `Person`, `PersonHandle`, and related enums remain available. |
+| Interaction | ✅ | `Interaction` and related helpers remain available. |
 | Voice shortcuts | ✅ | `VoiceShortcut` and `VoiceShortcutCenter` remain available. |
 
 ## v0.2.2 gap-closure areas
@@ -36,7 +35,7 @@ Legend:
 | API | Status | Notes |
 | --- | --- | --- |
 | `INCallAudioRoute`, `INCallCapability`, `INCallCapabilityOptions`, `INCallDestinationType`, `INCallRecordType`, `INCallRecordTypeOptions` | ✅ | Exposed as Rust enums / option sets. |
-| `INCallGroup`, `INCallRecord`, `INCallRecordFilter` | ✅ | Safe constructors and property accessors are exposed. |
+| `INCallGroup`, `INCallRecord`, `INCallRecordFilter` | ✅ | Safe constructors (the public initializers) and property accessors are exposed. `INCallRecord`'s initializer that takes participants is iOS-only, so `CallRecord::new` sets the identifier, type and capability. |
 | Call-related resolution results | ✅ | `CallCapabilityResolutionResult`, `CallDestinationTypeResolutionResult`, `CallRecordResolutionResult`, `CallRecordTypeResolutionResult`, and `CallRecordTypeOptionsResolutionResult` are exposed. |
 
 ### Focus surface
@@ -93,6 +92,7 @@ Legend:
 
 | API | Status | Reason |
 | --- | --- | --- |
+| `INPreferences`, `INVocabulary`, `INRelevantShortcut`, `INRelevantShortcutStore`, `INRelevanceProvider` and its subclasses, `INParameter`, `INPlayMediaIntent`, `INSearchForMessagesIntent`, `INAddTasksIntent` | ⏭️ | `API_UNAVAILABLE(macos)`. Versions before 0.4 reached them through the Objective-C runtime; 0.4 removed those wrappers. |
 | `INRestaurantReservationBooking` and restaurant-booking-only response enums | ⏭️ | The macOS SDK marks these types unavailable; they are recorded in `COVERAGE_AUDIT.md` as `EXEMPT`. |
 | `NSExtensionContext (ShareExtension)` | ⏭️ | The share-extension category is unavailable on macOS. |
 | `NSUserActivity.shortcutAvailability` | ⏭️ | The property is unavailable on macOS even though the rest of `NSUserActivity (IntentsAdditions)` is available. |

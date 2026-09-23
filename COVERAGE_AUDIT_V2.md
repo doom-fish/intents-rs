@@ -6,7 +6,9 @@ GAPS: 0
 EXEMPT: 29
 COVERAGE_PCT: 100.0%
 
-This audit re-verifies the previous v1 audit results against macOS 26.2.2.sdk (Xcode 16.0). All 29 EXEMPT entries were validated to have strict SDK availability attributes: 20 items in `_Deprecated.h` header files, and 9 items marked `API_UNAVAILABLE(macos)` in the framework headers. No additional gaps were identified.
+This audit re-verifies the previous v1 audit results against the macOS 26.2 SDK. All 29 EXEMPT entries were validated to have strict SDK availability attributes: 20 items in `_Deprecated.h` header files, and 9 items marked `API_UNAVAILABLE(macos)` in the framework headers. No additional gaps were identified.
+
+What the numbers measure: a top-level symbol counts as VERIFIED when the crate wraps it at all; members aren't counted, and COVERAGE.md is the logical-area view. Re-checked on 2026-09-23 against the installed MacOSX26.5.sdk and MacOSX27.0.sdk headers, which declare the same top-level Intents symbols.
 
 ## 🟢 VERIFIED
 | Symbol | Kind | Header | Wrapped by |

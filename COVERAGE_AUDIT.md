@@ -2,7 +2,9 @@
 
 This audit enumerates top-level Objective-C/C public symbols from `Intents.framework` headers (interfaces, protocols, categories, enums/options, structs, exported constants) in the macOS SDK. macOS-unavailable symbols are excluded from the denominator; deprecated symbols are kept as `EXEMPT` per the audit instructions.
 
-`intents-rs` also exposes several runtime-only wrappers for symbols that the macOS 26.2 SDK marks unavailable (for example `INPreferences`, `INParameter`, `INVocabulary`, `INRelevantShortcut*`, `INRelevanceProvider*`, `INPlayMediaIntent`, `INSearchForMessagesIntent`, and `INAddTasksIntent`). Those wrappers are intentionally excluded from the `VERIFIED` / `GAPS` counts here.
+Up to 0.3.x, `intents-rs` also exposed runtime-only wrappers for symbols that the SDK marks unavailable on macOS (`INPreferences`, `INParameter`, `INVocabulary`, `INRelevantShortcut*`, `INRelevanceProvider*`, `INPlayMediaIntent`, `INSearchForMessagesIntent` and `INAddTasksIntent`). 0.4.0 removed them; they were never part of the `VERIFIED` / `GAPS` counts.
+
+What the numbers measure: a top-level symbol counts as VERIFIED when the crate wraps it at all; members aren't counted, and COVERAGE.md is the logical-area view. Re-checked on 2026-09-23 against the installed MacOSX26.5.sdk and MacOSX27.0.sdk headers, which declare the same top-level Intents symbols.
 
 SDK_PUBLIC_SYMBOLS: 170
 VERIFIED: 141
