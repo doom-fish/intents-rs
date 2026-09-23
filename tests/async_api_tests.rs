@@ -8,7 +8,7 @@
 
 #[cfg(feature = "async")]
 mod async_api_tests {
-    use intents::async_api::{AsyncInteraction, AsyncPreferences, AsyncVoiceShortcutCenter};
+    use intents::async_api::{AsyncInteraction, AsyncVoiceShortcutCenter};
     use intents::{Intent, Interaction, VoiceShortcutCenter};
 
     // -----------------------------------------------------------------------
@@ -90,30 +90,6 @@ mod async_api_tests {
             result.is_err(),
             "expected Err for NUL-containing group identifier, got Ok"
         );
-    }
-
-    // -----------------------------------------------------------------------
-    // AsyncPreferences
-    // -----------------------------------------------------------------------
-
-    #[test]
-    fn async_siri_auth_resolves() {
-        use intents::Preferences;
-        use intents::SiriAuthorizationStatus;
-        // Skip if status is NotDetermined — calling requestSiriAuthorization
-        // would show a system dialog and hang.
-        if matches!(
-            Preferences::siri_authorization_status(),
-            SiriAuthorizationStatus::NotDetermined
-        ) {
-            println!("async_siri_auth_resolves: status=NotDetermined — skipping to avoid dialog");
-            return;
-        }
-        pollster::block_on(async {
-            let result = AsyncPreferences::request_siri_authorization().await;
-            println!("async_siri_auth_resolves: {result:?}");
-            let _ = result;
-        });
     }
 
     // -----------------------------------------------------------------------

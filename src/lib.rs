@@ -24,16 +24,8 @@ pub mod in_file;
 pub mod in_interaction;
 /// Wrappers for `INObject`, `INImage`, and `INSpeakable*` types.
 pub mod in_object;
-/// Wrappers for `INParameter` from Intents.framework.
-pub mod in_parameter;
 /// Wrappers for `INPerson*` types from Intents.framework.
 pub mod in_person;
-/// Wrappers for `INRelevantShortcut*` types from Intents.framework.
-pub mod in_relevant_shortcut;
-/// Wrappers for `INRelevantShortcutStore` from Intents.framework.
-pub mod in_relevant_shortcut_store;
-/// Wrappers for `INVocabulary` and related enums from Intents.framework.
-pub mod in_vocabulary;
 /// Re-exported `INIntent` wrapper types.
 pub mod intent;
 /// Wrappers for `INIntent`, `INShortcut`, and typed intent classes.
@@ -54,11 +46,7 @@ pub mod intent_response;
 pub mod interaction;
 /// Wrappers for `INMessage*` and related messaging types.
 pub mod message;
-/// Wrappers for `INPreferences` authorization APIs.
-pub mod preferences;
 mod private;
-/// Re-exported `INRelevantShortcut*` wrapper types.
-pub mod relevant;
 /// Wrappers for reservation, travel, and payment types from Intents.framework.
 pub mod reservation;
 /// Wrappers for typed `INIntentResolutionResult` subclasses.
@@ -88,17 +76,8 @@ pub use handler_extras::{
 pub use in_file::IntentFile;
 pub use in_interaction::{DateInterval, IntentHandlingStatus, Interaction, InteractionDirection};
 pub use in_object::{Image, IntentObject, Speakable, SpeakableString};
-pub use in_parameter::IntentParameter;
 pub use in_person::{Person, PersonHandle, PersonHandleType, PersonSuggestionType};
-pub use in_relevant_shortcut::{
-    DailyRoutineSituation, RelevanceProvider, RelevantShape, RelevantShortcut, RelevantShortcutRole,
-};
-pub use in_relevant_shortcut_store::RelevantShortcutStore;
-pub use in_vocabulary::{IntentVocabulary, VocabularyStringType};
-pub use intent_definition::{
-    AddTasksIntent, Intent, PlayMediaIntent, SearchForMessagesIntent, SendMessageIntent,
-    SetTimerIntent, Shortcut, StartCallIntent,
-};
+pub use intent_definition::{Intent, SendMessageIntent, SetTimerIntent, Shortcut, StartCallIntent};
 pub use intent_donation::{IntentDonationMetadata, SendMessageIntentDonationMetadata};
 pub use intent_extension::IntentExtension;
 pub use intent_extras::{
@@ -114,7 +93,6 @@ pub use message::{
     MessageLinkMetadata, MessageReaction, MessageReactionType, OutgoingMessageType,
     SendMessageAttachment, Sticker, StickerType,
 };
-pub use preferences::{Preferences, SiriAuthorizationStatus};
 pub use reservation::{
     Airline, Airport, AirportGate, BoatReservation, BoatTrip, BusReservation, BusTrip,
     CurrencyAmount, DateComponentsRange, Flight, FlightReservation, LodgingReservation,
@@ -168,17 +146,9 @@ pub mod prelude {
         DateInterval, IntentHandlingStatus, Interaction, InteractionDirection,
     };
     pub use crate::in_object::{Image, IntentObject, Speakable, SpeakableString};
-    pub use crate::in_parameter::IntentParameter;
     pub use crate::in_person::{Person, PersonHandle, PersonHandleType, PersonSuggestionType};
-    pub use crate::in_relevant_shortcut::{
-        DailyRoutineSituation, RelevanceProvider, RelevantShape, RelevantShortcut,
-        RelevantShortcutRole,
-    };
-    pub use crate::in_relevant_shortcut_store::RelevantShortcutStore;
-    pub use crate::in_vocabulary::{IntentVocabulary, VocabularyStringType};
     pub use crate::intent_definition::{
-        AddTasksIntent, Intent, PlayMediaIntent, SearchForMessagesIntent, SendMessageIntent,
-        SetTimerIntent, Shortcut, StartCallIntent,
+        Intent, SendMessageIntent, SetTimerIntent, Shortcut, StartCallIntent,
     };
     pub use crate::intent_donation::{IntentDonationMetadata, SendMessageIntentDonationMetadata};
     pub use crate::intent_extension::IntentExtension;
@@ -195,7 +165,6 @@ pub mod prelude {
         MessageLinkMetadata, MessageReaction, MessageReactionType, OutgoingMessageType,
         SendMessageAttachment, Sticker, StickerType,
     };
-    pub use crate::preferences::{Preferences, SiriAuthorizationStatus};
     pub use crate::reservation::{
         Airline, Airport, AirportGate, BoatReservation, BoatTrip, BusReservation, BusTrip,
         CurrencyAmount, DateComponentsRange, Flight, FlightReservation, LodgingReservation,

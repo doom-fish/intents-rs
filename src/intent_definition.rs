@@ -251,10 +251,7 @@ macro_rules! typed_intent {
 }
 
 typed_intent!(SendMessageIntent, "INSendMessageIntent");
-typed_intent!(SearchForMessagesIntent, "INSearchForMessagesIntent");
 typed_intent!(StartCallIntent, "INStartCallIntent");
-typed_intent!(PlayMediaIntent, "INPlayMediaIntent");
-typed_intent!(AddTasksIntent, "INAddTasksIntent");
 typed_intent!(SetTimerIntent, "INSetTimerIntent");
 
 impl SendMessageIntent {
@@ -276,23 +273,6 @@ impl SendMessageIntent {
     /// Returns the corresponding value from `INSendMessageIntent`.
     pub fn conversation_identifier(&self) -> Option<String> {
         private::string_property(self, "conversationIdentifier")
-    }
-}
-
-impl SearchForMessagesIntent {
-    /// Wraps the corresponding method on `INSearchForMessagesIntent`.
-    pub fn search_terms(&self) -> Result<Option<Vec<String>>, IntentsError> {
-        private::string_array_property(self, "searchTerms")
-    }
-
-    /// Wraps the corresponding method on `INSearchForMessagesIntent`.
-    pub fn identifiers(&self) -> Result<Option<Vec<String>>, IntentsError> {
-        private::string_array_property(self, "identifiers")
-    }
-
-    /// Returns the corresponding value from `INSearchForMessagesIntent`.
-    pub fn attributes(&self) -> Option<i64> {
-        private::integer_property(self, "attributes")
     }
 }
 
@@ -318,41 +298,3 @@ impl StartCallIntent {
     }
 }
 
-impl PlayMediaIntent {
-    /// Returns the number of corresponding values exposed by `INPlayMediaIntent`.
-    pub fn media_items_count(&self) -> Option<usize> {
-        private::array_count_property(self, "mediaItems")
-    }
-
-    /// Returns the corresponding value from `INPlayMediaIntent`.
-    pub fn play_shuffled(&self) -> Option<bool> {
-        private::bool_property(self, "playShuffled")
-    }
-
-    /// Returns the corresponding value from `INPlayMediaIntent`.
-    pub fn playback_repeat_mode(&self) -> Option<i64> {
-        private::integer_property(self, "playbackRepeatMode")
-    }
-
-    /// Returns the corresponding value from `INPlayMediaIntent`.
-    pub fn resume_playback(&self) -> Option<bool> {
-        private::bool_property(self, "resumePlayback")
-    }
-
-    /// Returns the corresponding value from `INPlayMediaIntent`.
-    pub fn playback_speed(&self) -> Option<f64> {
-        private::double_property(self, "playbackSpeed")
-    }
-}
-
-impl AddTasksIntent {
-    /// Returns the number of corresponding values exposed by `INAddTasksIntent`.
-    pub fn task_titles_count(&self) -> Option<usize> {
-        private::array_count_property(self, "taskTitles")
-    }
-
-    /// Returns the corresponding value from `INAddTasksIntent`.
-    pub fn priority(&self) -> Option<i64> {
-        private::integer_property(self, "priority")
-    }
-}

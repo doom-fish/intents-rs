@@ -1,7 +1,8 @@
 use intents::prelude::*;
 
 fn main() {
-    let status = Preferences::siri_authorization_status();
-    println!("Siri authorization status: {status:?}");
-    println!("✅ intents preferences OK");
+    println!("Intents.framework version: {}", intents_version_number());
+    let intent = Intent::new().expect("INIntent");
+    println!("created {}", intent.class_name());
+    println!("✅ intents smoke OK");
 }

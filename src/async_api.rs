@@ -13,7 +13,6 @@
 //! | `INInteraction.delete(with:[String],completion:)` | [`InteractionDeleteFuture`] | [`AsyncInteraction::delete`] |
 //! | `INInteraction.delete(with:String,completion:)` | [`InteractionDeleteFuture`] | [`AsyncInteraction::delete_by_group`] |
 //! | `INInteraction.deleteAll(completion:)` | [`InteractionDeleteAllFuture`] | [`AsyncInteraction::delete_all`] |
-//! | `INPreferences.requestSiriAuthorization(_:)` | [`SiriAuthorizationFuture`] | [`AsyncPreferences::request_siri_authorization`] |
 //! | `INVoiceShortcutCenter.getAllVoiceShortcuts(completion:)` | [`AllVoiceShortcutsFuture`] | [`AsyncVoiceShortcutCenter::get_all`] |
 //! | `INVoiceShortcutCenter.getVoiceShortcut(with:completion:)` | [`VoiceShortcutFuture`] | [`AsyncVoiceShortcutCenter::get`] |
 //!
@@ -29,7 +28,7 @@
 //! ## Example
 //!
 //! ```rust,no_run
-//! use intents::async_api::{AsyncInteraction, AsyncPreferences};
+//! use intents::async_api::AsyncInteraction;
 //! use intents::{Intent, IntentResponse, Interaction};
 //!
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -60,7 +59,6 @@ use doom_fish_utils::panic_safe::catch_user_panic;
 use crate::error::IntentsError;
 use crate::ffi;
 use crate::in_interaction::Interaction;
-use crate::preferences::SiriAuthorizationStatus;
 use crate::private::RawObject;
 use crate::voice_shortcut::{VoiceShortcut, VoiceShortcutCenter};
 
@@ -265,70 +263,6 @@ impl AsyncInteraction {
         let (future, ctx) = AsyncCompletion::create();
         unsafe { ffi::inx_interaction_delete_all(void_completion_cb, ctx) };
         InteractionDeleteAllFuture {
-            inner: future.into(),
-        }
-    }
-}
-
-// ============================================================================
-// INPreferences.requestSiriAuthorization(_:)
-// ============================================================================
-
-/// Callback for Siri authorization, carrying a status code.
-unsafe extern "C" fn siri_auth_cb(ctx: *mut c_void, status: i64, error: *const c_char) {
-    // SAFETY: ctx is a valid AsyncCompletion context pointer from AsyncCompletion::create();
-    // called at most once by the Swift bridge.
-    catch_user_panic("siri_auth_cb", || {
-        if error.is_null() {
-            let auth = SiriAuthorizationStatus::from_raw(status);
-            unsafe { AsyncCompletion::complete_ok(ctx, auth) };
-        } else {
-            let msg = unsafe { error_from_cstr(error.cast::<i8>()) };
-            unsafe { AsyncCompletion::<SiriAuthorizationStatus>::complete_err(ctx, msg) };
-        }
-    });
-}
-
-/// Future returned by [`AsyncPreferences::request_siri_authorization`].
-///
-/// Resolves to the resulting [`SiriAuthorizationStatus`] on success, or
-/// `Err(IntentsError)` if the system couldn't complete the request.
-#[derive(Debug)]
-pub struct SiriAuthorizationFuture {
-    inner: OpaqueCompletionFuture<SiriAuthorizationStatus>,
-}
-
-impl Future for SiriAuthorizationFuture {
-    type Output = Result<SiriAuthorizationStatus, IntentsError>;
-
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        Pin::new(&mut self.inner)
-            .poll(cx)
-            .map(|r| r.map_err(IntentsError::framework))
-    }
-}
-
-/// Async wrapper for `INPreferences` operations.
-///
-/// Wraps `INPreferences.requestSiriAuthorization(_:)` as a [`Future`].
-#[derive(Debug, Clone, Copy)]
-pub struct AsyncPreferences;
-
-impl AsyncPreferences {
-    /// Asynchronously request Siri & dictation authorization.
-    ///
-    /// Wraps `INPreferences.requestSiriAuthorization(_:)`. On macOS this
-    /// will show the system authorization dialog the first time it is called.
-    /// Subsequent calls resolve immediately with the cached status.
-    ///
-    /// # macOS availability
-    ///
-    /// `INPreferences` is available on macOS 12.0+. If the class is absent,
-    /// the future resolves with `Err(IntentsError::Framework(...))`.
-    pub fn request_siri_authorization() -> SiriAuthorizationFuture {
-        let (future, ctx) = AsyncCompletion::create();
-        unsafe { ffi::inx_preferences_request_siri_authorization(siri_auth_cb, ctx) };
-        SiriAuthorizationFuture {
             inner: future.into(),
         }
     }

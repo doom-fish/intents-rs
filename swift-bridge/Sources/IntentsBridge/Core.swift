@@ -1,11 +1,6 @@
 import Foundation
 import Intents
 
-public typealias INXStatusCallback = @convention(c) (
-    UnsafeMutableRawPointer?,
-    Int64,
-    UnsafePointer<CChar>?
-) -> Void
 public typealias INXObjectCallback = @convention(c) (
     UnsafeMutableRawPointer?,
     UnsafeMutableRawPointer?,
@@ -55,24 +50,6 @@ public func inx_object_release(_ ptr: UnsafeMutableRawPointer?) {
 
 func inxClass(named name: String) -> AnyClass? {
     NSClassFromString(name)
-}
-
-func inxClassIntMethod(_ className: String, selectorName: String) -> Int? {
-    guard let cls = inxClass(named: className),
-          let metaClass = object_getClass(cls)
-    else {
-        return nil
-    }
-
-    let selector = NSSelectorFromString(selectorName)
-    guard class_respondsToSelector(metaClass, selector) else {
-        return nil
-    }
-
-    typealias Fn = @convention(c) (AnyClass, Selector) -> Int
-    let imp = class_getMethodImplementation(metaClass, selector)
-    let function = unsafeBitCast(imp, to: Fn.self)
-    return function(cls, selector)
 }
 
 func inxAllocObject(className: String) -> NSObject? {
@@ -136,24 +113,6 @@ public func inx_intents_version_string() -> UnsafeMutablePointer<CChar>? {
         ?? (bundle?.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)
         ?? ""
     return inxCString(version)
-}
-
-final class StatusCallbackBox {
-    private let callback: INXStatusCallback
-    private let refcon: UnsafeMutableRawPointer?
-
-    init(callback: @escaping INXStatusCallback, refcon: UnsafeMutableRawPointer?) {
-        self.callback = callback
-        self.refcon = refcon
-    }
-
-    func send(status: Int64, errorMessage: String? = nil) {
-        if let errorMessage {
-            errorMessage.withCString { callback(refcon, status, $0) }
-        } else {
-            callback(refcon, status, nil)
-        }
-    }
 }
 
 final class ObjectCallbackBox {

@@ -67,10 +67,6 @@ name = "26_async_interaction"
 required-features = ["async"]
 
 [[example]]
-name = "27_async_preferences"
-required-features = ["async"]
-
-[[example]]
 name = "28_async_voice_shortcuts"
 required-features = ["async"]
 

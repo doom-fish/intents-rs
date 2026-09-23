@@ -9,9 +9,11 @@ Safe Rust bindings for Apple's [Intents](https://developer.apple.com/documentati
 ```rust,no_run
 use intents::prelude::*;
 
-fn main() {
-    let status = Preferences::siri_authorization_status();
-    println!("Siri authorization status: {status:?}");
+fn main() -> Result<(), IntentsError> {
+    let intent = Intent::new()?;
+    let interaction = Interaction::new(&intent, None)?;
+    interaction.donate()?;
+    Ok(())
 }
 ```
 

@@ -95,11 +95,6 @@ pub fn string_property(object: &impl RawObject, key: &str) -> Option<String> {
     unsafe { take_string(ptr) }
 }
 
-/// Wraps Objective-C equality checks for two wrapped Intents objects.
-pub fn object_is_equal(lhs: &impl RawObject, rhs: &impl RawObject) -> bool {
-    unsafe { ffi::inx_object_is_equal(lhs.as_ptr(), rhs.as_ptr()) }
-}
-
 /// Reads an Objective-C object property from a wrapped Intents object.
 pub fn object_property(object: &impl RawObject, key: &str) -> Option<RetainedObject> {
     let key = property_key(key);
