@@ -75,10 +75,14 @@ public func inx_send_message_attachment_create_with_audio_file(
         outError?.pointee = inxCString("INSendMessageAttachment attachmentWithAudioMessageFile: was unavailable")
         return nil
     }
-    typealias Fn = @convention(c) (AnyClass, Selector, INFile) -> AnyObject
+    typealias Fn = @convention(c) (AnyClass, Selector, INFile) -> AnyObject?
     let imp = class_getMethodImplementation(metaClass, selector)
     let function = unsafeBitCast(imp, to: Fn.self)
-    return inxRetain(function(INSendMessageAttachment.self, selector, file))
+    guard let attachment = function(INSendMessageAttachment.self, selector, file) else {
+        outError?.pointee = inxCString("INSendMessageAttachment attachmentWithAudioMessageFile: returned nil")
+        return nil
+    }
+    return inxRetain(attachment)
 }
 
 @_cdecl("inx_sticker_create")

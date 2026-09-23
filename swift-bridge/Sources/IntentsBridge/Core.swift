@@ -52,22 +52,6 @@ func inxClass(named name: String) -> AnyClass? {
     NSClassFromString(name)
 }
 
-func inxAllocObject(className: String) -> NSObject? {
-    guard let cls = inxClass(named: className), let metaClass = object_getClass(cls) else {
-        return nil
-    }
-
-    let selector = NSSelectorFromString("alloc")
-    guard class_respondsToSelector(metaClass, selector) else {
-        return nil
-    }
-
-    typealias Fn = @convention(c) (AnyClass, Selector) -> AnyObject
-    let imp = class_getMethodImplementation(metaClass, selector)
-    let function = unsafeBitCast(imp, to: Fn.self)
-    return function(cls, selector) as? NSObject
-}
-
 @_cdecl("inx_object_create_blank")
 public func inx_object_create_blank(
     _ className: UnsafePointer<CChar>?,

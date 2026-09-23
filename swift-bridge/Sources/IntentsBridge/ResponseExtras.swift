@@ -1,6 +1,34 @@
 import Foundation
 import Intents
 
+private func inxResponseError(_ message: String) -> NSError {
+    NSError(domain: "IntentsBridge", code: -1, userInfo: [NSLocalizedDescriptionKey: message])
+}
+
+private func inxResponseSubclass(named name: String, code: Int, userActivity: NSUserActivity?) throws -> INIntentResponse {
+    switch name {
+    case "INAnswerCallIntentResponse":
+        guard #available(macOS 13.1, *) else { throw inxResponseError("\(name) requires macOS 13.1") }
+        return INAnswerCallIntentResponse(code: INAnswerCallIntentResponseCode(rawValue: code) ?? .unspecified, userActivity: userActivity)
+    case "INEditMessageIntentResponse":
+        guard #available(macOS 14.0, *) else { throw inxResponseError("\(name) requires macOS 14") }
+        return INEditMessageIntentResponse(code: INEditMessageIntentResponseCode(rawValue: code) ?? .unspecified, userActivity: userActivity)
+    case "INGetReservationDetailsIntentResponse":
+        return INGetReservationDetailsIntentResponse(code: INGetReservationDetailsIntentResponseCode(rawValue: code) ?? .unspecified, userActivity: userActivity)
+    case "INHangUpCallIntentResponse":
+        guard #available(macOS 13.1, *) else { throw inxResponseError("\(name) requires macOS 13.1") }
+        return INHangUpCallIntentResponse(code: INHangUpCallIntentResponseCode(rawValue: code) ?? .unspecified, userActivity: userActivity)
+    case "INShareFocusStatusIntentResponse":
+        guard #available(macOS 12.0, *) else { throw inxResponseError("\(name) requires macOS 12") }
+        return INShareFocusStatusIntentResponse(code: INShareFocusStatusIntentResponseCode(rawValue: code) ?? .unspecified, userActivity: userActivity)
+    case "INUnsendMessagesIntentResponse":
+        guard #available(macOS 14.0, *) else { throw inxResponseError("\(name) requires macOS 14") }
+        return INUnsendMessagesIntentResponse(code: INUnsendMessagesIntentResponseCode(rawValue: code) ?? .unspecified, userActivity: userActivity)
+    default:
+        throw inxResponseError("unknown intent response subclass \(name)")
+    }
+}
+
 @_cdecl("inx_intent_response_subclass_create")
 public func inx_intent_response_subclass_create(
     _ className: UnsafePointer<CChar>?,
@@ -12,27 +40,15 @@ public func inx_intent_response_subclass_create(
         outError?.pointee = inxCString("intent response subclass class name was NULL")
         return nil
     }
-
-    let name = String(cString: className)
-    guard let object = inxAllocObject(className: name) else {
-        outError?.pointee = inxCString("unknown intent response subclass \(name)")
+    do {
+        let response = try inxResponseSubclass(
+            named: String(cString: className),
+            code: code,
+            userActivity: userActivityPtr.map { inxUnretained($0) as NSUserActivity }
+        )
+        return inxRetain(response)
+    } catch {
+        outError?.pointee = inxCString(error.localizedDescription)
         return nil
     }
-
-    let selector = NSSelectorFromString("initWithCode:userActivity:")
-    guard object.responds(to: selector) else {
-        outError?.pointee = inxCString("\(name) does not respond to initWithCode:userActivity:")
-        return nil
-    }
-
-    typealias Fn = @convention(c) (AnyObject, Selector, Int, NSUserActivity?) -> AnyObject
-    let imp = object.method(for: selector)
-    let function = unsafeBitCast(imp, to: Fn.self)
-    let response = function(
-        object,
-        selector,
-        code,
-        userActivityPtr.map { inxUnretained($0) as NSUserActivity }
-    )
-    return inxRetain(response)
 }

@@ -15,10 +15,14 @@ private func inxResolutionResultUnsupportedForReason(
         outError?.pointee = inxCString("\(className) does not respond to unsupportedWithReason:")
         return nil
     }
-    typealias Fn = @convention(c) (AnyClass, Selector, Int) -> AnyObject
+    typealias Fn = @convention(c) (AnyClass, Selector, Int) -> AnyObject?
     let imp = class_getMethodImplementation(metaClass, selector)
     let function = unsafeBitCast(imp, to: Fn.self)
-    return inxRetain(function(cls, selector, reason))
+    guard let result = function(cls, selector, reason) else {
+        outError?.pointee = inxCString("\(className) unsupportedWithReason: returned nil")
+        return nil
+    }
+    return inxRetain(result)
 }
 
 @_cdecl("inx_intent_resolution_result_unsupported_with_reason")
@@ -49,10 +53,15 @@ public func inx_intent_resolution_result_confirmation_required_with_item_for_rea
         return nil
     }
 
-    typealias Fn = @convention(c) (AnyClass, Selector, AnyObject?, Int) -> AnyObject
+    typealias Fn = @convention(c) (AnyClass, Selector, AnyObject?, Int) -> AnyObject?
     let imp = class_getMethodImplementation(metaClass, selector)
     let function = unsafeBitCast(imp, to: Fn.self)
-    return inxRetain(function(cls, selector, itemPtr.map { Unmanaged<AnyObject>.fromOpaque($0).takeUnretainedValue() }, reason))
+    let item = itemPtr.map { Unmanaged<AnyObject>.fromOpaque($0).takeUnretainedValue() }
+    guard let result = function(cls, selector, item, reason) else {
+        outError?.pointee = inxCString("INIntentResolutionResult confirmationRequiredWithItemToConfirm:forReason: returned nil")
+        return nil
+    }
+    return inxRetain(result)
 }
 
 @_cdecl("inx_typed_intent_resolution_result_unsupported_for_reason")

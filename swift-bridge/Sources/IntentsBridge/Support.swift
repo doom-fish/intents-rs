@@ -27,14 +27,14 @@ public func inx_deferred_localized_intents_string_copy(
     if let table {
         let selector = NSSelectorFromString("deferredLocalizedIntentsStringWithFormat:fromTable:")
         guard class_respondsToSelector(metaClass, selector) else { return nil }
-        typealias Fn = @convention(c) (AnyClass, Selector, NSString, NSString?) -> AnyObject
+        typealias Fn = @convention(c) (AnyClass, Selector, NSString, NSString?) -> AnyObject?
         let imp = class_getMethodImplementation(metaClass, selector)
         let function = unsafeBitCast(imp, to: Fn.self)
         localized = function(NSString.self, selector, formatValue, NSString(string: String(cString: table))) as? NSString
     } else {
         let selector = NSSelectorFromString("deferredLocalizedIntentsStringWithFormat:")
         guard class_respondsToSelector(metaClass, selector) else { return nil }
-        typealias Fn = @convention(c) (AnyClass, Selector, NSString) -> AnyObject
+        typealias Fn = @convention(c) (AnyClass, Selector, NSString) -> AnyObject?
         let imp = class_getMethodImplementation(metaClass, selector)
         let function = unsafeBitCast(imp, to: Fn.self)
         localized = function(NSString.self, selector, formatValue) as? NSString
@@ -55,7 +55,7 @@ public func inx_placemark_create(
         return nil
     }
 
-    typealias Fn = @convention(c) (AnyClass, Selector, CLLocation, NSString?, AnyObject?) -> AnyObject
+    typealias Fn = @convention(c) (AnyClass, Selector, CLLocation, NSString?, AnyObject?) -> AnyObject?
     let imp = class_getMethodImplementation(metaClass, selector)
     let function = unsafeBitCast(imp, to: Fn.self)
     let placemark = function(
@@ -65,6 +65,10 @@ public func inx_placemark_create(
         name.map { NSString(string: String(cString: $0)) },
         nil
     )
+    guard let placemark else {
+        outError?.pointee = inxCString("CLPlacemark placemarkWithLocation:name:postalAddress: returned nil")
+        return nil
+    }
     return inxRetain(placemark)
 }
 
