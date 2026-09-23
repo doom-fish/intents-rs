@@ -1,5 +1,47 @@
 # Changelog
 
+All notable changes to `intents` are documented here.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.4.0] - Unreleased
+
+### Fixed
+
+- Objects created through `+alloc` and `init` method pointers leaked, because
+  the pointers were typed as returning an unretained object, and a nil result
+  was read as a non-optional reference (undefined behavior). The six
+  intent-response subclasses are now created with their typed initializers,
+  and the class-factory calls made through method pointers treat a nil result
+  as an error.
+- `CallRecord::new` and `CallRecordFilter::new` called the unavailable
+  `-init` and wrote read-only properties through KVC; they now use the public
+  initializers.
+- The blocking interaction and voice-shortcut calls use doom-fish-utils'
+  `SyncCompletion` and shared panic helpers instead of an `mpsc` channel and
+  raw `catch_unwind`, and no longer move `VoiceShortcut` values between
+  threads.
+
+### Changed
+
+- The `doom-fish-utils` requirement is `>=0.4.1, <0.5`.
+- `rust-version` is 1.82 (was 1.76), the fleet baseline.
+
+### Removed
+
+- **Breaking:** the wrappers for classes that macOS marks
+  `API_UNAVAILABLE(macos)`, which the bridge reached through
+  `NSClassFromString`, KVC and `unsafeBitCast`: `Preferences`,
+  `SiriAuthorizationStatus`, `async_api::AsyncPreferences`,
+  `async_api::SiriAuthorizationFuture`, `IntentVocabulary`,
+  `VocabularyStringType`, `RelevantShortcut`, `RelevanceProvider`,
+  `RelevantShortcutRole`, `DailyRoutineSituation`, `RelevantShape`,
+  `RelevantShortcutStore`, `IntentParameter`, `PlayMediaIntent`,
+  `SearchForMessagesIntent` and `AddTasksIntent`, with their modules, raw
+  `ffi` declarations, examples and tests. SiriKit Intents on macOS is largely
+  superseded by App Intents; see the README.
+
 ## [0.3.6] - 2026-05-20
 
 - Migrated local `take_string` body to call `doom_fish_utils::ffi_string::take_owned_cstring_c`. Centralises the duplicated FFI take-string pattern fleet-wide. No public API change.
