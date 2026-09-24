@@ -16,6 +16,7 @@ mod async_api_tests {
     // -----------------------------------------------------------------------
 
     #[test]
+    #[ignore = "donates an interaction to the user's Siri interaction history"]
     fn async_donate_resolves() {
         pollster::block_on(async {
             let intent = Intent::new().expect("Intent::new");
@@ -29,6 +30,7 @@ mod async_api_tests {
     }
 
     #[test]
+    #[ignore = "deletes every interaction this process has donated from the user's Siri interaction history"]
     fn async_delete_all_resolves() {
         pollster::block_on(async {
             let result = AsyncInteraction::delete_all().await;
