@@ -1,7 +1,7 @@
 use intents::prelude::*;
 
 #[test]
-fn interaction_properties_and_cleanup_paths_work() -> Result<(), Box<dyn std::error::Error>> {
+fn interaction_properties_round_trip() -> Result<(), Box<dyn std::error::Error>> {
     let intent = Intent::new()?;
     let response = IntentResponse::new()?;
     let mut interaction = Interaction::new(&intent, Some(&response))?;
@@ -23,7 +23,12 @@ fn interaction_properties_and_cleanup_paths_work() -> Result<(), Box<dyn std::er
         InteractionDirection::Incoming
     ));
     assert!(interaction.date_interval().is_some());
+    Ok(())
+}
 
+#[test]
+#[ignore = "deletes interactions by identifier and group from the user's Siri interaction history"]
+fn interaction_cleanup_paths_work() -> Result<(), Box<dyn std::error::Error>> {
     Interaction::delete_by_identifiers(&["demo-interaction"])?;
     Interaction::delete_by_group_identifier("demo-group")?;
     Ok(())

@@ -40,6 +40,7 @@ mod async_api_tests {
     }
 
     #[test]
+    #[ignore = "deletes interactions by identifier from the user's Siri interaction history"]
     fn async_delete_by_ids_resolves() {
         pollster::block_on(async {
             let result = AsyncInteraction::delete(&["async-test-id"])
@@ -51,6 +52,7 @@ mod async_api_tests {
     }
 
     #[test]
+    #[ignore = "sends a delete request to the user's Siri interaction history"]
     fn async_delete_empty_ids_resolves() {
         pollster::block_on(async {
             let result = AsyncInteraction::delete(&[])
@@ -62,6 +64,7 @@ mod async_api_tests {
     }
 
     #[test]
+    #[ignore = "deletes interactions by group from the user's Siri interaction history"]
     fn async_delete_by_group_resolves() {
         pollster::block_on(async {
             let result = AsyncInteraction::delete_by_group("async-test-group")
