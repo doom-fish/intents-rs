@@ -22,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `SyncCompletion` and shared panic helpers instead of an `mpsc` channel and
   raw `catch_unwind`, and no longer move `VoiceShortcut` values between
   threads.
+- `build.rs` no longer adds the toolchain's Swift 5.5 back-deployment
+  directory (`usr/lib/swift-5.5/macosx`) to the link search path or the
+  rpath. Its old `libswift_Concurrency.dylib` shadowed the SDK's
+  `libswift_Concurrency.tbd` in every binary that depends on this crate, so
+  linking failed next to a Swift bridge that uses newer concurrency APIs,
+  such as apple-localauthentication's.
 
 ### Changed
 
