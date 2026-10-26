@@ -23,6 +23,6 @@ fn intent_file_roundtrip() -> Result<(), Box<dyn std::error::Error>> {
         .file_url()
         .as_deref()
         .is_some_and(|value| value.ends_with("/Cargo.toml")));
-    assert!(!file_from_url.data()?.is_empty());
+    assert_ne!(file_from_url.data()?, [] as [u8; 0]);
     Ok(())
 }

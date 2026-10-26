@@ -14,7 +14,7 @@ fn support_roundtrip() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(collection.all_items_count(), 1);
     assert!(collection.uses_indexed_collation());
     assert!(intents_version_number() > 0.0);
-    assert!(!intents_version_string().is_empty());
+    assert_ne!(intents_version_string(), "");
     assert!(deferred_localized_intents_string("Hello").is_ok());
     Ok(())
 }
