@@ -19,7 +19,7 @@ Classes that the macOS SDK marks `API_UNAVAILABLE(macos)` aren't wrapped. Versio
 
 ```toml
 [dependencies]
-intents = "0.4"
+intents = "0.4.3"
 ```
 
 ## Quick start
@@ -42,7 +42,7 @@ Enable the `async` feature for executor-agnostic `Future` wrappers over every
 
 ```toml
 [dependencies]
-intents = { version = "0.4", features = ["async"] }
+intents = { version = "0.4.3", features = ["async"] }
 ```
 
 ```rust,no_run
