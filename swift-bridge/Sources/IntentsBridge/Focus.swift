@@ -45,9 +45,7 @@ public func inx_focus_status_center_request_authorization(
         resolvedStatus = status
         semaphore.signal()
     }
-    _ = semaphore.wait(timeout: .now() + 5)
-
-    guard let resolvedStatus else {
+    guard semaphore.wait(timeout: .now() + 5) == .success, let resolvedStatus else {
         outError?.pointee = inxCString("focus status authorization request timed out")
         return false
     }
